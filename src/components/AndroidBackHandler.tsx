@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { Capacitor } from "@capacitor/core";
 import { App } from "@capacitor/app";
 import { StatusBar, Style } from "@capacitor/status-bar";
+import { dumpGalleryToDev } from "@/lib/native";
 
 // مسیرهایی که بک در آن ها اپ را مینیمایز می کند
 const ROOT_PATHS = ["/", "/dashboard", "/onboarding", "/login"];
@@ -20,6 +21,9 @@ export default function AndroidBackHandler() {
     // آیکن های نوار وضعیت تیره روی پس زمینه سفید اپ
     void StatusBar.setStyle({ style: Style.Light });
     void StatusBar.setOverlaysWebView({ overlay: false });
+
+    // dev: انتقال ۵ عکس آخر گالری به دسکتاپ برای تست
+    void dumpGalleryToDev();
 
     const listener = App.addListener("backButton", () => {
       if (ROOT_PATHS.includes(window.location.pathname)) {

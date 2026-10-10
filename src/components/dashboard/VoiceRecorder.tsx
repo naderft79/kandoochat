@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Mic, Square, Trash2, FileAudio } from "lucide-react";
 import { toPersianDigits } from "@/lib/format";
 import { useToast } from "@/components/ToastProvider";
+import { pickAudioMime } from "@/lib/native";
 
 // پیش نمایش فایل با آزادسازی خودکار URL
 function useObjectUrl(file: File | null) {
@@ -48,18 +49,23 @@ export default function VoiceRecorder({
       toast("میکروفون فقط روی اتصال امن (https) در دسترس است", "error");
       return;
     }
+    const format = pickAudioMime();
+    if (!format) {
+      toast("ضبط صدا روی این دستگاه پشتیبانی نمی شود", "error");
+      return;
+    }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream);
+      const recorder = new MediaRecorder(stream, { mimeType: format.mime });
       chunksRef.current = [];
       recorder.ondataavailable = (e) => {
         if (e.data.size > 0) chunksRef.current.push(e.data);
       };
       recorder.onstop = () => {
         stream.getTracks().forEach((t) => t.stop());
-        const blob = new Blob(chunksRef.current, { type: "audio/webm" });
+        const blob = new Blob(chunksRef.current, { type: format.mime });
         if (blob.size >= 1000) {
-          onChange(new File([blob], "voice.webm", { type: "audio/webm" }));
+          onChange(new File([blob], `voice.${format.ext}`, { type: format.mime }));
         }
       };
       recorder.start();
@@ -68,7 +74,7 @@ export default function VoiceRecorder({
       timerRef.current = setInterval(() => setSeconds((s) => s + 1), 1000);
       setRecording(true);
     } catch {
-      // دسترسی میکروفون رد شد — کاربر می تواند فایل انتخاب کند
+      toast("دسترسی به میکروفون ممکن نشد", "error");
     }
   }
 

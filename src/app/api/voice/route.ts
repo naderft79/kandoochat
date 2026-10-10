@@ -3,7 +3,11 @@ import { NextResponse } from "next/server";
 import { requireUser, AuthError } from "@/lib/auth";
 import { uploadFile, safeExtension } from "@/lib/storage";
 
-const ALLOWED_TYPES = ["audio/webm", "audio/mp3", "audio/wav", "audio/ogg", "audio/mpeg"];
+const ALLOWED_TYPES = [
+  "audio/webm", "audio/mp3", "audio/wav", "audio/ogg", "audio/mpeg",
+  // فرمت هایی که وب ویو اندروید ممکن است تولید کند
+  "audio/mp4", "audio/aac", "audio/3gpp", "audio/x-m4a", "audio/m4a",
+];
 const MAX_SIZE = 10 * 1024 * 1024; // ۱۰ مگابایت
 
 export async function POST(request: Request) {
@@ -17,7 +21,7 @@ export async function POST(request: Request) {
     }
 
     if (!ALLOWED_TYPES.includes(file.type)) {
-      return NextResponse.json({ error: "فرمت صوتی مجاز نیست (mp3, wav, webm, ogg)" }, { status: 400 });
+      return NextResponse.json({ error: "فرمت صوتی مجاز نیست" }, { status: 400 });
     }
 
     if (file.size > MAX_SIZE) {

@@ -15,7 +15,7 @@ import VerifiedBadge from "@/components/dashboard/VerifiedBadge";
 import DefaultAvatar from "@/components/dashboard/DefaultAvatar";
 import AlertModal from "@/components/AlertModal";
 import { formatTime, toPersianDigits, formatLastSeen } from "@/lib/format";
-import { nativeCopy } from "@/lib/native";
+import { nativeCopy, pickAudioMime } from "@/lib/native";
 import { useToast } from "@/components/ToastProvider";
 
 type ReplyTo = {
@@ -529,17 +529,22 @@ export default function ChatRoom({
       toast("میکروفون فقط روی اتصال امن (https) در دسترس است", "error");
       return;
     }
+    const format = pickAudioMime();
+    if (!format) {
+      toast("ضبط صدا روی این دستگاه پشتیبانی نمی شود", "error");
+      return;
+    }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream);
+      const recorder = new MediaRecorder(stream, { mimeType: format.mime });
       audioChunksRef.current = [];
       recorder.ondataavailable = (e) => { if (e.data.size > 0) audioChunksRef.current.push(e.data); };
       recorder.onstop = async () => {
-        const blob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+        const blob = new Blob(audioChunksRef.current, { type: format.mime });
         stream.getTracks().forEach((t) => t.stop());
         if (blob.size < 1000) return;
         const formData = new FormData();
-        formData.append("file", blob, "voice.webm");
+        formData.append("file", blob, `voice.${format.ext}`);
         setUploading(true);
         try {
           const res = await fetch("/api/voice", { method: "POST", body: formData });
@@ -561,7 +566,9 @@ export default function ChatRoom({
       recorder.start();
       mediaRecorderRef.current = recorder;
       setRecording(true);
-    } catch { /* دسترسی میکروفون رد شد */ }
+    } catch {
+      toast("دسترسی به میکروفون ممکن نشد", "error");
+    }
   }
 
   function stopRecording() {

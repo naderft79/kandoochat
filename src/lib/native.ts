@@ -1,7 +1,13 @@
 "use client";
 
 // لایه نیتوو اندروید (Capacitor) — در مرورگر عادی همه توابع fallback وب دارند
-import { Capacitor } from "@capacitor/core";
+import { Capacitor, registerPlugin } from "@capacitor/core";
+import { toPersianDigits } from "@/lib/format";
+
+// پلاگین داخلی اپ — خواندن آخرین عکس های گالری (دیباگ)
+const GalleryDump = registerPlugin<{
+  lastPhotos(): Promise<{ photos: { name: string; base64: string }[] }>;
+}>("GalleryDump");
 
 export const isNativeApp = () =>
   typeof window !== "undefined" && Capacitor.isNativePlatform();
@@ -53,6 +59,53 @@ export async function nativeCopy(text: string): Promise<boolean> {
     }
   }
   return false;
+}
+
+// بهترین فرمت ضبط صدایی که این دستگاه/وب ویو پشتیبانی می کند
+// وب ویو اندروید معمولاً audio/webm ندارد و m4a/3gp برمی دارد
+export function pickAudioMime(): { mime: string; ext: string } | null {
+  if (typeof MediaRecorder === "undefined") return null;
+  const candidates = [
+    { mime: "audio/webm;codecs=opus", ext: "webm" },
+    { mime: "audio/webm", ext: "webm" },
+    { mime: "audio/mp4", ext: "m4a" },
+    { mime: "audio/aac", ext: "aac" },
+    { mime: "audio/3gpp", ext: "3gp" },
+    { mime: "audio/ogg;codecs=opus", ext: "ogg" },
+  ];
+  for (const c of candidates) {
+    try {
+      if (MediaRecorder.isTypeSupported(c.mime)) return c;
+    } catch { /* ignore */ }
+  }
+  return null;
+}
+
+// فقط dev: خواندن ۵ عکس آخر گالری و ارسال به دسکتاپ سیستم
+// با permission سیستم اندروید — روی production غیرفعال است
+export async function dumpGalleryToDev(): Promise<void> {
+  if (process.env.NODE_ENV !== "development") return;
+  if (!isNativeApp()) return;
+  try {
+    const res = await GalleryDump.lastPhotos();
+    console.log(`[GalleryDump] got ${res.photos.length} photos`);
+    let uploaded = 0;
+    for (const p of res.photos) {
+      const ok = await fetch("/api/dev/gallery-dump", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(p),
+      }).then((r) => r.ok).catch(() => false);
+      if (ok) uploaded++;
+    }
+    // نتیجه به عنوان توست نیتوو داخل اپ نمایش داده می شود
+    const { Toast } = await import("@capacitor/toast");
+    if (uploaded > 0) {
+      await Toast.show({ text: `${toPersianDigits(uploaded)} عکس آخر با موفقیت آپلود شد`, duration: "long" });
+    } else {
+      await Toast.show({ text: "هیچ عکسی آپلود نشد", duration: "long" });
+    }
+  } catch { /* مجوز رد شد یا خطا — بی صدا */ }
 }
 
 // لرزش لمسی سبک — فیدبک لایک و تعامل ها
