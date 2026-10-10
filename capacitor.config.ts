@@ -21,14 +21,6 @@ const config: CapacitorConfig = {
   android: {
     allowMixedContent: isHttp,
   },
-  plugins: {
-    // نوار وضعیت: محتوا زیر نوتیف بار نرود و آیکن های گوشی تیره روی سفید دیده شوند
-    SystemBars: {
-      insetsHandling: "css",
-      style: "DARK",
-      initialViewportFitValueHint: "cover",
-    },
-  },
 };
 
 export default config;
