@@ -12,7 +12,7 @@ const lanIps = Object.entries(os.networkInterfaces()).flatMap(([name, infos]) =>
 
 const nextConfig: NextConfig = {
   reactCompiler: false,
-  allowedDevOrigins: ["localhost", "127.0.0.1", "0.0.0.0", ...lanIps],
+  allowedDevOrigins: ["localhost", "127.0.0.1", "0.0.0.0", "192.168.1.106", ...lanIps],
   devIndicators: false,
   serverExternalPackages: ["@prisma/client"],
   images: {
