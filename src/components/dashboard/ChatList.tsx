@@ -185,12 +185,6 @@ export default async function ChatList() {
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold flex items-center gap-1">
                 {aiConfig.firstName}
-                <span
-                  className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-bold bg-ig-btn2 text-ig-gray`}
-                >
-                  <Sparkles className="w-2.5 h-2.5" />
-                  هوش مصنوعی
-                </span>
               </p>
               <p
                 className={`text-sm truncate flex items-center gap-1 ${

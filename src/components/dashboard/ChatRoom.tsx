@@ -739,12 +739,7 @@ export default function ChatRoom({
         <Link href={isAIChat ? "/dashboard/chat" : `/profile/${otherUsername}`} className="flex-1 min-w-0 active:scale-95 transition-transform">
           <p className="text-sm font-bold flex items-center gap-1">
             {otherName}
-            {isAIChat ? (
-              <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-bold ${aiGradient.includes("rose") ? "bg-ig-gray-bg text-ig-gray" : "bg-ig-gray-bg text-ig-blue"}`}>
-                <Sparkles className="w-2.5 h-2.5" />
-                هوش مصنوعی
-              </span>
-            ) : otherVerified ? (
+            {isAIChat ? null : otherVerified ? (
               <VerifiedBadge className="w-4 h-4" />
             ) : null}
           </p>
