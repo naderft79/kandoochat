@@ -524,6 +524,11 @@ export default function ChatRoom({
 
   // ضبط پیام صوتی
   async function startRecording() {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      // کانتکست ناامن (http روی IP) — میکروفون فقط روی https/localhost کار می کند
+      toast("میکروفون فقط روی اتصال امن (https) در دسترس است", "error");
+      return;
+    }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const recorder = new MediaRecorder(stream);

@@ -69,11 +69,24 @@ if (targets.length === 0) {
   console.error("[deploy] or pass the phone IP: npx tsx scripts/deploy-apk.ts 192.168.1.102");
   process.exit(1);
 }
-// ترجیح اتصال وایرلس — با -s مشخص می کنیم روی کدام دستگاه نصب شود
-const target = targets.find((t) => t.includes(":")) || targets[0];
-const phoneIp = target.split(":")[0];
-const lanIp = target.includes(":") ? hostLanIp(phoneIp) : hostLanIp();
-const serverUrl = `http://${lanIp}:3000`;
+// انتخاب دستگاه — ترجیح با USB چون http://localhost کانتکست امن است
+// (میکروفون و کلیپ بورد فقط روی https/localhost کار می کنند — روی IP شبکه کار نمی کنند)
+const usbTarget = targets.find((t) => !t.includes(":"));
+const target = usbTarget || targets[0];
+const overUsb = !target.includes(":");
+
+let serverUrl: string;
+if (overUsb) {
+  // تونل USB — localhost گوشی به dev server سیستم می رسد و کانتکست امن است
+  for (const p of [3000, 3001]) {
+    try { out(adb, ["-s", target, "reverse", `tcp:${p}`, `tcp:${p}`]); } catch { /* ignore */ }
+  }
+  serverUrl = "http://localhost:3000";
+} else {
+  const lanIp = hostLanIp(target.split(":")[0]);
+  serverUrl = `http://${lanIp}:3000`;
+  console.log("[deploy] NOTE: wireless uses http://LAN-IP — insecure context: mic/voice won't work (USB or production https required)");
+}
 console.log(`[deploy] device: ${target} | server: ${serverUrl}`);
 
 // ۲) سینک با IP شبکه — گوشی از طریق وای فای به dev server می رسد

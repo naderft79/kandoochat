@@ -4,6 +4,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Mic, Square, Trash2, FileAudio } from "lucide-react";
 import { toPersianDigits } from "@/lib/format";
+import { useToast } from "@/components/ToastProvider";
 
 // پیش نمایش فایل با آزادسازی خودکار URL
 function useObjectUrl(file: File | null) {
@@ -23,6 +24,7 @@ export default function VoiceRecorder({
   value: File | null;
   onChange: (f: File | null) => void;
 }) {
+  const { toast } = useToast();
   const [recording, setRecording] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const recorderRef = useRef<MediaRecorder | null>(null);
@@ -41,6 +43,11 @@ export default function VoiceRecorder({
   }, []);
 
   async function startRecording() {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      // کانتکست ناامن (http روی IP) — میکروفون فقط روی https/localhost کار می کند
+      toast("میکروفون فقط روی اتصال امن (https) در دسترس است", "error");
+      return;
+    }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const recorder = new MediaRecorder(stream);
