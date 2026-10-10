@@ -321,8 +321,8 @@ html, body {
   }
 }
 
-/* احترام به safe-area — فقط در اپ ناتیو (Capacitor)؛ بدون آن محتوا زیر ناچ می رود */
-html.capacitor body {
+/* فاصله محتوا از نوار وضعیت — در PWA و اپ اندروید (Capacitor) */
+body {
   padding-top: env(safe-area-inset-top);
 }
 

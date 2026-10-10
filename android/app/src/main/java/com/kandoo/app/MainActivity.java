@@ -9,7 +9,7 @@ import com.getcapacitor.BridgeActivity;
 public class MainActivity extends BridgeActivity {
   @Override
   public void onCreate(Bundle savedInstanceState) {
-    // edge-to-edge استاندارد androidx — محتوا زیر ناچ می رود و اینست ها توسط CSS مدیریت می شوند
+    // اندروید ۱۵ به بعد edge-to-edge اجباری است — فعال می کنیم تا محتوا زیر ناچ نرود
     EdgeToEdge.enable(this);
     super.onCreate(savedInstanceState);
   }
