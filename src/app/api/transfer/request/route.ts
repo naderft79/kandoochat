@@ -1,0 +1,217 @@
+// API درخواست سکه در چت + تایید/رد درخواست
+import { NextResponse } from "next/server";
+import { z } from "zod";
+import { prisma } from "@/lib/prisma";
+import { requireUser, AuthError } from "@/lib/auth";
+import { ensureWallet } from "@/lib/finance";
+import { getAllSettings } from "@/lib/settings";
+import { isHaniUser } from "@/lib/aiCompanion";
+
+const requestSchema = z.object({
+  conversationId: z.string().min(1),
+  receiverId: z.string().min(1),
+  coins: z.coerce.number().int().min(1).max(100_000),
+  message: z.string().max(200).optional(),
+});
+
+export async function POST(request: Request) {
+  try {
+    const user = await requireUser();
+    const body = await request.json();
+    const parsed = requestSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: "اطلاعات نامعتبر است" }, { status: 400 });
+    }
+
+    const { conversationId, receiverId, coins, message } = parsed.data;
+
+    // بررسی عضویت در گفتگو
+    const conv = await prisma.conversation.findUnique({
+      where: { id: conversationId },
+    });
+    if (!conv || (conv.userAId !== user.id && conv.userBId !== user.id)) {
+      return NextResponse.json({ error: "گفتگو یافت نشد" }, { status: 404 });
+    }
+    if (receiverId === user.id) {
+      return NextResponse.json({ error: "نمی توانید از خودتان سکه درخواست کنید" }, { status: 400 });
+    }
+
+    // جلوگیری از درخواست سکه از هانی (هوش مصنوعی)
+    if (await isHaniUser(receiverId)) {
+      return NextResponse.json({ error: "امکان درخواست سکه از هانی وجود ندارد" }, { status: 400 });
+    }
+
+    // ثبت درخواست
+    const transfer = await prisma.coinTransfer.create({
+      data: {
+        conversationId,
+        senderId: user.id,
+        receiverId,
+        coins,
+        fee: 0,
+        type: "REQUEST",
+        status: "PENDING",
+        message: message ?? null,
+      },
+    });
+
+    // پیام سیستمی در چت
+    await prisma.message.create({
+      data: {
+        conversationId,
+        senderId: user.id,
+        content: JSON.stringify({ coins, message: message ?? "", type: "REQUEST", transferId: transfer.id }),
+        type: "SYSTEM",
+      },
+    });
+
+    // نوتیفیکیشن برای گیرنده درخواست
+    await prisma.notification.create({
+      data: {
+        userId: receiverId,
+        type: "REQUEST_RECEIVED",
+        title: "درخواست سکه",
+        body: `${user.firstName} از شما ${coins} سکه درخواست کرد`,
+        data: JSON.stringify({ coins, senderId: user.id, conversationId, transferId: transfer.id }),
+      },
+    });
+
+    console.log(`[transfer/request] user ${user.id} requested ${coins} coins from ${receiverId}`);
+    return NextResponse.json({ ok: true, transferId: transfer.id });
+  } catch (err) {
+    if (err instanceof AuthError)
+      return NextResponse.json({ error: "دسترسی غیرمجاز" }, { status: 401 });
+    console.error("[transfer/request] error:", err);
+    return NextResponse.json({ error: "خطای سرور" }, { status: 500 });
+  }
+}
+
+const actionSchema = z.object({
+  transferId: z.string().min(1),
+  action: z.enum(["APPROVE", "REJECT"]),
+});
+
+export async function PATCH(request: Request) {
+  try {
+    const user = await requireUser();
+    const body = await request.json();
+    const parsed = actionSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: "اطلاعات نامعتبر است" }, { status: 400 });
+    }
+
+    const { transferId, action } = parsed.data;
+
+    const transfer = await prisma.coinTransfer.findUnique({
+      where: { id: transferId },
+    });
+    if (!transfer || transfer.type !== "REQUEST" || transfer.status !== "PENDING") {
+      return NextResponse.json({ error: "درخواست یافت نشد" }, { status: 404 });
+    }
+    // فقط گیرنده درخواست می تواند تایید/رد کند
+    if (transfer.receiverId !== user.id) {
+      return NextResponse.json({ error: "اجازه انجام این عمل را ندارید" }, { status: 403 });
+    }
+
+    if (action === "REJECT") {
+      await prisma.$transaction([
+        prisma.coinTransfer.update({
+          where: { id: transferId },
+          data: { status: "REJECTED", type: "REQUEST_REJECTED" },
+        }),
+        prisma.message.create({
+          data: {
+            conversationId: transfer.conversationId,
+            senderId: user.id,
+            content: JSON.stringify({ coins: transfer.coins, type: "REQUEST_REJECTED", transferId }),
+            type: "SYSTEM",
+          },
+        }),
+        prisma.notification.create({
+          data: {
+            userId: transfer.senderId,
+            type: "REQUEST_REJECTED",
+            title: "درخواست سکه رد شد",
+            body: `درخواست ${transfer.coins} سکه رد شد`,
+            data: JSON.stringify({ transferId }),
+          },
+        }),
+      ]);
+      return NextResponse.json({ ok: true, status: "REJECTED" });
+    }
+
+    // تایید درخواست
+    const settings = await getAllSettings();
+    const fee = Math.ceil((transfer.coins * settings.transferFeePercent) / 100);
+    const totalDeduct = transfer.coins + fee;
+    const coinValue = settings.coinValue;
+
+    await ensureWallet(user.id);
+    await ensureWallet(transfer.senderId);
+
+    const senderWallet = await prisma.wallet.findUnique({ where: { userId: user.id } });
+    if (!senderWallet || senderWallet.balance < totalDeduct) {
+      return NextResponse.json({ error: "موجودی سکه کافی نیست" }, { status: 400 });
+    }
+
+    await prisma.$transaction([
+      prisma.wallet.update({
+        where: { userId: user.id },
+        data: { balance: { decrement: totalDeduct } },
+      }),
+      prisma.wallet.update({
+        where: { userId: transfer.senderId },
+        data: { balance: { increment: transfer.coins } },
+      }),
+      prisma.coinTransfer.update({
+        where: { id: transferId },
+        data: { status: "COMPLETED", type: "REQUEST_APPROVED", fee },
+      }),
+      prisma.transaction.create({
+        data: {
+          userId: user.id,
+          type: "COIN_TRANSFER_OUT",
+          coins: -totalDeduct,
+          amountToman: totalDeduct * coinValue,
+          status: "COMPLETED",
+          description: `تایید درخواست ${transfer.coins} سکه + کارمزد ${fee}`,
+        },
+      }),
+      prisma.transaction.create({
+        data: {
+          userId: transfer.senderId,
+          type: "COIN_TRANSFER_IN",
+          coins: transfer.coins,
+          amountToman: transfer.coins * coinValue,
+          status: "COMPLETED",
+          description: `دریافت ${transfer.coins} سکه (درخواست تایید شد)`,
+        },
+      }),
+      prisma.message.create({
+        data: {
+          conversationId: transfer.conversationId,
+          senderId: user.id,
+          content: JSON.stringify({ coins: transfer.coins, fee, type: "REQUEST_APPROVED", transferId }),
+          type: "SYSTEM",
+        },
+      }),
+      prisma.notification.create({
+        data: {
+          userId: transfer.senderId,
+          type: "REQUEST_APPROVED",
+          title: "درخواست سکه تایید شد",
+          body: `درخواست ${transfer.coins} سکه تایید شد`,
+          data: JSON.stringify({ transferId }),
+        },
+      }),
+    ]);
+
+    console.log(`[transfer/request] user ${user.id} approved transfer ${transferId}`);
+    return NextResponse.json({ ok: true, status: "COMPLETED", fee });
+  } catch (err) {
+    if (err instanceof AuthError)
+      return NextResponse.json({ error: "دسترسی غیرمجاز" }, { status: 401 });
+    console.error("[transfer/request PATCH] error:", err);
+    return NextResponse.json({ error: "خطای سرور" }, { status: 500 });
+  }
+}

@@ -1,0 +1,781 @@
+// اسکیمای دیتابیس سایت همسریابی کندو
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// کاربران سایت (کاربر عادی و مدیر)
+model User {
+  id           String   @id @default(cuid())
+  phone        String   @unique
+  username     String   @unique
+  password     String
+  role         String   @default("USER") // USER | ADMIN
+  gender       String // MALE | FEMALE
+  firstName    String
+  lastName     String
+  province     String
+  city         String
+  age          Int
+  height       Int // سانتی متر
+  weight       Int // کیلوگرم
+  income       Int // تومان در ماه
+  carModel     String?
+  neighborhood String?
+  job          String?
+  bio          String?
+  isVerified   Boolean  @default(false) // تیک آبی — تایید مدیر سایت
+  isIdentityVerified Boolean @default(false) // احراز هویت کامل — لازم برای برداشت
+  isActive     Boolean  @default(true)
+  phoneVerified Boolean  @default(false)
+  isSpecial    Boolean  @default(false) // کاربر ویژه (اشتراک نامحدود + 20% سکه اضافه)
+  isFake       Boolean  @default(false) // کاربر فیک (ربات تشویقی)
+  isAdminProfile Boolean @default(false) // پروفایل ویژه مدیر برای پیام مدیریتی
+  isAICompanion  Boolean @default(false) // همراه هوش مصنوعی (هانی)
+  lastSeen     DateTime @default(now())
+  isOnline     Boolean  @default(false)
+  goldenStoryExpiresAt DateTime? // انقضای استوری طلایی
+  dailyLikesUsed Int    @default(0)
+  dailyLikesReset DateTime @default(now())
+  dailySuperLikeUsed Boolean @default(false)
+  dailySuperLikeReset DateTime @default(now())
+  isTyping           Boolean  @default(false) // در حال تایپ در چت
+  typingConversationId String? // شناسه گفتگو که در آن تایپ می کند
+  typingExpiresAt    DateTime? // انقضای وضعیت تایپ
+  messageLockUntil   DateTime? // قفل ارسال پیام تا این تاریخ
+  messageLockReason  String?  // دلیل قفل ارسال پیام
+  termsAcceptedAt    DateTime? // زمان تایید قوانین و ۱۸ سال تمام
+  passwordChangedAt  DateTime? // زمان آخرین تغییر رمز؛ سشن های قدیمی تر باطل می شوند
+  referralCode   String?  @unique // کد دعوت یکتای کاربر — ۷ کاراکتر حروف بزرگ و عدد
+  legacyReferralCode String? @unique // کد دعوت قدیمی برای زنده ماندن لینک های قبلی
+  referralMilestonePaidAt DateTime? // زمان پرداخت جایزه مایلستون دعوت
+  feedHides          FeedHide[] @relation("FeedHideOwner")
+  hiddenInFeeds      FeedHide[] @relation("FeedHideTarget")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  wallet           Wallet?
+  transactions     Transaction[]
+  subscriptions    Subscription[]
+  withdrawRequests WithdrawRequest[]
+  sentMessages     Message[]         @relation("SentMessages")
+  conversationsA   Conversation[]    @relation("UserA")
+  conversationsB   Conversation[]    @relation("UserB")
+  sentTransfers    CoinTransfer[]    @relation("SentTransfers")
+  receivedTransfers CoinTransfer[]  @relation("ReceivedTransfers")
+  notifications    Notification[]
+  sentLikes        Like[]            @relation("SentLikes")
+  receivedLikes    Like[]            @relation("ReceivedLikes")
+  matchesA         Match[]           @relation("MatchA")
+  matchesB         Match[]           @relation("MatchB")
+  sentGifts        GiftPurchase[]    @relation("SentGifts")
+  receivedGifts    GiftPurchase[]    @relation("ReceivedGifts")
+  sentBlocks       Block[]           @relation("SentBlocks")
+  receivedBlocks   Block[]           @relation("ReceivedBlocks")
+  sentReports      Report[]          @relation("SentReports")
+  receivedReports  Report[]          @relation("ReceivedReports")
+  sentViews        ProfileView[]     @relation("SentViews")
+  receivedViews    ProfileView[]     @relation("ReceivedViews")
+  boosts           Boost[]
+  featuredListings FeaturedListing[]
+  streak           Streak?
+  sentReferrals    Referral[]        @relation("SentReferrals")
+  receivedReferral Referral?         @relation("ReceivedReferrals")
+  photos           ProfilePhoto[]
+  interests        UserInterest[]
+  userSettings     UserSettings?
+  missions         UserMission[]
+  auditLogs        AuditLog[]        @relation("AuditLogs")
+  stories          Story[]
+  storyViews       StoryView[]
+  storyLikes       StoryLike[]
+  storyReplies     StoryReply[]   @relation("StoryRepliesSent")
+  storyRepliesReceived StoryReply[] @relation("StoryRepliesReceived")
+  paymentRequests  PaymentRequest[]
+  tickets          Ticket[]
+  ticketMessages   TicketMessage[]  @relation("TicketMessages")
+  pushSubscriptions PushSubscription[]
+  fcmTokens      FcmToken[]
+  verificationRequests VerificationRequest[]
+}
+
+// کیف پول سکه هر کاربر
+model Wallet {
+  id      String @id @default(cuid())
+  userId  String @unique
+  balance Int    @default(0) // تعداد سکه
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// تراکنش های مالی (بر اساس سکه)
+model Transaction {
+  id          String   @id @default(cuid())
+  userId      String
+  type        String // COIN_PURCHASE | SUBSCRIPTION | WITHDRAW | ADMIN_ADJUST | COIN_TRANSFER_OUT | COIN_TRANSFER_IN | COIN_TRANSFER_FEE | BOOST_PURCHASE | REFERRAL_REWARD | STREAK_REWARD
+  coins       Int // مقدار سکه (مثبت = واریز، منفی = برداشت)
+  amountToman Int // معادل تومانی
+  status      String   @default("COMPLETED") // PENDING | COMPLETED | REJECTED
+  description String?
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// اشتراک ماهانه
+model Subscription {
+  id        String   @id @default(cuid())
+  userId    String
+  tier      String   @default("BASIC") // BASIC | PREMIUM | VIP
+  startsAt  DateTime @default(now())
+  endsAt    DateTime
+  coinsPaid Int
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, endsAt])
+}
+
+// سطح اشتراک (قابل تنظیم توسط ادمین)
+model SubscriptionTier {
+  id          String  @id @default(cuid())
+  key         String  @unique // BASIC | PREMIUM | VIP
+  name        String
+  coinsPerMonth Int
+  dailyLikes   Int
+  dailySuperLikes Int
+  canSeeLikers Boolean @default(false)
+  canRewindLast Boolean @default(false)
+  canHideOnline Boolean @default(false)
+  canSendGifts  Boolean @default(false)
+  profileBoost  Boolean @default(false)
+  isActive    Boolean @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// درخواست احراز هویت کاربر — دو نوع: تیک آبی (BLUE_TICK) و احراز هویت کامل (KYC)
+model VerificationRequest {
+  id             String   @id @default(cuid())
+  userId         String
+  kind           String   // BLUE_TICK | KYC
+  status         String   @default("PENDING") // PENDING | APPROVED | REJECTED
+  selfieUrls     String   @default("[]") // JSON آرایه آدرس عکس های سلفی
+  voiceUrl       String?  // پیام صوتی کاربر
+  idCardFrontUrl String?  // عکس روی کارت ملی (فقط KYC)
+  idCardBackUrl  String?  // عکس پشت کارت ملی (فقط KYC)
+  nationalCode   String?  // کد ملی (فقط KYC)
+  fullName       String?  // نام و نام خانوادگی واقعی (فقط KYC)
+  birthDate      String?  // تاریخ تولد واقعی (فقط KYC)
+  faceScore      Float?   // کمترین امتیاز تشخیص چهره بین سلفی ها
+  faceCount      Int?     // بیشترین تعداد چهره در یک سلفی
+  autoResult     String?  // FACE_OK | FACE_NOT_FOUND | MANUAL
+  adminNote      String?
+  createdAt      DateTime @default(now())
+  reviewedAt     DateTime?
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, kind])
+  @@index([status])
+}
+
+// درخواست برداشت سکه (تبدیل به تومان)
+model WithdrawRequest {
+  id          String    @id @default(cuid())
+  userId      String
+  coins       Int
+  amountToman Int
+  cardNumber  String
+  status      String    @default("PENDING") // PENDING | APPROVED | REJECTED
+  adminNote   String?
+  createdAt   DateTime  @default(now())
+  processedAt DateTime?
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// گفتگو بین دو کاربر
+model Conversation {
+  id         String    @id @default(cuid())
+  userAId    String
+  userBId    String
+  startedBy  String    // شناسه کاربری که گفتگو را شروع کرده
+  deletedByA Boolean   @default(false) // کاربر A گفتگو را حذف کرده
+  deletedByB Boolean   @default(false) // کاربر B گفتگو را حذف کرده
+  pinnedByA  Boolean   @default(false) // سنجاق شده برای A
+  pinnedByB  Boolean   @default(false) // سنجاق شده برای B
+  mutedByA   Boolean   @default(false) // بی صدا برای A
+  mutedByB   Boolean   @default(false) // بی صدا برای B
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  userA      User      @relation("UserA", fields: [userAId], references: [id], onDelete: Cascade)
+  userB      User      @relation("UserB", fields: [userBId], references: [id], onDelete: Cascade)
+  messages   Message[]
+  coinTransfers CoinTransfer[]
+
+  @@unique([userAId, userBId])
+}
+
+// پیام های چت
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  senderId       String
+  content        String
+  type           String       @default("TEXT") // TEXT | IMAGE | VOICE | VIDEO | STICKER | SYSTEM
+  mediaUrl       String?
+  duration       Int? // مدت پیام صوتی/ویدیویی به ثانیه
+  replyToId      String? // ریپلای به پیام دیگر
+  reaction       String? // واکنش (emoji)
+  isPriority     Boolean  @default(false) // پیام اولویت دار
+  isRead         Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         User         @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  replyTo        Message?     @relation("MessageReply", fields: [replyToId], references: [id], onDelete: SetNull)
+  replies        Message[]    @relation("MessageReply")
+
+  @@index([conversationId, createdAt])
+}
+
+// تنظیمات سایت (قابل تغییر توسط مدیر)
+model Setting {
+  key   String @id
+  value String
+}
+
+// انتقال سکه بین کاربران در چت (هدیه / درخواست)
+model CoinTransfer {
+  id             String       @id @default(cuid())
+  conversationId String
+  senderId       String
+  receiverId     String
+  coins          Int
+  fee            Int
+  type           String       @default("GIFT") // GIFT | REQUEST | REQUEST_APPROVED | REQUEST_REJECTED
+  status         String       @default("COMPLETED") // PENDING | COMPLETED | REJECTED | CANCELLED
+  message        String?
+  createdAt      DateTime     @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         User         @relation("SentTransfers", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver       User         @relation("ReceivedTransfers", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([receiverId])
+  @@index([senderId])
+}
+
+// درخواست پرداخت (اتصال به KandooPay)
+model PaymentRequest {
+  id          String   @id @default(cuid())
+  userId      String
+  type        String   // SUBSCRIPTION | COINS
+  coins       Int      @default(0) // تعداد سکه (برای خرید سکه)
+  amountToman Int      // مبلغ به تومان
+  token       String   @unique // توکن یکتا برای ارتباط با KandooPay
+  authority   String?  // کد مرجع زرین پال
+  status      String   @default("PENDING") // PENDING | PAID | FAILED | CANCELLED
+  returnPath  String?  // مسیر بازگشت کاربر پس از پرداخت
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String   // GIFT_RECEIVED | REQUEST_RECEIVED | REQUEST_APPROVED | REQUEST_REJECTED | LIKE | SUPER_LIKE | MATCH | SUBSCRIPTION_ENDING | BOOST_ACTIVATED | ADMIN_BROADCAST | PROFILE_VIEW
+  title     String
+  body      String
+  data      String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+}
+
+// لایک و سوپر لایک بین کاربران
+model Like {
+  id         String   @id @default(cuid())
+  senderId   String
+  receiverId String
+  type       String   @default("LIKE") // LIKE | SUPER_LIKE
+  isMatched  Boolean  @default(false) // آیا لایک متقابل بوده
+  createdAt  DateTime @default(now())
+  sender     User     @relation("SentLikes", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver   User     @relation("ReceivedLikes", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@unique([senderId, receiverId, type])
+  @@index([receiverId])
+}
+
+// مچ (لایک متقابل)
+model Match {
+  id        String   @id @default(cuid())
+  userAId   String
+  userBId   String
+  createdAt DateTime @default(now())
+  userA     User     @relation("MatchA", fields: [userAId], references: [id], onDelete: Cascade)
+  userB     User     @relation("MatchB", fields: [userBId], references: [id], onDelete: Cascade)
+
+  @@unique([userAId, userBId])
+  @@index([userAId])
+  @@index([userBId])
+}
+
+// بلاک کردن کاربران
+model Block {
+  id        String   @id @default(cuid())
+  blockerId String
+  blockedId String
+  reason    String?
+  createdAt DateTime @default(now())
+  blocker   User     @relation("SentBlocks", fields: [blockerId], references: [id], onDelete: Cascade)
+  blocked   User     @relation("ReceivedBlocks", fields: [blockedId], references: [id], onDelete: Cascade)
+
+  @@unique([blockerId, blockedId])
+}
+
+// گزارش تخلف کاربران
+model Report {
+  id         String   @id @default(cuid())
+  reporterId String
+  reportedId String
+  messageId  String?  // شناسه پیام گزارش شده (اختیاری)
+  reason     String
+  details    String?
+  status     String   @default("PENDING") // PENDING | REVIEWED | ACTIONED | DISMISSED
+  adminNote  String?
+  createdAt  DateTime @default(now())
+  reporter   User     @relation("SentReports", fields: [reporterId], references: [id], onDelete: Cascade)
+  reported   User     @relation("ReceivedReports", fields: [reportedId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+}
+
+// بازدید پروفایل
+model ProfileView {
+  id        String   @id @default(cuid())
+  viewerId  String
+  viewedId  String
+  createdAt DateTime @default(now())
+  viewer    User     @relation("SentViews", fields: [viewerId], references: [id], onDelete: Cascade)
+  viewed    User     @relation("ReceivedViews", fields: [viewedId], references: [id], onDelete: Cascade)
+
+  @@index([viewedId, createdAt])
+}
+
+// بوست پروفایل
+model Boost {
+  id       String   @id @default(cuid())
+  userId   String
+  startsAt DateTime @default(now())
+  endsAt   DateTime
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, endsAt])
+}
+
+// درخواست قرار گرفتن در بخش ویژه: PENDING (لیست انتظار) | APPROVED | REJECTED
+model FeaturedListing {
+  id         String    @id @default(cuid())
+  userId     String
+  status     String    @default("PENDING")
+  costCoins  Int
+  createdAt  DateTime  @default(now())
+  approvedAt DateTime?
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status, approvedAt])
+}
+
+// استریک روزانه کاربر
+model Streak {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  count     Int      @default(0)
+  lastVisit DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// دعوت دوستان
+model Referral {
+  id           String   @id @default(cuid())
+  referrerId   String
+  referredId   String
+  rewardCoins  Int      @default(0)
+  status       String   @default("PENDING") // PENDING | PAID — پاداش بعد از فعالیت دعوت شده آزاد می شود
+  paidAt       DateTime?
+  createdAt    DateTime @default(now())
+  referrer     User     @relation("SentReferrals", fields: [referrerId], references: [id], onDelete: Cascade)
+  referred     User     @relation("ReceivedReferrals", fields: [referredId], references: [id], onDelete: Cascade)
+
+  @@unique([referredId])
+}
+
+// عکس های پروفایل کاربر
+model ProfilePhoto {
+  id         String   @id @default(cuid())
+  userId     String
+  url        String
+  order      Int      @default(0)
+  isProfile  Boolean  @default(false) // عکس اصلی پروفایل
+  isVerified Boolean  @default(false) // تایید عکس توسط ادمین
+  isRejected Boolean  @default(false) // رد شده توسط ادمین
+  isDeletedByUser Boolean @default(false) // حذف شده توسط خود کاربر
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, order])
+  @@index([isVerified])
+  @@index([isRejected])
+  @@index([isDeletedByUser])
+}
+
+// تنظیمات شخصی کاربر (نوتیفیکیشن و حریم خصوصی)
+model UserSettings {
+  id                   String  @id @default(cuid())
+  userId               String  @unique
+  notifLikes           Boolean @default(true)
+  notifMessages        Boolean @default(true)
+  notifSuperLikes      Boolean @default(true)
+  notifProfileViews    Boolean @default(true)
+  notifGifts           Boolean @default(true)
+  notifStreak          Boolean @default(true)
+  privacyShowOnline    Boolean @default(true)
+  privacyShowAge       Boolean @default(true)
+  privacyShowIncome    Boolean @default(false)
+  privacyOnlyVerified  Boolean @default(false)
+  savedFilters         Json?   // آخرین فیلترهای ذخیره شده جستجو
+  user                 User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// علایق از پیش تعریف شده
+model Interest {
+  id    String @id @default(cuid())
+  name  String @unique
+  icon  String // emoji
+  users UserInterest[]
+}
+
+// علایق هر کاربر
+model UserInterest {
+  id         String   @id @default(cuid())
+  userId     String
+  interestId String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  interest   Interest @relation(fields: [interestId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, interestId])
+}
+
+// ماموریت های روزانه برای کسب سکه رایگان
+model Mission {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  title       String
+  description String
+  rewardCoins Int
+  target      Int      @default(1)
+  icon        String   @default("🎯")
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  userMissions UserMission[]
+}
+
+// وضعیت انجام ماموریت توسط کاربر
+model UserMission {
+  id          String   @id @default(cuid())
+  userId      String
+  missionId   String
+  progress    Int      @default(0)
+  completed   Boolean  @default(false)
+  claimed     Boolean  @default(false)
+  date        DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mission     Mission  @relation(fields: [missionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, missionId, date])
+}
+
+// لاگ اقدامات ادمین
+model AuditLog {
+  id          String   @id @default(cuid())
+  adminId     String
+  action      String   // APPROVE_PHOTO | REJECT_PHOTO | BLOCK_USER | RESET_PASSWORD | etc.
+  targetType  String   // USER | PHOTO | REPORT | etc.
+  targetId    String?
+  details     String?
+  createdAt   DateTime @default(now())
+  admin       User     @relation("AuditLogs", fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([adminId, createdAt])
+  @@index([createdAt])
+}
+
+// استوری ۲۴ ساعته
+model Story {
+  id          String   @id @default(cuid())
+  userId      String
+  url         String
+  type        String   // IMAGE | VIDEO
+  caption     String?  // متن استوری
+  elements    String?  // JSON عناصر روی استوری (متن، استیکر، دکمه سکه، نقاشی)
+  filter      String?  // نام فیلتر تصویری
+  isApproved  Boolean  @default(false) // تایید ادمین
+  isRejected  Boolean  @default(false) // رد شده توسط ادمین
+  rejectReason String? // دلیل رد استوری
+  isDeletedByUser Boolean @default(false) // حذف شده توسط خود کاربر
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  views       StoryView[]
+  likes       StoryLike[]
+  replies     StoryReply[]
+
+  @@index([userId, createdAt])
+  @@index([expiresAt])
+  @@index([isApproved, expiresAt])
+  @@index([isDeletedByUser])
+}
+
+// ثبت بازدید استوری
+model StoryView {
+  id          String   @id @default(cuid())
+  storyId     String
+  viewerId    String
+  createdAt   DateTime @default(now())
+  story       Story    @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  viewer      User     @relation(fields: [viewerId], references: [id], onDelete: Cascade)
+
+  @@unique([storyId, viewerId])
+  @@index([storyId])
+}
+
+// لایک استوری
+model StoryLike {
+  id          String   @id @default(cuid())
+  storyId     String
+  userId      String
+  createdAt   DateTime @default(now())
+  story       Story    @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([storyId, userId])
+  @@index([storyId])
+}
+
+// ریپلای/پاسخ به استوری
+model StoryReply {
+  id          String   @id @default(cuid())
+  storyId     String
+  senderId    String
+  receiverId  String
+  content     String
+  createdAt   DateTime @default(now())
+  story       Story    @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  sender      User     @relation("StoryRepliesSent", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver    User     @relation("StoryRepliesReceived", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@index([storyId])
+  @@index([receiverId, createdAt])
+}
+
+// تیکت پشتیبانی
+model Ticket {
+  id        String   @id @default(cuid())
+  userId    String
+  subject   String
+  status    String   @default("OPEN") // OPEN | ANSWERED | CLOSED
+  priority  String   @default("MEDIUM") // LOW | MEDIUM | HIGH
+  category  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages  TicketMessage[]
+
+  @@index([userId, status])
+  @@index([status])
+}
+
+// پیام های تیکت
+model TicketMessage {
+  id          String   @id @default(cuid())
+  ticketId    String
+  senderId    String
+  content     String
+  attachments String?  // JSON array of URLs
+  isFromAdmin Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  ticket      Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  sender      User     @relation("TicketMessages", fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId, createdAt])
+}
+
+// هدیه فروشگاه
+model Gift {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  name        String
+  emoji       String
+  coinPrice   Int
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  purchases   GiftPurchase[]
+}
+
+// خرید هدیه توسط کاربر
+model GiftPurchase {
+  id             String   @id @default(cuid())
+  giftId         String
+  senderId       String
+  receiverId     String
+  conversationId String?
+  coinsPaid      Int
+  message        String?
+  createdAt      DateTime @default(now())
+  gift           Gift     @relation(fields: [giftId], references: [id], onDelete: Cascade)
+  sender         User     @relation("SentGifts", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver       User     @relation("ReceivedGifts", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@index([senderId, createdAt])
+  @@index([receiverId, createdAt])
+}
+
+// لاگ فعالیت ربات تشویقی — ثبت تمام ارسال‌ها و عملیات ربات
+model BotLog {
+  id               String   @id @default(cuid())
+  botType          String   // MESSAGE | LIKE | PROFILE_VIEW | STORY_VIEW | GIFT | MATCH | AUTO_REPLY | CONVERSATION
+  senderId         String?  // کاربر فیک ارسال کننده
+  targetId         String?  // کاربر هدف
+  templateId       String?  // شناسه قالب استفاده شده
+  category         String?  // دسته قالب
+  status           String   @default("SENT") // SENT | SKIPPED | FAILED | ANSWERED
+  detail           String?  // توضیح اضافی (مثلا دلیل skip)
+  conversationStep Int?     // مرحله گفتگو (برای گفتگوی چندمرحله‌ای)
+  engagementScore  Int?     // امتیاز تعامل کاربر (محاسبه شده)
+  createdAt        DateTime @default(now())
+
+  @@index([botType, createdAt])
+  @@index([targetId])
+  @@index([status, createdAt])
+}
+
+// قالب پیام داینامیک ربات — قابل ویرایش از پنل ادمین
+model BotTemplate {
+  id           String   @id @default(cuid())
+  text         String
+  category     String   // CHAT_START | FLIRTY | CASUAL | COMPLIMENT | CURIOSITY | PLAYFUL | WARM
+  senderGender String   @default("FEMALE")
+  targetGender String   @default("MALE")
+  isActive     Boolean  @default(true)
+  weight       Int      @default(1) // وزن برای اولویت در انتخاب تصادفی
+  sendCount    Int      @default(0) // تعداد دفعات ارسال
+  answerCount  Int      @default(0) // تعداد پاسخ های دریافت شده
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([category, isActive])
+}
+
+// لیست سیاه ربات — کاربرانی که ربات نباید بهشان پیام دهد
+model BotExclude {
+  id        String   @id @default(cuid())
+  userId    String
+  reason    String?  // دلیل استثنا
+  addedBy   String   // ادمینی که اضافه کرده
+  createdAt DateTime @default(now())
+
+  @@unique([userId])
+}
+
+// لیست سفید ربات — اگر فعال باشد، ربات فقط به این کاربران پیام می‌دهد
+model BotWhitelist {
+  id        String   @id @default(cuid())
+  userId    String
+  reason    String?
+  addedBy   String
+  createdAt DateTime @default(now())
+
+  @@unique([userId])
+}
+
+
+// کدهای OTP برای تایید موبایل
+model OtpCode {
+  id        String   @id @default(cuid())
+  userId    String
+  codeHash  String
+  expiresAt DateTime
+  attempts  Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+// اشتراک Push Notification کاربر
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// توکن FCM دستگاه های اندروید — برای پوش نوتیفیکیشن وقتی اپ بسته است
+model FcmToken {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  platform  String   @default("android")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// پروفایل هایی که کاربر در فید "نشان نده" کرده است
+model FeedHide {
+  id        String   @id @default(cuid())
+  userId    String
+  hiddenId  String
+  createdAt DateTime @default(now())
+  user      User     @relation("FeedHideOwner", fields: [userId], references: [id], onDelete: Cascade)
+  hidden    User     @relation("FeedHideTarget", fields: [hiddenId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, hiddenId])
+  @@index([userId])
+}
+
+// کد یکبار مصرف مبتنی بر شماره موبایل (ثبت نام و بازیابی رمز) — بدون نیاز به کاربر
+model PhoneOtp {
+  id        String   @id @default(cuid())
+  phone     String
+  purpose   String // REGISTER | RESET
+  codeHash  String
+  expiresAt DateTime
+  attempts  Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([phone, purpose])
+  @@index([expiresAt])
+}

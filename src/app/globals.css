@@ -1,0 +1,812 @@
+@import "tailwindcss";
+
+@source inline("col-span-4 col-span-3 col-span-2 col-span-1");
+
+:root {
+  --background: #ffffff;
+  --foreground: #262626;
+  --ig-border: #dbdbdb;
+  --ig-gray-bg: #fafafa;
+  --ig-gray-text: #737373;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-vazirmatn), system-ui, sans-serif;
+  /* پالت اینستاگرام — متن و دکمه آبی با کنتراست AA */
+  --color-ig-border: var(--ig-border);
+  --color-ig-gray: var(--ig-gray-text);
+  --color-ig-gray-bg: var(--ig-gray-bg);
+  --color-ig-divider: #efefef;
+  --color-ig-btn2: #efefef;
+  --color-ig-btn2-hover: #dbdbdb;
+  --color-ig-blue: #0074c7;
+  --color-ig-blue-hover: #005fa3;
+  --color-ig-blue-bright: #0095f6;
+  --color-ig-red: #d32f3f;
+  --color-ig-like: #ff3040;
+  --color-ig-gold: #f5b301;
+  --color-ig-online: #44d62c;
+  --color-ig-toast: #262626;
+  --color-ig-purple: #c13584;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/* مخفی کردن اسکرول بار مرورگر در تمام صفحات */
+::-webkit-scrollbar {
+  display: none;
+}
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* اسکرول نرم */
+html {
+  scroll-behavior: smooth;
+}
+
+/* انیمیشن های پنل ادمین */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeInScale {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+  50% { box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); }
+}
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+.animate-fade-in-scale {
+  animation: fadeInScale 0.4s ease-out forwards;
+}
+.animate-slide-in-right {
+  animation: slideInRight 0.4s ease-out forwards;
+}
+.animate-pulse-glow {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* skeleton با shimmer */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* تاخیر انیمیشن برای کارت ها */
+.stagger-1 { animation-delay: 0.05s; opacity: 0; }
+.stagger-2 { animation-delay: 0.1s; opacity: 0; }
+.stagger-3 { animation-delay: 0.15s; opacity: 0; }
+.stagger-4 { animation-delay: 0.2s; opacity: 0; }
+.stagger-5 { animation-delay: 0.25s; opacity: 0; }
+.stagger-6 { animation-delay: 0.3s; opacity: 0; }
+
+/* گرادیان خنثی */
+.ig-gradient {
+  background: var(--color-ig-blue);
+}
+
+.ig-gradient-text {
+  color: var(--foreground);
+}
+
+/* رینگ استوری — گرادیان بنفش/صورتی اینستاگرام */
+.ig-story-ring {
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  padding: 2.5px;
+  border-radius: 9999px;
+}
+
+.ig-story-ring-seen {
+  background: #dbdbdb;
+  padding: 2.5px;
+  border-radius: 9999px;
+}
+
+.ig-story-ring-golden {
+  background: linear-gradient(45deg, #FFD700 0%, #FFA500 25%, #FFD700 50%, #FFC0CB 75%, #FFD700 100%);
+  padding: 3px;
+  border-radius: 9999px;
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+}
+
+/* اسکرول بار ظریف */
+.thin-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.thin-scroll::-webkit-scrollbar-thumb {
+  background: #dbdbdb;
+  border-radius: 9999px;
+}
+.thin-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* مخفی کردن اسکرول بار */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* انیمیشن heartbeat برای لایک */
+@keyframes ig-heart-pop {
+  0% { transform: scale(0); opacity: 0; }
+  15% { transform: scale(1.2); opacity: 0.9; }
+  30% { transform: scale(0.95); opacity: 1; }
+  45% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.ig-heart-pop {
+  animation: ig-heart-pop 0.8s ease-out;
+}
+
+/* انیمیشن ظاهر شدن modal */
+@keyframes ig-modal-in {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.ig-modal-in {
+  animation: ig-modal-in 0.2s ease-out;
+}
+
+/* انیمیشن ظاهر شدن از پایین (bottom sheet) */
+@keyframes ig-slide-up {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.ig-slide-up {
+  animation: ig-slide-up 0.3s ease-out;
+}
+
+/* انیمیشن پالس برای نشان آنلاین */
+@keyframes ig-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.ig-pulse {
+  animation: ig-pulse 2s ease-in-out infinite;
+}
+
+/* انیمیشن بیرون آمدن توست اعلان زنده از آیکن قلب */
+@keyframes ig-notif-drop {
+  0% { transform: translateY(-30%) scale(0.5); opacity: 0; }
+  60% { transform: translateY(2%) scale(1.02); opacity: 1; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+.ig-notif-drop {
+  transform-origin: top right;
+  animation: ig-notif-drop 0.45s cubic-bezier(0.34, 1.4, 0.64, 1) forwards;
+}
+@keyframes ig-notif-out {
+  from { transform: translateY(0) scale(1); opacity: 1; }
+  to { transform: translateY(-40%) scale(0.6); opacity: 0; }
+}
+.ig-notif-out {
+  transform-origin: top right;
+  animation: ig-notif-out 0.25s ease-in forwards;
+}
+@keyframes ig-heart-ring {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.35); }
+  60% { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+.ig-heart-ring {
+  animation: ig-heart-ring 0.6s ease-out;
+}
+
+/* انیمیشن ظاهر شدن fade */
+@keyframes ig-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.ig-fade-in {
+  animation: ig-fade-in 0.3s ease-out;
+}
+
+/* Glassmorphism */
+.ig-glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* عناصر دکمه toggle */
+.toggle-knob {
+  background-color: #ffffff;
+}
+
+/* سایه نرم */
+.ig-shadow-sm {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+.ig-shadow {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+.ig-shadow-lg {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* انیمیشن بوست */
+@keyframes ig-boost-glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(115, 115, 115, 0.3); }
+  50% { box-shadow: 0 0 16px rgba(115, 115, 115, 0.6); }
+}
+.ig-boost-glow {
+  animation: ig-boost-glow 2s ease-in-out infinite;
+}
+
+/* انیمیشن استریک */
+@keyframes ig-flame-flicker {
+  0%, 100% { transform: scale(1) rotate(-2deg); }
+  50% { transform: scale(1.1) rotate(2deg); }
+}
+.ig-flame-flicker {
+  animation: ig-flame-flicker 1.5s ease-in-out infinite;
+}
+
+/* انیمیشن قلب بزرگ دابل‌تپ — سبک اینستاگرام */
+@keyframes ig-double-tap-heart {
+  0% { transform: scale(0) rotate(-15deg); opacity: 0; }
+  15% { transform: scale(1.3) rotate(-10deg); opacity: 1; }
+  30% { transform: scale(0.95) rotate(-5deg); }
+  45% { transform: scale(1.1) rotate(0deg); }
+  60% { transform: scale(1) rotate(0deg); opacity: 1; }
+  100% { transform: scale(1.2) rotate(0deg); opacity: 0; }
+}
+.ig-double-tap-heart {
+  animation: ig-double-tap-heart 1s ease-out forwards;
+  filter: drop-shadow(0 4px 12px rgba(115, 115, 115, 0.5));
+}
+
+/* انیمیشن بورست قلب کوچک زیر کارت */
+@keyframes ig-heart-burst {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.35); }
+  50% { transform: scale(0.9); }
+  75% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+.ig-heart-burst {
+  animation: ig-heart-burst 0.6s ease-out;
+}
+
+/* Skeleton loading */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.skeleton {
+  background-color: #e5e5e5;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+  border-radius: 0.5rem;
+}
+
+/* رفرش داخلی مرورگر خاموش — pull-to-refresh خودمان جایگزین است */
+html, body {
+  overscroll-behavior-y: none;
+}
+
+/* PWA full-screen — حالت standalone */
+@media (display-mode: standalone) {
+  html, body {
+    overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+}
+
+/* احترام به safe-area برای نچ گوشی — در PWA و اپ اندروید (Capacitor) */
+body {
+  padding-top: env(safe-area-inset-top);
+}
+
+/* انیمیشن قلب استوری — دابل تپ لایک */
+@keyframes ig-heart-pop {
+  0% { transform: scale(0); opacity: 0; }
+  15% { transform: scale(1.2); opacity: 1; }
+  30% { transform: scale(0.95); }
+  45% { transform: scale(1); }
+  70% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+.ig-heart-pop {
+  animation: ig-heart-pop 0.8s ease-out forwards;
+}
+
+/* انیمیشن ورود استوری */
+@keyframes ig-story-slide-in {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.ig-story-slide-in {
+  animation: ig-story-slide-in 0.3s ease-out forwards;
+}
+
+/* انیمیشن fade-in عمومی */
+@keyframes ig-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.ig-fade-in {
+  animation: ig-fade-in 0.2s ease-out forwards;
+}
+
+/* انیمیشن ورود مودال */
+@keyframes ig-modal-in {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.ig-modal-in {
+  animation: ig-modal-in 0.2s ease-out forwards;
+}
+
+/* انیمیشن slide-up از پایین */
+@keyframes ig-slide-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+.ig-slide-up {
+  animation: ig-slide-up 0.25s ease-out forwards;
+}
+
+/* پنهان کردن اسکرول بار */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* === تم لاکچری طلایی-مشکی ادمین === */
+:root {
+  --lux-bg: #0a0a12;
+  --lux-surface: #12101c;
+  --lux-surface-2: #181426;
+  --lux-border: #2a2438;
+  --lux-gold: #d4af37;
+  --lux-gold-light: #f0d264;
+  --lux-gold-dark: #b8941f;
+  --lux-text: #e8e8e8;
+  --lux-text-muted: #888888;
+}
+
+/* بک گراند مشکی طلایی ادمین */
+.lux-admin-bg {
+  background: radial-gradient(ellipse at top, #1a1528 0%, #0a0a12 60%);
+}
+
+/* سایدبار ادمین لاکچری */
+.lux-sidebar {
+  background: linear-gradient(180deg, #0d0b14 0%, #12101c 100%);
+  border-left: 1px solid rgba(212, 175, 55, 0.15);
+}
+
+/* عنوان دسته بندی سایدبار */
+.lux-group-title {
+  color: rgba(212, 175, 55, 0.5);
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
+/* آیتم سایدبار */
+.lux-nav-item {
+  color: #999;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+.lux-nav-item:hover {
+  color: #e8e8e8;
+  background: rgba(212, 175, 55, 0.08);
+  border-color: rgba(212, 175, 55, 0.1);
+}
+.lux-nav-item-active {
+  color: #d4af37;
+  background: linear-gradient(90deg, rgba(212, 175, 55, 0.15) 0%, rgba(212, 175, 55, 0.03) 100%);
+  border-color: rgba(212, 175, 55, 0.2);
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.08);
+}
+
+/* لوگوی طلایی */
+.lux-gold-text {
+  background: linear-gradient(135deg, #d4af37 0%, #f0d264 50%, #d4af37 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* کارت لاکچری */
+.lux-card {
+  background: linear-gradient(135deg, #12101c 0%, #181426 100%);
+  border: 1px solid rgba(212, 175, 55, 0.12);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+.lux-card:hover {
+  border-color: rgba(212, 175, 55, 0.25);
+  box-shadow: 0 8px 32px rgba(212, 175, 55, 0.06);
+}
+
+/* دکمه طلایی */
+.lux-btn-gold {
+  background: linear-gradient(135deg, #d4af37 0%, #f0d264 100%);
+  color: #0a0a0a;
+  font-weight: 700;
+  border: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.15);
+}
+.lux-btn-gold:hover {
+  box-shadow: 0 6px 24px rgba(212, 175, 55, 0.3);
+  transform: translateY(-1px);
+}
+.lux-btn-gold:active {
+  transform: translateY(0);
+}
+
+/* دکمه مشکی طلایی */
+.lux-btn-outline {
+  background: transparent;
+  color: #d4af37;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+.lux-btn-outline:hover {
+  background: rgba(212, 175, 55, 0.08);
+  border-color: rgba(212, 175, 55, 0.5);
+}
+
+/* بجج طلایی */
+.lux-badge {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(212, 175, 55, 0.05) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  color: #d4af37;
+}
+
+/* خط طلایی */
+.lux-divider {
+  border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+}
+
+/* شیمر طلایی */
+@keyframes luxShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.lux-shimmer {
+  background: linear-gradient(90deg, #12101c 25%, #181426 50%, #12101c 75%);
+  background-size: 200% 100%;
+  animation: luxShimmer 1.5s infinite;
+}
+
+/* گلو طلایی */
+@keyframes luxGlow {
+  0%, 100% { box-shadow: 0 0 8px rgba(212, 175, 55, 0.1); }
+  50% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.2); }
+}
+.lux-glow {
+  animation: luxGlow 3s ease-in-out infinite;
+}
+
+/* اسکرول بار طلایی */
+.lux-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.lux-scroll::-webkit-scrollbar-thumb {
+  background: rgba(212, 175, 55, 0.2);
+  border-radius: 9999px;
+}
+.lux-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* === Override جامع تم طلایی-مشکی برای کل بخش ادمین === */
+.lux-admin-bg .bg-white {
+  background: linear-gradient(135deg, #12101c 0%, #181426 100%) !important;
+}
+.lux-admin-bg .border-ig-border {
+  border-color: rgba(212, 175, 55, 0.12) !important;
+}
+.lux-admin-bg .text-foreground {
+  color: #e8e8e8 !important;
+}
+.lux-admin-bg .text-ig-gray {
+  color: #888 !important;
+}
+.lux-admin-bg .bg-ig-gray-bg {
+  background: rgba(212, 175, 55, 0.06) !important;
+}
+.lux-admin-bg .hover\:bg-ig-gray-bg:hover {
+  background: rgba(212, 175, 55, 0.08) !important;
+}
+.lux-admin-bg .hover\:text-foreground:hover {
+  color: #d4af37 !important;
+}
+.lux-admin-bg input,
+.lux-admin-bg textarea,
+.lux-admin-bg select {
+  background: #0d0b14 !important;
+  border-color: rgba(212, 175, 55, 0.15) !important;
+  color: #e8e8e8 !important;
+}
+.lux-admin-bg input:focus,
+.lux-admin-bg textarea:focus,
+.lux-admin-bg select:focus {
+  border-color: rgba(212, 175, 55, 0.4) !important;
+}
+.lux-admin-bg .bg-neutral-900,
+.lux-admin-bg .bg-neutral-800 {
+  background: linear-gradient(135deg, #d4af37 0%, #f0d264 100%) !important;
+  color: #0a0a0a !important;
+}
+.lux-admin-bg .bg-neutral-100,
+.lux-admin-bg .bg-neutral-50 {
+  background: rgba(212, 175, 55, 0.06) !important;
+  color: #ccc !important;
+}
+.lux-admin-bg .text-neutral-700,
+.lux-admin-bg .text-neutral-800 {
+  color: #d4af37 !important;
+}
+.lux-admin-bg .text-neutral-500,
+.lux-admin-bg .text-neutral-400 {
+  color: #888 !important;
+}
+.lux-admin-bg .divide-y > * + * {
+  border-color: rgba(212, 175, 55, 0.08) !important;
+}
+.lux-admin-bg .divide-ig-border > * + * {
+  border-color: rgba(212, 175, 55, 0.08) !important;
+}
+.lux-admin-bg .border-b,
+.lux-admin-bg .border-t {
+  border-color: rgba(212, 175, 55, 0.1) !important;
+}
+.lux-admin-bg .ig-shadow-sm {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+.lux-admin-bg .ig-shadow-md {
+  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.08) !important;
+}
+.lux-admin-bg .ig-glass {
+  background: rgba(20, 20, 20, 0.8) !important;
+  backdrop-filter: blur(12px) !important;
+}
+.lux-admin-bg .skeleton {
+  background: linear-gradient(90deg, #12101c 25%, #181426 50%, #12101c 75%) !important;
+  background-size: 200% 100% !important;
+}
+
+/* آیکون های عنوان طلایی */
+.lux-admin-bg h1 .lucide,
+.lux-admin-bg h2 .lucide,
+.lux-admin-bg h3 .lucide {
+  color: #d4af37 !important;
+}
+
+/* دکمه های معمولی */
+.lux-admin-bg button:not(.lux-btn-gold):not(.lux-btn-outline) {
+  color: #e8e8e8;
+}
+.lux-admin-bg button:not(.lux-btn-gold):not(.lux-btn-outline):hover {
+  color: #d4af37;
+}
+
+/* لینک ها */
+.lux-admin-bg a {
+  color: inherit;
+}
+
+/* جدول ها */
+.lux-admin-bg table {
+  color: #e8e8e8;
+}
+.lux-admin-bg th {
+  color: #d4af37 !important;
+  border-color: rgba(212, 175, 55, 0.15) !important;
+}
+.lux-admin-bg td {
+  border-color: rgba(212, 175, 55, 0.08) !important;
+}
+
+/* بجج سبز/قرمز */
+.lux-admin-bg .bg-green-100 {
+  background: rgba(34, 197, 94, 0.1) !important;
+  color: #4ade80 !important;
+}
+.lux-admin-bg .bg-red-100 {
+  background: rgba(239, 68, 68, 0.1) !important;
+  color: #f87171 !important;
+}
+.lux-admin-bg .bg-yellow-100 {
+  background: rgba(212, 175, 55, 0.1) !important;
+  color: #d4af37 !important;
+}
+.lux-admin-bg .bg-blue-100 {
+  background: rgba(59, 130, 246, 0.1) !important;
+  color: #60a5fa !important;
+}
+.lux-admin-bg .text-green-600,
+.lux-admin-bg .text-green-700 {
+  color: #4ade80 !important;
+}
+.lux-admin-bg .text-red-600,
+.lux-admin-bg .text-red-500 {
+  color: #f87171 !important;
+}
+.lux-admin-bg .text-blue-600,
+.lux-admin-bg .text-blue-500 {
+  color: #60a5fa !important;
+}
+
+/* === انیمیشن ها و افکت نئون طلایی === */
+
+/* ورود کارت با انیمیشن */
+@keyframes luxCardIn {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.lux-admin-bg .animate-fade-in-up {
+  animation: luxCardIn 0.4s ease-out forwards;
+}
+
+/* نئون طلایی برای عناصر فعال */
+@keyframes luxNeon {
+  0%, 100% { box-shadow: 0 0 5px rgba(212, 175, 55, 0.15), 0 0 10px rgba(212, 175, 55, 0.08); }
+  50% { box-shadow: 0 0 10px rgba(212, 175, 55, 0.25), 0 0 20px rgba(212, 175, 55, 0.12); }
+}
+.lux-neon {
+  animation: luxNeon 3s ease-in-out infinite;
+}
+
+/* گلو طلایی روی hover */
+.lux-admin-bg .lux-card:hover {
+  box-shadow: 0 8px 32px rgba(212, 175, 55, 0.12), 0 0 16px rgba(212, 175, 55, 0.06);
+  border-color: rgba(212, 175, 55, 0.3);
+}
+
+/* تب های فعال نئون طلایی */
+.lux-admin-bg .bg-neutral-900 {
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.2), 0 2px 8px rgba(212, 175, 55, 0.1);
+}
+
+/* اینپورت با گلو فوکوس */
+.lux-admin-bg input:focus,
+.lux-admin-bg textarea:focus,
+.lux-admin-bg select:focus {
+  border-color: rgba(212, 175, 55, 0.5) !important;
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.08) !important;
+}
+
+/* رینگ طلایی دور آواتار */
+.lux-admin-bg .ring-neutral-100,
+.lux-admin-bg .ring-2 {
+  --tw-ring-color: rgba(212, 175, 55, 0.2) !important;
+}
+
+/* بجج سکه طلایی */
+.lux-admin-bg .bg-amber-50 {
+  background: rgba(212, 175, 55, 0.1) !important;
+  color: #d4af37 !important;
+  border-color: rgba(212, 175, 55, 0.2) !important;
+}
+.lux-admin-bg .border-amber-100 {
+  border-color: rgba(212, 175, 55, 0.15) !important;
+}
+.lux-admin-bg .hover\:bg-amber-100:hover {
+  background: rgba(212, 175, 55, 0.15) !important;
+}
+
+/* بجج اشتراک سبز */
+.lux-admin-bg .bg-emerald-50,
+.lux-admin-bg .bg-emerald-50\/50 {
+  background: rgba(16, 185, 129, 0.08) !important;
+}
+.lux-admin-bg .border-emerald-100,
+.lux-admin-bg .border-emerald-400 {
+  border-color: rgba(16, 185, 129, 0.2) !important;
+}
+.lux-admin-bg .text-emerald-700,
+.lux-admin-bg .text-emerald-800 {
+  color: #34d399 !important;
+}
+
+/* بجج مسدود قرمز */
+.lux-admin-bg .bg-red-50 {
+  background: rgba(239, 68, 68, 0.08) !important;
+}
+.lux-admin-bg .border-ig-red\/40 {
+  border-color: rgba(239, 68, 68, 0.25) !important;
+}
+
+/* دکمه hover نئون */
+.lux-admin-bg .hover\:bg-neutral-700:hover {
+  background: linear-gradient(135deg, #b8941f 0%, #d4af37 100%) !important;
+}
+
+/* اسپینر طلایی */
+.lux-admin-bg .animate-spin {
+  color: #d4af37 !important;
+}
+
+/* متن خالی */
+.lux-admin-bg .text-center .text-ig-gray {
+  color: #666 !important;
+}
+
+/* پنل فیلتر */
+.lux-admin-bg .bg-white.border {
+  background: linear-gradient(135deg, #12101c 0%, #181426 100%) !important;
+}
+
+/* hover لینک کارت کاربر */
+.lux-admin-bg .hover\:opacity-80:hover {
+  opacity: 0.85;
+}
+
+/* select option ها */
+.lux-admin-bg select option {
+  background: #12101c !important;
+  color: #e8e8e8 !important;
+}
+
+/* احترام به تنظیم «کاهش حرکت» سیستم */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* انیمیشن های کیف پول: ظاهر شدن از پایین با تاخیر، پاپ تیک انتخاب و درخشش موفقیت */
+@keyframes ig-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.ig-rise {
+  animation: ig-rise 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes ig-pop {
+  0% { transform: scale(0.4); opacity: 0; }
+  60% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); }
+}
+.ig-pop {
+  animation: ig-pop 0.3s ease-out both;
+}
+@keyframes ig-coin-spin {
+  0% { transform: rotateY(0); }
+  100% { transform: rotateY(360deg); }
+}
+.ig-coin-spin {
+  animation: ig-coin-spin 0.9s ease-in-out;
+}

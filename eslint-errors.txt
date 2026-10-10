@@ -1,0 +1,569 @@
+﻿
+D:\kandoo\src\app\admin\backup\page.tsx
+  7:10  warning  'toPersianDigits' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\kandoo\src\app\admin\bot\blacklist\page.tsx
+   42:21  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\kandoo\src\app\admin\bot\blacklist\page.tsx:42:21
+  40 |   }, [mode]);
+  41 |
+> 42 |   useEffect(() => { fetchItems(); }, [fetchItems]);
+     |                     ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  43 |
+  44 |   async function searchUsers(query: string) {
+  45 |     if (!query.trim()) {  react-hooks/set-state-in-effect
+  201:47  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @next/next/no-img-element
+
+D:\kandoo\src\app\admin\bot\dynamic-templates\page.tsx
+  62:21  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\kandoo\src\app\admin\bot\dynamic-templates\page.tsx:62:21
+  60 |   }, []);
+  61 |
+> 62 |   useEffect(() => { fetchTemplates(); }, [fetchTemplates]);
+     |                     ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  63 |
+  64 |   async function addTemplate() {
+  65 |     if (!newText.trim()) { toast("متن الزامی است", "error"); return; }  react-hooks/set-state-in-effect
+
+D:\kandoo\src\app\admin\bot\fake-users\page.tsx
+    4:44  warning  'Edit2' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+   50:21  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\kandoo\src\app\admin\bot\fake-users\page.tsx:50:21
+  48 |   }, [page, search]);
+  49 |
+> 50 |   useEffect(() => { load(); }, [load]);
+     |                     ^^^^ Avoid calling setState() directly within an effect
+  51 |
+  52 |   const handleGenerate = async (count: number) => {
+  53 |     setGenerating(true);  react-hooks/set-state-in-effect
+  149:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @next/next/no-img-element
+
+D:\kandoo\src\app\admin\bot\logs\page.tsx
+  70:21  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\kandoo\src\app\admin\bot\logs\page.tsx:70:21
+  68 |   }, [filterBotType, filterStatus, filterFrom, filterTo]);
+  69 |
+> 70 |   useEffect(() => { fetchLogs(1); }, [fetchLogs]);
+     |                     ^^^^^^^^^ Avoid calling setState() directly within an effect
+  71 |
+  72 |   return (
+  73 |     <div className="space-y-4">  react-hooks/set-state-in-effect
+
+D:\kandoo\src\app\admin\bot\page.tsx
+  147:10  warning  'totalTemplates' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+  173:5   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\kandoo\src\app\admin\bot\page.tsx:173:5
+  171 |
+  172 |   useEffect(() => {
+> 173 |     fetchData();
+      |     ^^^^^^^^^ Avoid calling setState() directly within an effect
+  174 |   }, [fetchData]);
+  175 |
+  176 |   async function saveSettings() {  react-hooks/set-state-in-effect
+
+D:\kandoo\src\app\admin\bot\stats\page.tsx
+  53:21  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\kandoo\src\app\admin\bot\stats\page.tsx:53:21
+  51 |   }, []);
+  52 |
+> 53 |   useEffect(() => { fetchStats(); }, [fetchStats]);
+     |                     ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  54 |
+  55 |   if (loading || !stats) {
+  56 |     return (  react-hooks/set-state-in-effect
+
+D:\kandoo\src\app\admin\bot\sub-bots\page.tsx
+  46:21  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\kandoo\src\app\admin\bot\sub-bots\page.tsx:46:21
+  44 |   }, []);
+  45 |
+> 46 |   useEffect(() => { fetchSettings(); }, [fetchSettings]);
+     |                     ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  47 |
+  48 |   async function saveSettings() {
+  49 |     if (!settings) return;  react-hooks/set-state-in-effect
+
+D:\kandoo\src\app\admin\notifications\page.tsx
+  69:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\kandoo\src\app\admin\notifications\page.tsx:69:5
+  67 |
+  68 |   useEffect(() => {
+> 69 |     fetchNotifications(1);
+     |     ^^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  70 |   }, [fetchNotifications]);
+  71 |
+  72 |   return (  react-hooks/set-state-in-effect
+
+D:\kandoo\src\app\admin\tiers\page.tsx
+  52:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\kandoo\src\app\admin\tiers\page.tsx:52:5
+  50 |
+  51 |   useEffect(() => {
+> 52 |     fetchTiers();
+     |     ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  53 |   }, [fetchTiers]);
+  54 |
+  55 |   async function saveTier(tier: Tier) {  react-hooks/set-state-in-effect
+
+D:\kandoo\src\app\admin\verify\page.tsx
+   93:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  103:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+D:\kandoo\src\app\api\admin\stories\route.ts
+  11:11  warning  'admin' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\kandoo\src\app\api\admin\users\route.ts
+  51:11  warning  'admin' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\kandoo\src\app\api\payment\create\route.ts
+  7:22  warning  'getSubscriptionCoinCost' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\kandoo\src\app\api\profile\photos\route.ts
+    5:28  warning  'unlink' is defined but never used          @typescript-eslint/no-unused-vars
+  130:18  warning  'photo' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\kandoo\src\app\contact\page.tsx
+  27:17  error  Do not use an `<a>` element to navigate to `/dashboard/support/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+
+D:\kandoo\src\app\dashboard\blocked\page.tsx
+  6:8  warning  'Link' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\kandoo\src\app\dashboard\chat\page.tsx
+  5:10  warning  'Edit' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\kandoo\src\app\dashboard\coins\page.tsx
+  8:10  warning  'formatCoins' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\kandoo\src\app\dashboard\likes\page.tsx
+  60:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\kandoo\src\app\dashboard\likes\page.tsx:60:5
+  58 |
+  59 |   useEffect(() => {
+> 60 |     fetchLikes(1);
+     |     ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  61 |   }, [fetchLikes]);
+  62 |
+  63 |   return (  react-hooks/set-state-in-effect
+
+D:\kandoo\src\app\dashboard\page.tsx
+  5:17  warning  'Plus' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\kandoo\src\app\dashboard\support\page.tsx
+  7:10  warning  'toPersianDigits' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\kandoo\src\components\ThemeProvider.tsx
+  41:5   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\kandoo\src\components\ThemeProvider.tsx:41:5
+  39 |   useEffect(() => {
+  40 |     document.documentElement.classList.remove("dark");
+> 41 |     setResolved("light");
+     |     ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  42 |   }, []);
+  43 |
+  44 |   const setTheme = useCallback((_t: Theme) => {  react-hooks/set-state-in-effect
+  44:33  warning  '_t' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+
+D:\kandoo\src\components\admin\AdminCharts.tsx
+  12:42  warning  'Gift' is defined but never used      @typescript-eslint/no-unused-vars
+  89:10  warning  'StatCard' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\kandoo\src\components\admin\AdminFinanceClient.tsx
+  101:9  warning  'allTransfersAsTransactions' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\kandoo\src\components\admin\AdminInterestsClient.tsx
+  35:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\kandoo\src\components\admin\AdminInterestsClient.tsx:35:5
+  33 |
+  34 |   useEffect(() => {
+> 35 |     fetchInterests();
+     |     ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  36 |   }, [fetchInterests]);
+  37 |
+  38 |   function resetForm() {  react-hooks/set-state-in-effect
+
+D:\kandoo\src\components\admin\AdminMissionsClient.tsx
+  48:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\kandoo\src\components\admin\AdminMissionsClient.tsx:48:5
+  46 |
+  47 |   useEffect(() => {
+> 48 |     fetchMissions();
+     |     ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  49 |   }, [fetchMissions]);
+  50 |
+  51 |   function resetForm() {  react-hooks/set-state-in-effect
+
+D:\kandoo\src\components\admin\AdminNav.tsx
+   78:7   warning  'allItems' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-unused-vars
+   98:27  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\kandoo\src\components\admin\AdminNav.tsx:98:27
+   96 |   useEffect(() => {
+   97 |     const saved = localStorage.getItem("admin-nav-collapsed");
+>  98 |     if (saved === "true") setCollapsed(true);
+      |                           ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+   99 |   }, []);
+  100 |
+  101 |   // ذخیره حالت در localStorage  react-hooks/set-state-in-effect
+  108:5   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\kandoo\src\components\admin\AdminNav.tsx:108:5
+  106 |   // بستن منوی موبایل هنگام تغییر مسیر
+  107 |   useEffect(() => {
+> 108 |     setMobileOpen(false);
+      |     ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  109 |   }, [pathname]);
+  110 |
+  111 |   async function logout() {                                                               react-hooks/set-state-in-effect
+
+D:\kandoo\src\components\admin\AdminPagination.tsx
+  40:7  error  'endPage' is never reassigned. Use 'const' instead  prefer-const
+
+D:\kandoo\src\components\admin\AdminStoriesClient.tsx
+  59:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\kandoo\src\components\admin\AdminStoriesClient.tsx:59:5
+  57 |
+  58 |   useEffect(() => {
+> 59 |     fetchStories();
+     |     ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  60 |   }, [fetchStories]);
+  61 |
+  62 |   async function handleAction(storyId: string, action: "approve" | "reject", reason?: string) {  react-hooks/set-state-in-effect
+
+D:\kandoo\src\components\admin\AdminThemeToggle.tsx
+  15:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\kandoo\src\components\admin\AdminThemeToggle.tsx:15:5
+  13 |     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  14 |     const isDark = saved ? saved === "dark" : prefersDark;
+> 15 |     setDark(isDark);
+     |     ^^^^^^^ Avoid calling setState() directly within an effect
+  16 |     setMounted(true);
+  17 |   }, []);
+  18 |  react-hooks/set-state-in-effect
+
+D:\kandoo\src\components\admin\AdminUsersClient.tsx
+    6:10  warning  'BadgeCheck' is defined but never used                                                                           @typescript-eslint/no-unused-vars
+  180:5   warning  React Hook useCallback has a missing dependency: 'fetchUsers'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  217:12  warning  'handleActionComplete' is defined but never used                                                                 @typescript-eslint/no-unused-vars
+
+D:\kandoo\src\components\admin\LiveStoriesClient.tsx
+  49:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\kandoo\src\components\admin\LiveStoriesClient.tsx:49:5
+  47 |
+  48 |   useEffect(() => {
+> 49 |     fetchStories();
+     |     ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  50 |     const interval = setInterval(fetchStories, 10000);
+  51 |     return () => clearInterval(interval);
+  52 |   }, [fetchStories]);  react-hooks/set-state-in-effect
+
+D:\kandoo\src\components\admin\PhotoVerificationClient.tsx
+    7:98  warning  'ImageIcon' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+   89:5   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\kandoo\src\components\admin\PhotoVerificationClient.tsx:89:5
+  87 |
+  88 |   useEffect(() => {
+> 89 |     setPage(1);
+     |     ^^^^^^^ Avoid calling setState() directly within an effect
+  90 |   }, [filter]);
+  91 |
+  92 |   useEffect(() => {                                                                                    react-hooks/set-state-in-effect
+   93:5   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\kandoo\src\components\admin\PhotoVerificationClient.tsx:93:5
+  91 |
+  92 |   useEffect(() => {
+> 93 |     fetchData();
+     |     ^^^^^^^^^ Avoid calling setState() directly within an effect
+  94 |   }, [fetchData]);
+  95 |
+  96 |   async function handleAction(photoId: string, action: "approve" | "reject", reason?: string) {  react-hooks/set-state-in-effect
+  264:42  warning  'gi' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                @typescript-eslint/no-unused-vars
+  438:8   warning  Unused eslint-disable directive (no problems were reported from '@next/next/no-img-element')
+
+D:\kandoo\src\components\admin\SpecialRegisterLink.tsx
+  13:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\kandoo\src\components\admin\SpecialRegisterLink.tsx:13:5
+  11 |
+  12 |   useEffect(() => {
+> 13 |     setOrigin(window.location.origin);
+     |     ^^^^^^^^^ Avoid calling setState() directly within an effect
+  14 |   }, []);
+  15 |
+  16 |   function copyLink() {  react-hooks/set-state-in-effect
+
+D:\kandoo\src\components\admin\TicketPanel.tsx
+  5:48  warning  'AlertTriangle' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\kandoo\src\components\admin\settings\BrandingSettings.tsx
+  4:68  warning  'ToggleRow' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\kandoo\src\components\dashboard\ChatRoom.tsx
+   10:41  warning  'VideoIcon' is defined but never used                     @typescript-eslint/no-unused-vars
+   11:31  warning  'Paperclip' is defined but never used                     @typescript-eslint/no-unused-vars
+   95:10  warning  'showInputMenu' is assigned a value but never used        @typescript-eslint/no-unused-vars
+   95:25  warning  'setShowInputMenu' is assigned a value but never used     @typescript-eslint/no-unused-vars
+  107:28  warning  'setIsBlockedByOther' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\kandoo\src\components\dashboard\CoinsActions.tsx
+  480:23  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+D:\kandoo\src\components\dashboard\FeedCard.tsx
+  86:6  warning  React Hook useCallback has an unnecessary dependency: 'router'. Either exclude it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\kandoo\src\components\dashboard\PaymentResultModal.tsx
+  22:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\kandoo\src\components\dashboard\PaymentResultModal.tsx:22:7
+  20 |
+  21 |     if (paymentStatus === "success") {
+> 22 |       setResult({
+     |       ^^^^^^^^^ Avoid calling setState() directly within an effect
+  23 |         ok: true,
+  24 |         title: type === "SUBSCRIPTION" ? "اشتراک شما فعال شد" : "سکه ها به کیف پول شما اضافه شد",
+  25 |         desc: type === "SUBSCRIPTION" ? "اشتراک یک ماهه شما با موفقیت فعال شد" : "خرید سکه با موفقیت انجام شد",  react-hooks/set-state-in-effect
+
+D:\kandoo\src\components\dashboard\PhotoGallery.tsx
+  6:10  warning  'X' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\kandoo\src\components\dashboard\SpecialMissionsModal.tsx
+  79:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\kandoo\src\components\dashboard\SpecialMissionsModal.tsx:79:5
+  77 |
+  78 |   useEffect(() => {
+> 79 |     fetchData();
+     |     ^^^^^^^^^ Avoid calling setState() directly within an effect
+  80 |   }, []);
+  81 |
+  82 |   async function claimReward(tab: TabKey) {  react-hooks/set-state-in-effect
+
+D:\kandoo\src\components\dashboard\StoryBar.tsx
+  6:16  warning  'X' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\kandoo\src\components\dashboard\StoryEditor.tsx
+  103:10  warning  'goldenExpiresAt' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-unused-vars
+  123:5   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\kandoo\src\components\dashboard\StoryEditor.tsx:123:5
+  121 |
+  122 |   useEffect(() => {
+> 123 |     setMounted(true);
+      |     ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  124 |     document.body.style.overflow = "hidden";
+  125 |     return () => { document.body.style.overflow = ""; };
+  126 |   }, []);  react-hooks/set-state-in-effect
+
+D:\kandoo\src\components\dashboard\StoryViewer.tsx
+  137:21  warning  'setViewCount' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                @typescript-eslint/no-unused-vars
+  148:10  warning  'coinFromButton' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+  221:7   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\kandoo\src\components\dashboard\StoryViewer.tsx:221:7
+  219 |   useEffect(() => {
+  220 |     if (currentStory) {
+> 221 |       setLiked(currentStory.liked ?? false);
+      |       ^^^^^^^^ Avoid calling setState() directly within an effect
+  222 |       setLikeCount(currentStory.likeCount ?? 0);
+  223 |       setReplyText("");
+  224 |       setReplySent(false);                                                                               react-hooks/set-state-in-effect
+  233:5   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\kandoo\src\components\dashboard\StoryViewer.tsx:233:5
+  231 |     if (!currentStory || paused) return;
+  232 |     if (!isMyStory) registerView(currentStory.id);
+> 233 |     setProgress(0);
+      |     ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  234 |     progressRef.current = 0;
+  235 |     const startTime = Date.now() - (progressRef.current / 100) * STORY_DURATION;
+  236 |     timerRef.current = setInterval(() => {  react-hooks/set-state-in-effect
+  247:6   warning  React Hook useEffect has missing dependencies: 'currentStory', 'goToNext', 'isMyStory', and 'registerView'. Either include them or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   react-hooks/exhaustive-deps
+  492:6   warning  React Hook useEffect has missing dependencies: 'goToNext', 'goToPrev', and 'onClose'. Either include them or remove the dependency array. If 'onClose' changes too often, find the parent component that defines it and wrap that definition in useCallback                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      react-hooks/exhaustive-deps
+
+D:\kandoo\src\components\dashboard\SupportChat.tsx
+  5:10  warning  'ArrowRight' is defined but never used  @typescript-eslint/no-unused-vars
+  5:48  warning  'X' is defined but never used           @typescript-eslint/no-unused-vars
+
+D:\kandoo\src\lib\aiCompanion.ts
+  317:86  warning  '_userMessage' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\kandoo\src\lib\botLike.ts
+   4:112  warning  'logBotAction' is defined but never used  @typescript-eslint/no-unused-vars
+  16:9    warning  'now' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+✖ 77 problems (28 errors, 49 warnings)
+  1 error and 1 warning potentially fixable with the `--fix` option.
+

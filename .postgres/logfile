@@ -1,0 +1,314 @@
+2026-10-02 22:27:05.426 +0330 [14788] LOG:  starting PostgreSQL 18.6 on x86_64-windows, compiled by msvc-19.44.35228, 64-bit
+2026-10-02 22:27:05.430 +0330 [14788] LOG:  listening on IPv6 address "::1", port 5432
+2026-10-02 22:27:05.431 +0330 [14788] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2026-10-02 22:27:05.497 +0330 [28380] LOG:  database system was shut down at 2026-10-02 22:26:55 +0330
+2026-10-02 22:27:05.503 +0330 [14788] LOG:  database system is ready to accept connections
+2026-10-02 22:30:34.778 +0330 [11564] ERROR:  relation "_prisma_migrations" does not exist at character 126
+2026-10-02 22:30:34.778 +0330 [11564] STATEMENT:  SELECT "id", "checksum", "finished_at", "migration_name", "logs", "rolled_back_at", "started_at", "applied_steps_count" FROM "_prisma_migrations" ORDER BY "started_at" ASC
+2026-10-02 22:30:35.066 +0330 [7412] LOG:  checkpoint starting: immediate force wait
+2026-10-02 22:30:35.332 +0330 [7412] LOG:  checkpoint complete: wrote 1037 buffers (6.3%), wrote 3 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=0.100 s, sync=0.159 s, total=0.267 s; sync files=312, longest=0.002 s, average=0.001 s; distance=9737 kB, estimate=9737 kB; lsn=0/2175B18, redo lsn=0/2175AC0
+2026-10-02 22:30:35.764 +0330 [7412] LOG:  checkpoint starting: immediate force wait
+2026-10-02 22:30:35.779 +0330 [7412] LOG:  checkpoint complete: wrote 21 buffers (0.1%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.004 s, sync=0.005 s, total=0.015 s; sync files=7, longest=0.002 s, average=0.001 s; distance=4804 kB, estimate=9244 kB; lsn=0/2626C50, redo lsn=0/2626BF8
+2026-10-02 22:35:29.432 +0330 [28484] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 22:35:35.792 +0330 [7412] LOG:  checkpoint starting: time
+2026-10-02 22:35:58.311 +0330 [7412] LOG:  checkpoint complete: wrote 206 buffers (1.3%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=22.440 s, sync=0.068 s, total=22.520 s; sync files=270, longest=0.003 s, average=0.001 s; distance=1997 kB, estimate=8519 kB; lsn=0/281A140, redo lsn=0/281A0B0
+2026-10-02 22:38:51.479 +0330 [24920] ERROR:  DROP DATABASE cannot run inside a transaction block
+2026-10-02 22:38:51.479 +0330 [24920] STATEMENT:  DROP DATABASE IF EXISTS kandoo; CREATE DATABASE kandoo;
+2026-10-02 22:39:03.140 +0330 [7412] LOG:  checkpoint starting: immediate force wait
+2026-10-02 22:39:03.148 +0330 [7412] LOG:  checkpoint complete: wrote 1 buffers (0.0%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.002 s, total=0.009 s; sync files=2, longest=0.001 s, average=0.001 s; distance=88 kB, estimate=7676 kB; lsn=0/2830500, redo lsn=0/28304A8
+2026-10-02 22:39:20.175 +0330 [7096] ERROR:  relation "_prisma_migrations" does not exist at character 126
+2026-10-02 22:39:20.175 +0330 [7096] STATEMENT:  SELECT "id", "checksum", "finished_at", "migration_name", "logs", "rolled_back_at", "started_at", "applied_steps_count" FROM "_prisma_migrations" ORDER BY "started_at" ASC
+2026-10-02 22:39:20.422 +0330 [7412] LOG:  checkpoint starting: immediate force wait
+2026-10-02 22:39:20.671 +0330 [7412] LOG:  checkpoint complete: wrote 994 buffers (6.1%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=0.090 s, sync=0.151 s, total=0.249 s; sync files=302, longest=0.002 s, average=0.001 s; distance=9345 kB, estimate=9345 kB; lsn=0/3150BC0, redo lsn=0/3150B68
+2026-10-02 22:39:21.312 +0330 [7412] LOG:  checkpoint starting: immediate force wait
+2026-10-02 22:39:21.324 +0330 [7412] LOG:  checkpoint complete: wrote 4 buffers (0.0%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.003 s, sync=0.004 s, total=0.013 s; sync files=5, longest=0.002 s, average=0.001 s; distance=6025 kB, estimate=9013 kB; lsn=0/37330F0, redo lsn=0/3733098
+2026-10-02 22:39:22.244 +0330 [7412] LOG:  checkpoint starting: immediate force wait
+2026-10-02 22:39:22.475 +0330 [7412] LOG:  checkpoint complete: wrote 182 buffers (1.1%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.036 s, sync=0.188 s, total=0.231 s; sync files=266, longest=0.002 s, average=0.001 s; distance=7804 kB, estimate=8892 kB; lsn=0/3ED2140, redo lsn=0/3ED20E8
+2026-10-02 22:44:22.484 +0330 [7412] LOG:  checkpoint starting: time
+2026-10-02 22:44:44.846 +0330 [7412] LOG:  checkpoint complete: wrote 205 buffers (1.3%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=22.317 s, sync=0.038 s, total=22.363 s; sync files=72, longest=0.004 s, average=0.001 s; distance=1189 kB, estimate=8122 kB; lsn=0/3FFB878, redo lsn=0/3FFB7E8
+2026-10-02 22:47:51.911 +0330 [7412] LOG:  checkpoint starting: immediate force wait
+2026-10-02 22:47:51.919 +0330 [7412] LOG:  checkpoint complete: wrote 1 buffers (0.0%), wrote 0 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.001 s, total=0.008 s; sync files=1, longest=0.001 s, average=0.001 s; distance=2 kB, estimate=7310 kB; lsn=0/3FFC210, redo lsn=0/3FFC1B8
+2026-10-02 22:48:06.089 +0330 [27676] ERROR:  relation "_prisma_migrations" does not exist at character 126
+2026-10-02 22:48:06.089 +0330 [27676] STATEMENT:  SELECT "id", "checksum", "finished_at", "migration_name", "logs", "rolled_back_at", "started_at", "applied_steps_count" FROM "_prisma_migrations" ORDER BY "started_at" ASC
+2026-10-02 22:48:06.328 +0330 [7412] LOG:  checkpoint starting: immediate force wait
+2026-10-02 22:48:06.575 +0330 [7412] LOG:  checkpoint complete: wrote 994 buffers (6.1%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=0.089 s, sync=0.150 s, total=0.247 s; sync files=302, longest=0.002 s, average=0.001 s; distance=9346 kB, estimate=9346 kB; lsn=0/491CCD0, redo lsn=0/491CC78
+2026-10-02 22:48:07.201 +0330 [7412] LOG:  checkpoint starting: immediate force wait
+2026-10-02 22:48:07.214 +0330 [7412] LOG:  checkpoint complete: wrote 4 buffers (0.0%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.003 s, sync=0.004 s, total=0.013 s; sync files=5, longest=0.001 s, average=0.001 s; distance=6026 kB, estimate=9014 kB; lsn=0/4EFF6B8, redo lsn=0/4EFF660
+2026-10-02 22:48:08.058 +0330 [7412] LOG:  checkpoint starting: immediate force wait
+2026-10-02 22:48:08.279 +0330 [7412] LOG:  checkpoint complete: wrote 182 buffers (1.1%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=0.032 s, sync=0.180 s, total=0.221 s; sync files=266, longest=0.002 s, average=0.001 s; distance=7805 kB, estimate=8893 kB; lsn=0/569EB50, redo lsn=0/569EAF8
+2026-10-02 22:52:35.733 +0330 [7412] LOG:  checkpoint starting: immediate force wait
+2026-10-02 22:52:35.741 +0330 [7412] LOG:  checkpoint complete: wrote 1 buffers (0.0%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.002 s, total=0.009 s; sync files=2, longest=0.001 s, average=0.001 s; distance=779 kB, estimate=8082 kB; lsn=0/5761A78, redo lsn=0/5761A20
+2026-10-02 22:52:49.245 +0330 [13784] ERROR:  relation "_prisma_migrations" does not exist at character 126
+2026-10-02 22:52:49.245 +0330 [13784] STATEMENT:  SELECT "id", "checksum", "finished_at", "migration_name", "logs", "rolled_back_at", "started_at", "applied_steps_count" FROM "_prisma_migrations" ORDER BY "started_at" ASC
+2026-10-02 22:52:49.487 +0330 [7412] LOG:  checkpoint starting: immediate force wait
+2026-10-02 22:52:49.738 +0330 [7412] LOG:  checkpoint complete: wrote 994 buffers (6.1%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=0.091 s, sync=0.150 s, total=0.251 s; sync files=302, longest=0.005 s, average=0.001 s; distance=9347 kB, estimate=9347 kB; lsn=0/6082988, redo lsn=0/6082930
+2026-10-02 22:52:50.374 +0330 [7412] LOG:  checkpoint starting: immediate force wait
+2026-10-02 22:52:50.387 +0330 [7412] LOG:  checkpoint complete: wrote 4 buffers (0.0%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.003 s, sync=0.004 s, total=0.013 s; sync files=5, longest=0.001 s, average=0.001 s; distance=6027 kB, estimate=9015 kB; lsn=0/6665728, redo lsn=0/66656D0
+2026-10-02 22:52:51.257 +0330 [7412] LOG:  checkpoint starting: immediate force wait
+2026-10-02 22:52:51.475 +0330 [7412] LOG:  checkpoint complete: wrote 182 buffers (1.1%), wrote 2 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.033 s, sync=0.179 s, total=0.218 s; sync files=266, longest=0.002 s, average=0.001 s; distance=7807 kB, estimate=8894 kB; lsn=0/6E055B8, redo lsn=0/6E05560
+2026-10-02 22:55:39.973 +0330 [7412] LOG:  checkpoint starting: immediate force wait
+2026-10-02 22:55:39.982 +0330 [7412] LOG:  checkpoint complete: wrote 1 buffers (0.0%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.002 s, total=0.009 s; sync files=2, longest=0.001 s, average=0.001 s; distance=862 kB, estimate=8091 kB; lsn=0/6EDD020, redo lsn=0/6EDCFC8
+2026-10-02 22:55:57.232 +0330 [20276] ERROR:  relation "_prisma_migrations" does not exist at character 126
+2026-10-02 22:55:57.232 +0330 [20276] STATEMENT:  SELECT "id", "checksum", "finished_at", "migration_name", "logs", "rolled_back_at", "started_at", "applied_steps_count" FROM "_prisma_migrations" ORDER BY "started_at" ASC
+2026-10-02 22:55:57.469 +0330 [7412] LOG:  checkpoint starting: immediate force wait
+2026-10-02 22:55:57.719 +0330 [7412] LOG:  checkpoint complete: wrote 994 buffers (6.1%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=0.091 s, sync=0.151 s, total=0.251 s; sync files=302, longest=0.002 s, average=0.001 s; distance=9348 kB, estimate=9348 kB; lsn=0/77FE3A0, redo lsn=0/77FE348
+2026-10-02 22:55:58.361 +0330 [7412] LOG:  checkpoint starting: immediate force wait
+2026-10-02 22:55:58.375 +0330 [7412] LOG:  checkpoint complete: wrote 4 buffers (0.0%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.004 s, sync=0.004 s, total=0.014 s; sync files=5, longest=0.002 s, average=0.001 s; distance=6028 kB, estimate=9016 kB; lsn=0/7DE1578, redo lsn=0/7DE1520
+2026-10-02 22:55:59.267 +0330 [7412] LOG:  checkpoint starting: immediate force wait
+2026-10-02 22:55:59.491 +0330 [7412] LOG:  checkpoint complete: wrote 182 buffers (1.1%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=0.033 s, sync=0.182 s, total=0.225 s; sync files=266, longest=0.002 s, average=0.001 s; distance=7808 kB, estimate=8896 kB; lsn=0/85817F8, redo lsn=0/85817A0
+2026-10-02 23:00:59.510 +0330 [7412] LOG:  checkpoint starting: time
+2026-10-02 23:01:25.354 +0330 [7412] LOG:  checkpoint complete: wrote 237 buffers (1.4%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=25.797 s, sync=0.043 s, total=25.845 s; sync files=86, longest=0.001 s, average=0.001 s; distance=1320 kB, estimate=8138 kB; lsn=0/86CBAE0, redo lsn=0/86CBA50
+2026-10-02 23:05:18.637 +0330 [29252] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 23:05:18.637 +0330 [22008] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 23:05:18.638 +0330 [15468] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 23:05:18.638 +0330 [21864] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 23:05:18.639 +0330 [29080] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 23:05:18.639 +0330 [7344] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 23:05:18.639 +0330 [26364] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 23:05:59.364 +0330 [7412] LOG:  checkpoint starting: time
+2026-10-02 23:06:00.345 +0330 [7412] LOG:  checkpoint complete: wrote 9 buffers (0.1%), wrote 0 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.971 s, sync=0.003 s, total=0.981 s; sync files=3, longest=0.002 s, average=0.001 s; distance=57 kB, estimate=7330 kB; lsn=0/86DA1B8, redo lsn=0/86DA128
+2026-10-02 23:06:58.583 +0330 [24936] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 23:06:58.583 +0330 [8124] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 23:06:58.583 +0330 [19776] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 23:06:58.583 +0330 [1524] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 23:06:58.584 +0330 [24280] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 23:06:58.584 +0330 [27388] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 23:06:58.585 +0330 [2652] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 23:06:58.585 +0330 [27968] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 23:06:58.586 +0330 [7228] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 23:06:58.586 +0330 [27144] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 23:06:58.588 +0330 [24476] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 23:06:58.588 +0330 [1272] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 23:06:58.588 +0330 [19332] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 23:10:59.349 +0330 [7412] LOG:  checkpoint starting: time
+2026-10-02 23:10:59.789 +0330 [7412] LOG:  checkpoint complete: wrote 4 buffers (0.0%), wrote 0 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.431 s, sync=0.005 s, total=0.441 s; sync files=4, longest=0.003 s, average=0.002 s; distance=9 kB, estimate=6598 kB; lsn=0/86DC870, redo lsn=0/86DC818
+2026-10-02 23:27:11.112 +0330 [26820] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 23:27:11.112 +0330 [21624] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 23:27:11.113 +0330 [21936] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 23:27:11.113 +0330 [28640] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 23:27:11.114 +0330 [20536] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 23:27:11.116 +0330 [6632] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 23:27:11.117 +0330 [26948] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 23:27:11.117 +0330 [20368] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 23:27:11.118 +0330 [912] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 23:27:11.118 +0330 [4036] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 23:27:11.118 +0330 [24948] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 23:27:11.119 +0330 [22992] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 23:27:11.118 +0330 [25872] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 23:27:11.121 +0330 [28056] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 23:27:11.121 +0330 [27092] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-02 23:31:52.412 +0330 [20740] ERROR:  unterminated quoted identifier at or near "" User\" at character 8
+2026-10-02 23:31:52.412 +0330 [20740] STATEMENT:  UPDATE " User\
+2026-10-02 23:32:12.671 +0330 [29220] ERROR:  syntax error at or near "User" at character 8
+2026-10-02 23:32:12.671 +0330 [29220] STATEMENT:  UPDATE User SET role = 'SUPER_ADMIN' WHERE role = 'ADMIN';
+2026-10-02 23:35:59.810 +0330 [7412] LOG:  checkpoint starting: time
+2026-10-02 23:35:59.921 +0330 [7412] LOG:  checkpoint complete: wrote 1 buffers (0.0%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.104 s, sync=0.002 s, total=0.112 s; sync files=2, longest=0.002 s, average=0.001 s; distance=8 kB, estimate=5939 kB; lsn=0/86DEA08, redo lsn=0/86DE9B0
+2026-10-03 00:12:29.585 +0330 [31868] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:12:29.585 +0330 [31896] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:12:29.586 +0330 [31904] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:12:29.586 +0330 [12712] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:12:29.587 +0330 [16900] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:12:29.587 +0330 [21636] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:12:29.588 +0330 [31776] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:12:29.588 +0330 [31804] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:12:29.590 +0330 [31796] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:12:29.591 +0330 [31912] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:12:29.591 +0330 [31948] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:12:29.592 +0330 [31968] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:12:29.595 +0330 [31988] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:12:29.596 +0330 [32016] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:12:29.596 +0330 [32028] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:12:29.598 +0330 [32052] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:15:59.984 +0330 [7412] LOG:  checkpoint starting: time
+2026-10-03 00:16:00.552 +0330 [7412] LOG:  checkpoint complete: wrote 5 buffers (0.0%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.549 s, sync=0.005 s, total=0.569 s; sync files=6, longest=0.002 s, average=0.001 s; distance=14 kB, estimate=5346 kB; lsn=0/86E2428, redo lsn=0/86E23D0
+2026-10-03 00:20:11.075 +0330 [7412] LOG:  checkpoint starting: immediate force wait
+2026-10-03 00:20:11.098 +0330 [7412] LOG:  checkpoint complete: wrote 16 buffers (0.1%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.006 s, sync=0.010 s, total=0.024 s; sync files=15, longest=0.002 s, average=0.001 s; distance=6037 kB, estimate=6037 kB; lsn=0/8CC79A0, redo lsn=0/8CC7948
+2026-10-03 00:20:11.865 +0330 [7412] LOG:  checkpoint starting: immediate force wait
+2026-10-03 00:20:11.884 +0330 [7412] LOG:  checkpoint complete: wrote 25 buffers (0.2%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=0.004 s, sync=0.006 s, total=0.020 s; sync files=7, longest=0.002 s, average=0.001 s; distance=6181 kB, estimate=6181 kB; lsn=0/92D1040, redo lsn=0/92D0FE8
+2026-10-03 00:24:46.049 +0330 [29684] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:24:46.050 +0330 [25172] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:24:46.052 +0330 [14624] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:24:46.052 +0330 [5660] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:24:46.052 +0330 [11164] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:24:46.052 +0330 [5992] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:24:46.052 +0330 [13548] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:24:46.052 +0330 [11596] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:24:46.052 +0330 [22680] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:24:46.052 +0330 [31876] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:24:46.053 +0330 [31748] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:24:46.060 +0330 [9252] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:24:46.060 +0330 [24792] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:24:46.062 +0330 [30136] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:25:11.897 +0330 [7412] LOG:  checkpoint starting: time
+2026-10-03 00:25:18.415 +0330 [7412] LOG:  checkpoint complete: wrote 60 buffers (0.4%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=6.479 s, sync=0.031 s, total=6.519 s; sync files=52, longest=0.002 s, average=0.001 s; distance=382 kB, estimate=5601 kB; lsn=0/9330B40, redo lsn=0/9330AE8
+2026-10-03 00:29:07.978 +0330 [25104] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:29:07.978 +0330 [28640] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:29:07.978 +0330 [28528] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:29:07.980 +0330 [23752] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:29:07.980 +0330 [28216] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:29:07.993 +0330 [24660] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:29:07.994 +0330 [24104] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:29:07.994 +0330 [28656] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:29:07.996 +0330 [13792] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:29:07.996 +0330 [15728] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:29:07.997 +0330 [31436] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:29:07.997 +0330 [11936] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:29:07.998 +0330 [3512] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:29:07.998 +0330 [14832] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:29:07.998 +0330 [22464] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:34:20.059 +0330 [7412] LOG:  checkpoint starting: immediate force wait
+2026-10-03 00:34:20.073 +0330 [7412] LOG:  checkpoint complete: wrote 4 buffers (0.0%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.004 s, sync=0.004 s, total=0.014 s; sync files=5, longest=0.001 s, average=0.001 s; distance=6083 kB, estimate=6083 kB; lsn=0/99217F0, redo lsn=0/9921798
+2026-10-03 00:34:20.782 +0330 [7412] LOG:  checkpoint starting: immediate force wait
+2026-10-03 00:34:20.801 +0330 [7412] LOG:  checkpoint complete: wrote 17 buffers (0.1%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.006 s, sync=0.007 s, total=0.019 s; sync files=11, longest=0.002 s, average=0.001 s; distance=6174 kB, estimate=6174 kB; lsn=0/9F29118, redo lsn=0/9F290C0
+2026-10-03 00:39:20.804 +0330 [7412] LOG:  checkpoint starting: time
+2026-10-03 00:39:23.856 +0330 [7412] LOG:  checkpoint complete: wrote 28 buffers (0.2%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=3.037 s, sync=0.010 s, total=3.053 s; sync files=17, longest=0.001 s, average=0.001 s; distance=189 kB, estimate=5575 kB; lsn=0/9F585A8, redo lsn=0/9F58550
+2026-10-03 00:57:27.103 +0330 [22428] FATAL:  role "NADFER" does not exist
+2026-10-03 00:57:27.103 +0330 [13532] FATAL:  role "NADFER" does not exist
+2026-10-03 00:57:27.114 +0330 [29228] FATAL:  role "NADFER" does not exist
+2026-10-03 00:57:27.314 +0330 [29380] FATAL:  role "NADFER" does not exist
+2026-10-03 00:57:27.459 +0330 [14620] FATAL:  role "NADFER" does not exist
+2026-10-03 00:57:27.461 +0330 [31980] FATAL:  role "NADFER" does not exist
+2026-10-03 00:57:27.469 +0330 [27560] FATAL:  role "NADFER" does not exist
+2026-10-03 00:57:27.475 +0330 [32688] FATAL:  role "NADFER" does not exist
+2026-10-03 00:57:27.479 +0330 [30644] FATAL:  role "NADFER" does not exist
+2026-10-03 00:57:27.481 +0330 [22920] FATAL:  role "NADFER" does not exist
+2026-10-03 00:57:27.489 +0330 [27244] FATAL:  role "NADFER" does not exist
+2026-10-03 00:57:27.502 +0330 [30996] FATAL:  role "NADFER" does not exist
+2026-10-03 00:57:27.507 +0330 [5828] FATAL:  role "NADFER" does not exist
+2026-10-03 00:57:27.521 +0330 [17592] FATAL:  role "NADFER" does not exist
+2026-10-03 00:57:27.529 +0330 [31828] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:57:27.533 +0330 [30520] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:57:27.568 +0330 [11440] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:57:27.582 +0330 [30356] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:57:27.592 +0330 [24592] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:57:27.600 +0330 [32588] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:57:27.610 +0330 [28904] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:57:27.629 +0330 [31880] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 00:59:20.889 +0330 [7412] LOG:  checkpoint starting: time
+2026-10-03 00:59:21.323 +0330 [7412] LOG:  checkpoint complete: wrote 4 buffers (0.0%), wrote 0 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.425 s, sync=0.003 s, total=0.435 s; sync files=3, longest=0.001 s, average=0.001 s; distance=30 kB, estimate=5021 kB; lsn=0/9F600D0, redo lsn=0/9F60078
+2026-10-03 01:03:09.492 +0330 [3240] FATAL:  role "NADFER" does not exist
+2026-10-03 01:03:09.501 +0330 [3604] FATAL:  role "NADFER" does not exist
+2026-10-03 01:03:09.585 +0330 [4916] FATAL:  role "NADFER" does not exist
+2026-10-03 01:03:09.761 +0330 [23172] FATAL:  role "NADFER" does not exist
+2026-10-03 01:03:09.935 +0330 [31804] FATAL:  role "NADFER" does not exist
+2026-10-03 01:03:09.945 +0330 [30824] FATAL:  role "NADFER" does not exist
+2026-10-03 01:03:09.950 +0330 [2384] FATAL:  role "NADFER" does not exist
+2026-10-03 01:03:09.969 +0330 [31164] FATAL:  role "NADFER" does not exist
+2026-10-03 01:03:09.980 +0330 [32552] FATAL:  role "NADFER" does not exist
+2026-10-03 01:03:09.986 +0330 [19192] FATAL:  role "NADFER" does not exist
+2026-10-03 01:03:09.988 +0330 [25044] FATAL:  role "NADFER" does not exist
+2026-10-03 01:03:10.010 +0330 [20020] FATAL:  role "NADFER" does not exist
+2026-10-03 01:03:10.044 +0330 [24184] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 01:03:10.047 +0330 [24416] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 01:03:10.048 +0330 [32136] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 01:03:10.067 +0330 [29284] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 01:03:10.070 +0330 [31456] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 01:03:10.081 +0330 [27080] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 01:03:10.083 +0330 [1212] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 01:03:10.095 +0330 [6024] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 01:03:10.104 +0330 [30740] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-03 07:05:39.690 +0330 [14788] LOG:  autovacuum worker (PID 13892) was terminated by exception 0xC0000142
+2026-10-03 07:05:39.690 +0330 [14788] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2026-10-03 07:05:39.690 +0330 [14788] LOG:  terminating any other active server processes
+2026-10-03 07:05:39.723 +0330 [14788] LOG:  all server processes terminated; reinitializing
+2026-10-03 07:11:58.863 +0330 [14788] LOG:  received fast shutdown request
+2026-10-03 07:11:58.868 +0330 [14788] LOG:  abnormal database system shutdown
+2026-10-03 07:11:58.873 +0330 [14788] LOG:  database system is shut down
