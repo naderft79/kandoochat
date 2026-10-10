@@ -321,6 +321,19 @@ html, body {
   }
 }
 
+/* ناحیه ناچ/نوار وضعیت — رنگ سفید تم و فاصله واقعی هر دستگاه */
+body {
+  padding-top: env(safe-area-inset-top);
+}
+
+/* بدون اسکرول اضافی — ارتفاع صفحه منهای ناحیه نوار وضعیت */
+.min-h-screen {
+  min-height: calc(100dvh - env(safe-area-inset-top));
+}
+.min-h-dvh {
+  min-height: calc(100dvh - env(safe-area-inset-top));
+}
+
 /* انیمیشن قلب استوری — دابل تپ لایک */
 @keyframes ig-heart-pop {
   0% { transform: scale(0); opacity: 0; }
