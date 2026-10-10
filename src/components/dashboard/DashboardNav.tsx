@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import CoinBadge from "@/components/dashboard/CoinBadge";
 import { usePresence } from "@/hooks/usePresence";
-import { toPersianDigits } from "@/lib/format";
+import { formatBadgeCount } from "@/lib/format";
 import KandooLogo from "@/components/KandooLogo";
 import DefaultAvatar from "@/components/dashboard/DefaultAvatar";
 
@@ -67,19 +67,7 @@ export default function DashboardNav({
 
   usePresence();
 
-  // فرمت نمایش عدد: تا ۱۰ واقعی، بالای ۱۰ -> +10، بالای ۲۰ -> +20، نهایتا +99
-  function formatBadge(count: number): string {
-    if (count <= 10) return toPersianDigits(count);
-    if (count <= 20) return "+۱۰";
-    if (count <= 30) return "+۲۰";
-    if (count <= 40) return "+۳۰";
-    if (count <= 50) return "+۴۰";
-    if (count <= 60) return "+۵۰";
-    if (count <= 70) return "+۶۰";
-    if (count <= 80) return "+۷۰";
-    if (count <= 90) return "+۸۰";
-    return "+۹۹";
-  }
+  // فرمت بج عددی از format.ts مشترک می آید (تا ۱۰ دقیق، بعد +۱۰ ... سقف +۹۹)
 
   async function logout() {
     await fetch("/api/auth/logout", { method: "POST" });
@@ -147,7 +135,7 @@ export default function DashboardNav({
                 </span>
                 {item.href === "/dashboard/chat" && unreadCount > 0 && (
                   <span className="min-w-[20px] h-5 bg-ig-red rounded-full flex items-center justify-center text-xs font-bold text-white px-1.5 lg:relative absolute top-1 right-1">
-                    {formatBadge(unreadCount)}
+                    {formatBadgeCount(unreadCount)}
                   </span>
                 )}
               </Link>
@@ -229,7 +217,7 @@ export default function DashboardNav({
                   <NavIcon item={item} active={active} className={`w-6 h-6 ${active ? "text-foreground" : "text-foreground"}`} />
                   {item.href === "/dashboard/chat" && unreadCount > 0 && (
                     <span className="absolute -top-1 -right-1 min-w-[16px] h-4 bg-ig-red rounded-full flex items-center justify-center text-xs font-bold text-white px-1">
-                      {formatBadge(unreadCount)}
+                      {formatBadgeCount(unreadCount)}
                     </span>
                   )}
                 </div>

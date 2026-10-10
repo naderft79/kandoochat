@@ -3,7 +3,7 @@
 // زنگوله اعلان ها — بج تعداد خوانده نشده از LiveDataProvider
 import Link from "next/link";
 import { Heart } from "lucide-react";
-import { toPersianDigits } from "@/lib/format";
+import { toPersianDigits, formatBadgeCount } from "@/lib/format";
 import { useLiveData } from "@/components/dashboard/LiveDataProvider";
 
 export default function NotificationBell() {
@@ -18,7 +18,7 @@ export default function NotificationBell() {
       <Heart className="w-6 h-6 text-foreground" strokeWidth={1.8} />
       {unreadCount > 0 && (
         <span className="absolute -top-0.5 -end-0.5 min-w-4 h-4 px-0.5 rounded-full bg-ig-red text-white text-xs font-bold flex items-center justify-center leading-none">
-          {unreadCount > 9 ? "+۹" : toPersianDigits(unreadCount)}
+          {formatBadgeCount(unreadCount)}
         </span>
       )}
     </Link>

@@ -106,6 +106,20 @@ export function formatLastSeen(lastSeen: Date): string {
   return formatDateTimeCustom(lastSeen);
 }
 
+// فرمت بج عددی: تا ۱۰ دقیق، بعد +۱۰ +۲۰ ... و سقف +۹۹
+export function formatBadgeCount(count: number): string {
+  if (count <= 10) return toPersianDigits(count);
+  if (count <= 20) return "+۱۰";
+  if (count <= 30) return "+۲۰";
+  if (count <= 40) return "+۳۰";
+  if (count <= 50) return "+۴۰";
+  if (count <= 60) return "+۵۰";
+  if (count <= 70) return "+۶۰";
+  if (count <= 80) return "+۷۰";
+  if (count <= 90) return "+۸۰";
+  return "+۹۹";
+}
+
 // تبدیل ارقام فارسی و عربی به انگلیسی (برای ورودی شماره موبایل و کد)
 export function normalizeDigits(input: string): string {
   return input

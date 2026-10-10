@@ -42,13 +42,39 @@ export const prisma = base.$extends({
     message: {
       async create({ args, query }) {
         const result = await query(args);
-        // گیرنده پیام را پیدا کن تا بج پیام نخوانده او به روز شود
-        void base.conversation
-          .findUnique({ where: { id: result.conversationId }, select: { userAId: true, userBId: true } })
-          .then((conv) => {
+        // گیرنده پیام را پیدا کن تا بج پیام نخوانده و نوتیف زنده او به روز شود
+        void Promise.all([
+          base.conversation.findUnique({
+            where: { id: result.conversationId },
+            select: { userAId: true, userBId: true },
+          }),
+          base.user.findUnique({
+            where: { id: result.senderId },
+            select: { firstName: true, lastName: true },
+          }),
+        ])
+          .then(([conv, sender]) => {
             if (!conv) return;
             const recipientId = conv.userAId === result.senderId ? conv.userBId : conv.userAId;
-            publishToUser(recipientId, "change", { scope: "messages" });
+            const preview =
+              result.type === "TEXT"
+                ? String(result.content ?? "").slice(0, 100)
+                : result.type === "IMAGE"
+                  ? "عکس"
+                  : result.type === "VOICE"
+                    ? "پیام صوتی"
+                    : result.type === "VIDEO"
+                      ? "ویدیو"
+                      : "رسانه جدید";
+            publishToUser(recipientId, "change", {
+              scope: "messages",
+              message: {
+                id: result.id,
+                conversationId: result.conversationId,
+                senderName: sender ? `${sender.firstName} ${sender.lastName}`.trim() : "پیام جدید",
+                preview,
+              },
+            });
           })
           .catch(() => {});
         return result;
