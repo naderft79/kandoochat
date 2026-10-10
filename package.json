@@ -15,6 +15,7 @@
     "icons": "tsx scripts/generate-icons.ts",
     "build:pwa": "tsx scripts/generate-icons.ts && tsx scripts/generate-screenshots.ts && next build",
     "build:apk": "tsx scripts/build-apk.ts",
+    "deploy:apk": "tsx scripts/deploy-apk.ts",
     "cap:sync": "npx cap sync android",
     "db:seed-missions": "tsx prisma/seed-missions.ts",
     "lint:ui": "tsx scripts/check-ui.ts --strict",
