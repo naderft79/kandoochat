@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { requireUser, AuthError } from "@/lib/auth";
 import { getSetting } from "@/lib/settings";
 import { signPaymentToken, sanitizeReturnPath } from "@/lib/payment";
+import { SITE_URL } from "@/lib/site";
 import { rateLimit, apiRateLimit, getClientIdentifier } from "@/lib/rate-limit";
 
 const buySchema = z.object({
@@ -79,7 +80,8 @@ export async function POST(request: Request) {
     });
 
     const kandooPayUrl = process.env.KANDOOPAY_URL?.replace(/\/$/, "") || "https://kandoopay.com";
-    const callbackUrl = `${kandooPayUrl}/checkout/kandoo?token=${encodeURIComponent(token)}&title=${encodeURIComponent("خرید سکه کندو")}&amount=${amountToman}&type=COINS&returnPath=${encodeURIComponent(returnPath)}`;
+    const appUrl = (process.env.KANDOO_PUBLIC_URL || SITE_URL).replace(/\/$/, "");
+    const callbackUrl = `${kandooPayUrl}/checkout/kandoo?token=${encodeURIComponent(token)}&title=${encodeURIComponent("خرید سکه کندو")}&amount=${amountToman}&type=COINS&kandooUrl=${encodeURIComponent(appUrl)}&returnPath=${encodeURIComponent(returnPath)}`;
 
     console.log(`[wallet/buy] user ${user.id} created coins payment ${amountToman} toman, paymentId=${payment.id}`);
 

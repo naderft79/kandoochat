@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { requireUser, AuthError } from "@/lib/auth";
 import { getSetting } from "@/lib/settings";
 import { signPaymentToken, sanitizeReturnPath } from "@/lib/payment";
+import { SITE_URL } from "@/lib/site";
 import { rateLimit, apiRateLimit, getClientIdentifier } from "@/lib/rate-limit";
 import { getPlan } from "@/lib/subscriptionPlans";
 
@@ -102,7 +103,8 @@ export async function POST(request: Request) {
 
     // آدرس KandooPay از متغیر محیطی
     const kandooPayUrl = process.env.KANDOOPAY_URL?.replace(/\/$/, "") || "https://kandoopay.com";
-    const callbackUrl = `${kandooPayUrl}/checkout/kandoo?token=${encodeURIComponent(token)}&title=${encodeURIComponent(title)}&amount=${amountToman}&type=${type}&returnPath=${encodeURIComponent(returnPath)}`;
+    const appUrl = (process.env.KANDOO_PUBLIC_URL || SITE_URL).replace(/\/$/, "");
+    const callbackUrl = `${kandooPayUrl}/checkout/kandoo?token=${encodeURIComponent(token)}&title=${encodeURIComponent(title)}&amount=${amountToman}&type=${type}&kandooUrl=${encodeURIComponent(appUrl)}&returnPath=${encodeURIComponent(returnPath)}`;
 
     console.log(`[payment/create] user ${user.id} created ${type} payment ${amountToman} toman, paymentId=${payment.id}`);
 
