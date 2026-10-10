@@ -2,6 +2,7 @@
 import webpush from "web-push";
 import { JWT } from "google-auth-library";
 import { prisma } from "@/lib/prisma";
+import { SITE_DOMAIN } from "@/lib/site";
 
 function vapidReady(): boolean {
   return !!(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY);
@@ -10,7 +11,7 @@ function vapidReady(): boolean {
 function initVapid() {
   if (!vapidReady()) return false;
   webpush.setVapidDetails(
-    process.env.VAPID_SUBJECT || "mailto:admin@kandoochat.com",
+    process.env.VAPID_SUBJECT || `mailto:admin@${SITE_DOMAIN}`,
     process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
     process.env.VAPID_PRIVATE_KEY!
   );
