@@ -3,6 +3,7 @@ import { Vazirmatn, Grand_Hotel } from "next/font/google";
 import "./globals.css";
 import ServiceWorkerRegister from "@/components/pwa/ServiceWorkerRegister";
 import InstallBanner from "@/components/pwa/InstallBanner";
+import AndroidBackHandler from "@/components/AndroidBackHandler";
 import { ToastProvider } from "@/components/ToastProvider";
 import LiveDataProvider from "@/components/dashboard/LiveDataProvider";
 import { getSession } from "@/lib/auth";
@@ -89,6 +90,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       <head />
       <body className="min-h-full flex flex-col font-sans" suppressHydrationWarning>
         <ServiceWorkerRegister />
+        <AndroidBackHandler />
         <ToastProvider>
           <LiveDataProvider enabled={!!session}>
             {children}

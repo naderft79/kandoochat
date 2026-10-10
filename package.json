@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.943.0",
+    "@capacitor/app": "^8.1.2",
     "@capacitor/local-notifications": "^8.3.1",
     "@capacitor/network": "^8.0.1",
     "@capacitor/push-notifications": "^8.1.3",
