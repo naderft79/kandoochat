@@ -1,78 +1,49 @@
 "use client";
 
-// کارت های پلن اشتراک — تایید قبل از مصرف سکه
+// کارت های پلن اشتراک — فقط بر اساس مدت زمان (۱ماهه تا مادام العمر)
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Crown, Check, CreditCard, Loader2 } from "lucide-react";
+import { Crown, Check, CreditCard, Loader2, Coins, Calendar, Infinity as InfinityIcon } from "lucide-react";
 import Dialog from "@/components/ui/Dialog";
-import { formatCoins, toPersianDigits } from "@/lib/format";
-
-export type Tier = {
-  key: string;
-  name: string;
-  coinsPerMonth: number;
-  dailyLikes: number;
-  dailySuperLikes: number;
-  canSeeLikers: boolean;
-  canRewindLast: boolean;
-  canHideOnline: boolean;
-  canSendGifts: boolean;
-  profileBoost: boolean;
-};
-
-function tierBenefits(t: Tier): string[] {
-  const items = [
-    `${toPersianDigits(t.dailyLikes)} لایک در روز`,
-    `${toPersianDigits(t.dailySuperLikes)} سوپر لایک در روز`,
-  ];
-  if (t.canSeeLikers) items.push("دیدن کسانی که شما را لایک کرده اند");
-  if (t.canRewindLast) items.push("بازگشت آخرین لایک");
-  if (t.canHideOnline) items.push("مخفی کردن وضعیت آنلاین");
-  if (t.canSendGifts) items.push("ارسال هدیه سکه");
-  if (t.profileBoost) items.push("بوست رایگان پروفایل");
-  return items;
-}
+import { formatCoins, formatToman, toPersianDigits } from "@/lib/format";
+import type { SubscriptionPlan } from "@/lib/subscriptionPlans";
 
 export default function SubscriptionPlans({
-  tiers,
+  plans,
   balance,
   isRenewal,
-  rialPrice,
 }: {
-  tiers: Tier[];
+  plans: SubscriptionPlan[];
   balance: number;
   isRenewal: boolean;
-  rialPrice: string;
 }) {
   const router = useRouter();
-  const [selected, setSelected] = useState<string>(
-    tiers[Math.min(1, tiers.length - 1)]?.key ?? tiers[0]?.key
-  );
-  const [confirmTier, setConfirmTier] = useState<Tier | null>(null);
+  const [selected, setSelected] = useState<string>(plans[1]?.key ?? plans[0]?.key);
+  const [confirmPlan, setConfirmPlan] = useState<SubscriptionPlan | null>(null);
   const [loading, setLoading] = useState(false);
   const [redirecting, setRedirecting] = useState(false);
   const [error, setError] = useState("");
 
-  const current = tiers.find((t) => t.key === selected) ?? tiers[0];
-  const hasEnough = balance >= (current?.coinsPerMonth ?? Infinity);
+  const current = plans.find((p) => p.key === selected) ?? plans[0];
+  const hasEnough = balance >= (current?.coins ?? Infinity);
 
   async function buyWithCoins() {
-    if (!confirmTier) return;
+    if (!confirmPlan) return;
     setError("");
     setLoading(true);
     try {
       const res = await fetch("/api/subscription", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tier: confirmTier.key }),
+        body: JSON.stringify({ plan: confirmPlan.key }),
       });
       const data = await res.json();
       if (!res.ok) {
         setError(data.error ?? "خطایی رخ داد");
         return;
       }
-      setConfirmTier(null);
+      setConfirmPlan(null);
       router.refresh();
     } catch {
       setError("خطا در ارتباط با سرور");
@@ -82,13 +53,14 @@ export default function SubscriptionPlans({
   }
 
   async function buyWithRial() {
+    if (!current) return;
     setError("");
     setRedirecting(true);
     try {
       const res = await fetch("/api/payment/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "SUBSCRIPTION" }),
+        body: JSON.stringify({ type: "SUBSCRIPTION", plan: current.key }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -107,54 +79,58 @@ export default function SubscriptionPlans({
     <div className="space-y-4">
       {/* کارت های پلن */}
       <div className="grid gap-3">
-        {tiers.map((t, i) => {
-          const active = selected === t.key;
-          const suggested = i === Math.min(1, tiers.length - 1); // پلن میانی پیشنهادی
+        {plans.map((p) => {
+          const active = selected === p.key;
+          const lifetime = p.months === null;
           return (
             <button
-              key={t.key}
+              key={p.key}
               type="button"
-              onClick={() => setSelected(t.key)}
+              onClick={() => setSelected(p.key)}
               className={`relative w-full text-right rounded-2xl border-2 p-4 transition-colors ${
                 active
                   ? "border-foreground bg-white"
                   : "border-ig-border bg-white hover:border-neutral-400"
               }`}
             >
-              {suggested && (
-                <span className="absolute -top-2.5 right-4 px-2 py-0.5 rounded-full bg-ig-btn2 text-xs font-bold text-foreground">
-                  پیشنهادی
+              {lifetime && (
+                <span className="absolute -top-2.5 right-4 px-2 py-0.5 rounded-full bg-ig-gold text-xs font-bold text-white">
+                  بهترین ارزش
                 </span>
               )}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Crown
-                    className={`w-5 h-5 ${
-                      active ? "text-foreground" : "text-ig-gray"
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
+                      lifetime ? "bg-ig-gold" : "bg-ig-gray-bg"
                     }`}
-                  />
-                  <span className="text-sm font-black text-foreground">
-                    {t.name}
+                  >
+                    {lifetime ? (
+                      <InfinityIcon className="w-5 h-5 text-white" strokeWidth={2} />
+                    ) : (
+                      <Calendar className="w-5 h-5 text-foreground" strokeWidth={1.8} />
+                    )}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-black text-foreground">{p.name}</p>
+                    <p className="text-xs text-ig-gray mt-0.5">
+                      {lifetime ? "پرداخت یکبار، دسترسی همیشگی" : `دسترسی کامل به مدت ${p.name}`}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex flex-col items-end shrink-0">
+                  <span className="text-sm font-black text-foreground">{formatToman(p.toman)}</span>
+                  <span className="text-xs text-ig-gray mt-0.5 flex items-center gap-1">
+                    <Coins className="w-3.5 h-3.5" />
+                    {formatCoins(p.coins)}
                   </span>
                 </div>
-                <span className="text-sm font-black text-foreground">
-                  {formatCoins(t.coinsPerMonth)}
-                </span>
               </div>
-              <ul className="mt-3 space-y-1.5">
-                {tierBenefits(t).map((b) => (
-                  <li
-                    key={b}
-                    className="flex items-start gap-1.5 text-xs text-ig-gray"
-                  >
-                    <Check
-                      className="w-3.5 h-3.5 shrink-0 mt-0.5 text-foreground"
-                      strokeWidth={2.5}
-                    />
-                    {b}
-                  </li>
-                ))}
-              </ul>
+              {active && (
+                <div className="absolute top-3 left-3 w-5 h-5 rounded-full bg-foreground flex items-center justify-center">
+                  <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                </div>
+              )}
             </button>
           );
         })}
@@ -171,14 +147,14 @@ export default function SubscriptionPlans({
 
       {/* خرید با سکه */}
       <button
-        onClick={() => current && setConfirmTier(current)}
+        onClick={() => current && setConfirmPlan(current)}
         disabled={!hasEnough || loading || redirecting}
         className="w-full py-3 rounded-lg bg-ig-blue text-white text-sm font-bold hover:bg-ig-blue-hover transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
       >
         <Crown className="w-4 h-4" />
         {isRenewal
-          ? `تمدید ${current?.name ?? ""} با سکه`
-          : `فعال سازی ${current?.name ?? ""} با سکه`}
+          ? `تمدید ${current?.name ?? ""} با ${current ? toPersianDigits(current.coins) : ""} سکه`
+          : `فعال سازی ${current?.name ?? ""} با ${current ? toPersianDigits(current.coins) : ""} سکه`}
       </button>
 
       {/* پرداخت ریالی */}
@@ -195,7 +171,7 @@ export default function SubscriptionPlans({
         ) : (
           <>
             <CreditCard className="w-4 h-4" />
-            پرداخت ریالی ({rialPrice})
+            پرداخت ریالی ({current ? formatToman(current.toman) : ""})
           </>
         )}
       </button>
@@ -211,12 +187,12 @@ export default function SubscriptionPlans({
 
       {/* تایید قبل از مصرف سکه */}
       <Dialog
-        open={confirmTier !== null}
-        title={`فعال سازی اشتراک ${confirmTier?.name ?? ""}؟`}
+        open={confirmPlan !== null}
+        title={`فعال سازی اشتراک ${confirmPlan?.name ?? ""}؟`}
         message={`${formatCoins(
-          confirmTier?.coinsPerMonth ?? 0
+          confirmPlan?.coins ?? 0
         )} از کیف پول شما کسر می شود.`}
-        onClose={() => setConfirmTier(null)}
+        onClose={() => setConfirmPlan(null)}
         actions={[
           {
             label: loading ? "در حال فعال سازی..." : "تایید و فعال سازی",
@@ -224,7 +200,7 @@ export default function SubscriptionPlans({
             onClick: buyWithCoins,
             disabled: loading,
           },
-          { label: "انصراف", onClick: () => setConfirmTier(null) },
+          { label: "انصراف", onClick: () => setConfirmPlan(null) },
         ]}
       />
     </div>

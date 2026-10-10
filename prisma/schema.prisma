@@ -277,6 +277,7 @@ model PaymentRequest {
   userId      String
   type        String   // SUBSCRIPTION | COINS
   coins       Int      @default(0) // تعداد سکه (برای خرید سکه)
+  plan        String?  // کلید پلن اشتراک (1m | 3m | 6m | lifetime) — فقط برای SUBSCRIPTION
   amountToman Int      // مبلغ به تومان
   token       String   @unique // توکن یکتا برای ارتباط با KandooPay
   authority   String?  // کد مرجع زرین پال

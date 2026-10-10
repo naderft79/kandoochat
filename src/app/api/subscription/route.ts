@@ -1,26 +1,24 @@
-// API خرید اشتراک ماهانه با سکه — پشتیبانی از انتخاب پلن
+// API خرید اشتراک با سکه — پلن ها فقط بر اساس مدت زمان
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireUser, AuthError } from "@/lib/auth";
-import { getSubscriptionCoinCost } from "@/lib/settings";
 import { ensureWallet, getActiveSubscription } from "@/lib/finance";
 import { isoToJalaliDisplay } from "@/lib/jalali";
+import { getPlan, planEndsAt } from "@/lib/subscriptionPlans";
 
 export async function POST(request: Request) {
   try {
     const user = await requireUser();
     const body = await request.json().catch(() => ({}));
-    const tierKey = typeof body.tier === "string" ? body.tier : "BASIC";
-
-    // هزینه پلن — از جدول پلن ها یا تنظیمات پیش فرض
-    const tier = await prisma.subscriptionTier.findUnique({ where: { key: tierKey } });
-    const coinCost = tier?.isActive ? tier.coinsPerMonth : await getSubscriptionCoinCost();
-    const resolvedTier = tier?.isActive ? tier.key : "BASIC";
+    const plan = getPlan(typeof body.plan === "string" ? body.plan : null);
+    if (!plan) {
+      return NextResponse.json({ error: "پلن نامعتبر است" }, { status: 400 });
+    }
 
     const wallet = await ensureWallet(user.id);
-    if (wallet.balance < coinCost) {
+    if (wallet.balance < plan.coins) {
       return NextResponse.json(
-        { error: `موجودی کافی نیست. برای اشتراک به ${coinCost} سکه نیاز دارید` },
+        { error: `موجودی کافی نیست. برای این پلن به ${plan.coins} سکه نیاز دارید` },
         { status: 400 }
       );
     }
@@ -28,24 +26,28 @@ export async function POST(request: Request) {
     // اگر اشتراک فعال دارد، تمدید از پایان اشتراک فعلی
     const active = await getActiveSubscription(user.id);
     const startsAt = active ? active.endsAt : new Date();
-    const endsAt = new Date(startsAt.getTime() + 30 * 24 * 60 * 60 * 1000);
+    const endsAt = planEndsAt(startsAt, plan);
+    const validText =
+      plan.months === null
+        ? "برای همیشه"
+        : `تا ${isoToJalaliDisplay(endsAt.toISOString().slice(0, 10))}`;
 
     await prisma.$transaction([
       prisma.wallet.update({
         where: { userId: user.id },
-        data: { balance: { decrement: coinCost } },
+        data: { balance: { decrement: plan.coins } },
       }),
       prisma.subscription.create({
-        data: { userId: user.id, tier: resolvedTier, startsAt, endsAt, coinsPaid: coinCost },
+        data: { userId: user.id, tier: plan.name, startsAt, endsAt, coinsPaid: plan.coins },
       }),
       prisma.transaction.create({
         data: {
           userId: user.id,
           type: "SUBSCRIPTION",
-          coins: -coinCost,
+          coins: -plan.coins,
           amountToman: 0,
           status: "COMPLETED",
-          description: `خرید اشتراک ماهانه ${tier?.name ?? resolvedTier}`,
+          description: `خرید اشتراک ${plan.name}`,
         },
       }),
       prisma.notification.create({
@@ -53,13 +55,13 @@ export async function POST(request: Request) {
           userId: user.id,
           type: "SUBSCRIPTION_PURCHASED",
           title: "اشتراک فعال شد",
-          body: `اشتراک ${tier?.isActive ? tier.name : "ماهانه"} شما فعال شد و تا ${isoToJalaliDisplay(endsAt.toISOString().slice(0, 10))} معتبر است`,
+          body: `اشتراک ${plan.name} شما فعال شد و ${validText} معتبر است`,
           data: JSON.stringify({ link: "/dashboard/subscription" }),
         },
       }),
     ]);
 
-    console.log(`[subscription] user ${user.id} purchased ${resolvedTier} until ${endsAt.toISOString()}`);
+    console.log(`[subscription] user ${user.id} purchased plan ${plan.key} until ${endsAt.toISOString()}`);
     return NextResponse.json({ ok: true, endsAt });
   } catch (err) {
     if (err instanceof AuthError)

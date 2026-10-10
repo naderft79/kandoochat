@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { ensureWallet, getActiveSubscription } from "@/lib/finance";
 import { isoToJalaliDisplay } from "@/lib/jalali";
 import { toPersianDigits } from "@/lib/format";
+import { getPlan, planEndsAt, SUBSCRIPTION_PLANS } from "@/lib/subscriptionPlans";
 
 export type PaymentTokenPayload = {
   paymentId: string;
@@ -64,9 +65,15 @@ export async function fulfillPayment(paymentId: string, refId?: string | null) {
   if (payment.status !== "PENDING") return { alreadySettled: true };
 
   if (payment.type === "SUBSCRIPTION") {
+    // پلن ذخیره شده روی درخواست پرداخت؛ رکوردهای قدیمی یک ماهه فرض می شوند
+    const plan = getPlan(payment.plan) ?? SUBSCRIPTION_PLANS[0];
     const active = await getActiveSubscription(payment.userId);
     const startsAt = active ? active.endsAt : new Date();
-    const endsAt = new Date(startsAt.getTime() + 30 * 24 * 60 * 60 * 1000);
+    const endsAt = planEndsAt(startsAt, plan);
+    const validText =
+      plan.months === null
+        ? "برای همیشه"
+        : `تا ${isoToJalaliDisplay(endsAt.toISOString().slice(0, 10))}`;
 
     await prisma.$transaction([
       prisma.paymentRequest.update({
@@ -74,7 +81,7 @@ export async function fulfillPayment(paymentId: string, refId?: string | null) {
         data: { status: "PAID", authority: refId || null },
       }),
       prisma.subscription.create({
-        data: { userId: payment.userId, startsAt, endsAt, coinsPaid: 0 },
+        data: { userId: payment.userId, tier: plan.name, startsAt, endsAt, coinsPaid: 0 },
       }),
       prisma.transaction.create({
         data: {
@@ -83,7 +90,7 @@ export async function fulfillPayment(paymentId: string, refId?: string | null) {
           coins: 0,
           amountToman: payment.amountToman,
           status: "COMPLETED",
-          description: "خرید اشتراک ماهانه (پرداخت ریالی)",
+          description: `خرید اشتراک ${plan.name} (پرداخت ریالی)`,
         },
       }),
       prisma.notification.create({
@@ -91,7 +98,7 @@ export async function fulfillPayment(paymentId: string, refId?: string | null) {
           userId: payment.userId,
           type: "SUBSCRIPTION_PURCHASED",
           title: "اشتراک فعال شد",
-          body: `اشتراک ماهانه شما با موفقیت فعال شد و تا ${isoToJalaliDisplay(endsAt.toISOString().slice(0, 10))} معتبر است`,
+          body: `اشتراک ${plan.name} شما با موفقیت فعال شد و ${validText} معتبر است`,
           data: JSON.stringify({ link: "/dashboard/subscription" }),
         },
       }),

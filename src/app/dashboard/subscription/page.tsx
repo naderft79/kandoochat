@@ -1,14 +1,11 @@
-// صفحه اشتراک: کارت های پلن، روزهای باقی مانده، تایید قبل از خرید
+// صفحه اشتراک: پلن های زمانی (۱ماهه تا مادام العمر)، روزهای باقی مانده، تایید قبل از خرید
 import { redirect } from "next/navigation";
 import { Crown, Check } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
-import { getAllSettings } from "@/lib/settings";
 import { ensureWallet, getActiveSubscription } from "@/lib/finance";
-import { prisma } from "@/lib/prisma";
-import { formatToman, formatDate, toPersianDigits } from "@/lib/format";
-import SubscriptionPlans, {
-  type Tier,
-} from "@/components/dashboard/SubscriptionPlans";
+import { formatDate, toPersianDigits } from "@/lib/format";
+import { SUBSCRIPTION_PLANS } from "@/lib/subscriptionPlans";
+import SubscriptionPlans from "@/components/dashboard/SubscriptionPlans";
 import PaymentResultModal from "@/components/dashboard/PaymentResultModal";
 import PageHeader from "@/components/dashboard/PageHeader";
 import CoinBadge from "@/components/dashboard/CoinBadge";
@@ -25,70 +22,14 @@ export default async function SubscriptionPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
 
-  const [settings, wallet, active, dbTiers] = await Promise.all([
-    getAllSettings(),
+  const [wallet, active] = await Promise.all([
     ensureWallet(user.id),
     getActiveSubscription(user.id),
-    prisma.subscriptionTier.findMany({
-      where: { isActive: true },
-      orderBy: { coinsPerMonth: "asc" },
-    }),
   ]);
 
-  // پلن های پیش فرض اگر جدول خالی است
-  const tiers: Tier[] = dbTiers.length
-    ? dbTiers.map((t) => ({
-        key: t.key,
-        name: t.name,
-        coinsPerMonth: t.coinsPerMonth,
-        dailyLikes: t.dailyLikes,
-        dailySuperLikes: t.dailySuperLikes,
-        canSeeLikers: t.canSeeLikers,
-        canRewindLast: t.canRewindLast,
-        canHideOnline: t.canHideOnline,
-        canSendGifts: t.canSendGifts,
-        profileBoost: t.profileBoost,
-      }))
-    : [
-        {
-          key: "BASIC",
-          name: "پایه",
-          coinsPerMonth: 100,
-          dailyLikes: 30,
-          dailySuperLikes: 1,
-          canSeeLikers: false,
-          canRewindLast: false,
-          canHideOnline: false,
-          canSendGifts: false,
-          profileBoost: false,
-        },
-        {
-          key: "PREMIUM",
-          name: "پرمیوم",
-          coinsPerMonth: 300,
-          dailyLikes: 60,
-          dailySuperLikes: 3,
-          canSeeLikers: true,
-          canRewindLast: true,
-          canHideOnline: true,
-          canSendGifts: true,
-          profileBoost: false,
-        },
-        {
-          key: "VIP",
-          name: "VIP",
-          coinsPerMonth: 600,
-          dailyLikes: 100,
-          dailySuperLikes: 5,
-          canSeeLikers: true,
-          canRewindLast: true,
-          canHideOnline: true,
-          canSendGifts: true,
-          profileBoost: true,
-        },
-      ];
-
   const daysLeft = active ? calcDaysLeft(active.endsAt) : 0;
+  // اشتراک مادام العمر — تاریخ پایان خیلی دور است
+  const isLifetime = daysLeft > 365 * 50;
 
   return (
     <div>
@@ -108,18 +49,18 @@ export default async function SubscriptionPage() {
                 اشتراک {active.tier} شما فعال است
               </p>
               <p className="text-xs text-ig-gray mt-0.5">
-                {toPersianDigits(daysLeft)} روز باقی مانده — تا{" "}
-                {formatDate(active.endsAt)}
+                {isLifetime
+                  ? "بدون تاریخ انقضا — مادام العمر"
+                  : `${toPersianDigits(daysLeft)} روز باقی مانده — تا ${formatDate(active.endsAt)}`}
               </p>
             </div>
           </div>
         )}
 
         <SubscriptionPlans
-          tiers={tiers}
+          plans={SUBSCRIPTION_PLANS}
           balance={wallet.balance}
           isRenewal={!!active}
-          rialPrice={formatToman(settings.subscriptionPrice)}
         />
       </div>
       <PaymentResultModal />

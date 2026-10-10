@@ -7,10 +7,12 @@ import { requireUser, AuthError } from "@/lib/auth";
 import { getSetting } from "@/lib/settings";
 import { signPaymentToken, sanitizeReturnPath } from "@/lib/payment";
 import { rateLimit, apiRateLimit, getClientIdentifier } from "@/lib/rate-limit";
+import { getPlan } from "@/lib/subscriptionPlans";
 
 const createSchema = z.object({
   type: z.enum(["SUBSCRIPTION", "COINS"]),
   coins: z.coerce.number().int().min(1).max(100_000).optional(),
+  plan: z.string().optional(),
 });
 
 export async function POST(request: Request) {
@@ -36,10 +38,16 @@ export async function POST(request: Request) {
     let amountToman = 0;
     let coins = 0;
     let title = "";
+    let planKey: string | null = null;
 
     if (type === "SUBSCRIPTION") {
-      amountToman = await getSetting("SUBSCRIPTION_PRICE");
-      title = "خرید اشتراک کندو";
+      const plan = getPlan(parsed.data.plan);
+      if (!plan) {
+        return NextResponse.json({ error: "پلن نامعتبر است" }, { status: 400 });
+      }
+      planKey = plan.key;
+      amountToman = plan.toman;
+      title = `خرید اشتراک ${plan.name} کندو`;
     } else {
       coins = parsed.data.coins ?? 0;
       if (!coins) {
@@ -84,6 +92,7 @@ export async function POST(request: Request) {
         userId: user.id,
         type,
         coins,
+        plan: planKey,
         amountToman,
         token: dbToken,
         status: "PENDING",

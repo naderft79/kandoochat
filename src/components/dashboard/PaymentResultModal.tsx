@@ -23,7 +23,7 @@ function PaymentResultContent() {
         return {
           ok: true,
           title: type === "SUBSCRIPTION" ? "اشتراک شما فعال شد" : "سکه ها به کیف پول شما اضافه شد",
-          desc: type === "SUBSCRIPTION" ? "اشتراک یک ماهه شما با موفقیت فعال شد" : "خرید سکه با موفقیت انجام شد",
+          desc: type === "SUBSCRIPTION" ? "اشتراک شما با موفقیت فعال شد" : "خرید سکه با موفقیت انجام شد",
         };
       case "canceled":
         return {
