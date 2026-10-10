@@ -15,6 +15,7 @@ import VerifiedBadge from "@/components/dashboard/VerifiedBadge";
 import DefaultAvatar from "@/components/dashboard/DefaultAvatar";
 import AlertModal from "@/components/AlertModal";
 import { formatTime, toPersianDigits, formatLastSeen } from "@/lib/format";
+import { nativeCopy } from "@/lib/native";
 import { useToast } from "@/components/ToastProvider";
 
 type ReplyTo = {
@@ -610,13 +611,11 @@ export default function ChatRoom({
     });
   }
 
-  // کپی متن با fallback برای موبایل
+  // کپی متن — در اپ از پلاگین نیتوو، در مرورگر clipboard یا fallback
   function copyToClipboard(text: string) {
-    if (navigator.clipboard && window.isSecureContext) {
-      navigator.clipboard.writeText(text).catch(() => fallbackCopy(text));
-    } else {
-      fallbackCopy(text);
-    }
+    void nativeCopy(text).then((ok) => {
+      if (!ok) fallbackCopy(text);
+    });
   }
 
   function fallbackCopy(text: string) {

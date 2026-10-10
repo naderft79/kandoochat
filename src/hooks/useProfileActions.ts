@@ -4,6 +4,7 @@
 import { useCallback, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ToastProvider";
+import { hapticTap } from "@/lib/native";
 
 export function useLike(receiverId: string, initial = false) {
   const { toast } = useToast();
@@ -17,6 +18,7 @@ export function useLike(receiverId: string, initial = false) {
     if (busy.current || liked) return;
     busy.current = true;
     setLiked(true);
+    void hapticTap("medium");
     try {
       const res = await fetch("/api/likes", {
         method: "POST",
@@ -30,6 +32,7 @@ export function useLike(receiverId: string, initial = false) {
         else toast(data.error ?? "ثبت لایک ناموفق بود", "error");
       } else if (data.isMatch) {
         setMatched(true);
+        void hapticTap("success");
       }
     } catch {
       setLiked(false);

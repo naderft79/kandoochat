@@ -21,6 +21,19 @@ const config: CapacitorConfig = {
   android: {
     allowMixedContent: isHttp,
   },
+  plugins: {
+    // کیبورد: تغییر اندازه وب ویو تا اینپوت زیر کیبورد نرود (چت)
+    Keyboard: {
+      resize: "body",
+      resizeOnFullScreen: true,
+    },
+    // اسپلش: بعد از لود وب خودش محو می شود
+    SplashScreen: {
+      launchAutoHide: true,
+      launchShowDuration: 0,
+      backgroundColor: "#ffffff",
+    },
+  },
 };
 
 export default config;

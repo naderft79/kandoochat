@@ -9,6 +9,7 @@ import {
   Share2, Send, MessageCircle, QrCode, Crown, Clock3, BadgeCheck,
 } from "lucide-react";
 import { toPersianDigits } from "@/lib/format";
+import { nativeShare as capShare, nativeCopy } from "@/lib/native";
 import DefaultAvatar from "@/components/dashboard/DefaultAvatar";
 
 type ReferralItem = {
@@ -66,7 +67,7 @@ export default function ReferralPage() {
   }, [inviteLink]);
 
   function copyText(text: string, which: "code" | "link") {
-    navigator.clipboard.writeText(text).catch(() => {});
+    void nativeCopy(text);
     setCopied(which);
     setTimeout(() => setCopied(null), 2000);
   }
@@ -75,16 +76,9 @@ export default function ReferralPage() {
     window.open(url, "_blank", "noopener,noreferrer");
   }
 
-  async function nativeShare() {
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: "دعوت به کندو", text: shareText, url: inviteLink });
-      } catch {
-        // کاربر لغو کرد
-      }
-    } else {
-      copyText(inviteLink, "link");
-    }
+  async function share() {
+    const ok = await capShare({ title: "دعوت به کندو", text: shareText, url: inviteLink });
+    if (!ok) copyText(inviteLink, "link");
   }
 
   if (loading) {
@@ -194,7 +188,7 @@ export default function ReferralPage() {
             واتساپ
           </button>
           <button
-            onClick={nativeShare}
+            onClick={share}
             className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-ig-btn2 hover:bg-ig-btn2-hover text-sm font-bold transition-colors"
           >
             <Share2 className="w-4 h-4 text-foreground" />
@@ -373,7 +367,7 @@ export default function ReferralPage() {
             لینک دعوتت رو برای دوستانت بفرست و با هر دعوت فعال سکه بگیر
           </p>
           <button
-            onClick={nativeShare}
+            onClick={share}
             className="px-5 py-2.5 rounded-xl bg-ig-blue text-white text-sm font-bold"
           >
             اشتراک لینک دعوت

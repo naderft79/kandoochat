@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Capacitor } from "@capacitor/core";
 import { App } from "@capacitor/app";
+import { StatusBar, Style } from "@capacitor/status-bar";
 
 // مسیرهایی که بک در آن ها اپ را مینیمایز می کند
 const ROOT_PATHS = ["/", "/dashboard", "/onboarding", "/login"];
@@ -15,6 +16,10 @@ export default function AndroidBackHandler() {
 
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) return;
+
+    // آیکن های نوار وضعیت تیره روی پس زمینه سفید اپ
+    void StatusBar.setStyle({ style: Style.Light });
+    void StatusBar.setOverlaysWebView({ overlay: false });
 
     const listener = App.addListener("backButton", () => {
       if (ROOT_PATHS.includes(window.location.pathname)) {

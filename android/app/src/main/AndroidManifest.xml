@@ -54,4 +54,8 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <!-- ضبط ویس در چت و احراز هویت -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!-- سلفی و عکس کارت ملی برای احراز هویت -->
+    <uses-permission android:name="android.permission.CAMERA" />
 </manifest>

@@ -7,6 +7,7 @@ import { Settings, Share2, Eye } from "lucide-react";
 import { BottomSheet } from "@/components/ui/Modal";
 import ProfileForm from "@/components/dashboard/ProfileForm";
 import { useToast } from "@/components/ToastProvider";
+import { nativeShare as capShare, nativeCopy } from "@/lib/native";
 
 type ProfileData = {
   username: string;
@@ -31,14 +32,9 @@ export default function ProfileActions({ initial }: { initial: ProfileData }) {
 
   async function share() {
     const url = `${window.location.origin}/profile/${initial.username}`;
-    try {
-      if (navigator.share) await navigator.share({ title: "پروفایل من در کندو", url });
-      else {
-        await navigator.clipboard.writeText(url);
-        toast("لینک پروفایل کپی شد", "success");
-      }
-    } catch {
-      // کاربر اشتراک گذاری را لغو کرد
+    const ok = await capShare({ title: "پروفایل من در کندو", url });
+    if (!ok) {
+      if (await nativeCopy(url)) toast("لینک پروفایل کپی شد", "success");
     }
   }
 

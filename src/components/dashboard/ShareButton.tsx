@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { Share2, Copy, Check, Send, MessageCircle, X } from "lucide-react";
 import Portal from "@/components/ui/Portal";
+import { nativeShare as capShare, nativeCopy } from "@/lib/native";
 
 export default function ShareButton({
   url,
@@ -18,23 +19,13 @@ export default function ShareButton({
   const fullUrl = typeof window !== "undefined" ? `${window.location.origin}${url}` : url;
   const shareText = `${title} — کندو`;
 
-  async function nativeShare() {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: shareText,
-          url: fullUrl,
-        });
-      } catch {
-        // کاربر لغو کرد
-      }
-    } else {
-      setShowMenu(true);
-    }
+  async function share() {
+    const ok = await capShare({ title: shareText, url: fullUrl });
+    if (!ok) setShowMenu(true);
   }
 
   function copyLink() {
-    navigator.clipboard.writeText(fullUrl);
+    void nativeCopy(fullUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }
@@ -58,7 +49,7 @@ export default function ShareButton({
   return (
     <div className="relative">
       <button
-        onClick={nativeShare}
+        onClick={share}
         className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-ig-gray-bg text-xs font-bold text-foreground hover:bg-neutral-200 transition-colors"
       >
         <Share2 className="w-4 h-4" />
