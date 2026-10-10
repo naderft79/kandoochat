@@ -219,7 +219,7 @@ export default async function ChatList() {
                       aiConv.messages[0].content,
                       aiConv.messages[0].type
                     )
-                  : `با ${aiConfig.firstName} لاس بزن، درد دل کن، عشق کن 💕`}
+                  : `با ${aiConfig.firstName} درد دل کن، مشاوره و یا راهنمایی بگیر`}
               </p>
             </div>
 

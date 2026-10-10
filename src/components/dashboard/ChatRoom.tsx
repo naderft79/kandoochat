@@ -810,7 +810,7 @@ export default function ChatRoom({
             )}
             {isAIChat && (
               <div className="px-4 py-3 text-xs text-ig-gray text-center">
-                هانی همراه هوش مصنوعی شماست
+                {otherName} همراه هوش مصنوعی شماست
               </div>
             )}
             {!isAdminChat && (
