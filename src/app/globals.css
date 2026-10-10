@@ -321,6 +321,11 @@ html, body {
   }
 }
 
+/* احترام به safe-area — فقط در اپ ناتیو (Capacitor)؛ بدون آن محتوا زیر ناچ می رود */
+html.capacitor body {
+  padding-top: env(safe-area-inset-top);
+}
+
 /* انیمیشن قلب استوری — دابل تپ لایک */
 @keyframes ig-heart-pop {
   0% { transform: scale(0); opacity: 0; }

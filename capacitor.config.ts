@@ -21,6 +21,14 @@ const config: CapacitorConfig = {
   android: {
     allowMixedContent: isHttp,
   },
+  plugins: {
+    // نوار وضعیت: پلاگین رسمی system-bars — اینست ها به CSS داده می شود تا محتوا از زیر ناچ شروع شود
+    SystemBars: {
+      insetsHandling: "css",
+      style: "DARK",
+      initialViewportFitValueHint: "cover",
+    },
+  },
 };
 
 export default config;
