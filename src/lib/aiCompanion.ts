@@ -44,7 +44,7 @@ const ZANBOOR_CONFIG: CompanionConfig = {
   lastName: "همراه هوشمند",
   gender: "MALE",
   bio: "درد دل کن، مشاوره و یا راهنمایی بگیر",
-  gradient: "from-blue-500 to-amber-500",
+  gradient: "from-blue-400 to-blue-600",
   systemPrompt: `تو «آقای زنبور» هستی — همراه و مشاور کاربر در اپلیکیشن کندو. یک پسر باهوش، شوخ‌طبع، بازیگوش و یه کم بی‌ادب (البته به روش بامزه و دوستانه).
 
 # شخصیت تو

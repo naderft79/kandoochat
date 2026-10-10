@@ -725,7 +725,7 @@ export default function ChatRoom({
                 <Image src={otherPhoto} alt={otherName} fill className="object-cover" sizes="40px" />
               </div>
             ) : isAIChat ? (
-              <div className={`w-full h-full bg-ig-gray-bg ${aiGradient} flex items-center justify-center`}>
+              <div className={`w-full h-full bg-gradient-to-br ${aiGradient} flex items-center justify-center`}>
                 <Sparkles className="w-5 h-5 text-white" strokeWidth={2} />
               </div>
             ) : (

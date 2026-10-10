@@ -151,13 +151,14 @@ export default async function ChatList() {
             {/* آواتار همراه */}
             <div className="relative shrink-0">
               <div
-                className={`w-14 h-14 rounded-full bg-ig-gray-bg flex items-center justify-center overflow-hidden`}
+                className={`w-14 h-14 rounded-full bg-gradient-to-br ${aiConfig.gradient} flex items-center justify-center overflow-hidden`}
               >
-                {aiConv.userAId === user.id ? (
-                  aiConv.userB.photos?.[0]?.url ? (
+                {(() => {
+                  const aiPhoto = (aiConv.userAId === user.id ? aiConv.userB : aiConv.userA).photos?.[0]?.url;
+                  return aiPhoto ? (
                     <div className="relative w-full h-full">
                       <Image
-                        src={aiConv.userB.photos[0].url}
+                        src={aiPhoto}
                         alt={aiConfig.firstName}
                         fill
                         className="object-cover"
@@ -166,26 +167,11 @@ export default async function ChatList() {
                     </div>
                   ) : (
                     <Sparkles
-                      className="w-6 h-6 text-ig-gray"
+                      className="w-6 h-6 text-white"
                       strokeWidth={1.5}
                     />
-                  )
-                ) : aiConv.userA.photos?.[0]?.url ? (
-                  <div className="relative w-full h-full">
-                    <Image
-                      src={aiConv.userA.photos[0].url}
-                      alt={aiConfig.firstName}
-                      fill
-                      className="object-cover"
-                      sizes="56px"
-                    />
-                  </div>
-                ) : (
-                  <Sparkles
-                    className="w-6 h-6 text-ig-gray"
-                    strokeWidth={1.5}
-                  />
-                )}
+                  );
+                })()}
               </div>
               <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-ig-online rounded-full border-2 border-white ig-pulse" />
               {aiConv._count.messages > 0 && (
