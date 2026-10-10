@@ -321,11 +321,6 @@ html, body {
   }
 }
 
-/* فاصله محتوا از نوار وضعیت — در PWA و اپ اندروید (Capacitor) */
-body {
-  padding-top: env(safe-area-inset-top);
-}
-
 /* انیمیشن قلب استوری — دابل تپ لایک */
 @keyframes ig-heart-pop {
   0% { transform: scale(0); opacity: 0; }
