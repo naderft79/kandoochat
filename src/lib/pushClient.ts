@@ -85,11 +85,14 @@ export async function requestPushPermission(): Promise<void> {
         vibration: true,
         lights: true,
       });
-      // FCM — رجیستر کردن توکن؛ بدون google-services.json خطا می دهد و فقط لاگ می شود
-      try {
-        await initNativePush();
-      } catch (e) {
-        console.error("[FCM] init failed (google-services.json missing?):", e);
+      // FCM — فقط وقتی google-services.json به APK اضافه شده باشد فعال می شود
+      // بدون آن Firebase کرش ناتیو می دهد که قابل catch نیست و اپ می بندد
+      if (process.env.NEXT_PUBLIC_FCM_ENABLED === "true") {
+        try {
+          await initNativePush();
+        } catch (e) {
+          console.error("[FCM] init failed:", e);
+        }
       }
       return;
     }
