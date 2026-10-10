@@ -85,7 +85,7 @@ export default function OnboardingPage() {
         </p>
       </div>
 
-      {/* نقطه های پیشرفت + دکمه های قبلی و بعدی */}
+      {/* نقطه های پیشرفت + دکمه بعدی */}
       <div className="px-6 pb-10">
         <div className="flex justify-center gap-1.5 mb-6">
           {SLIDES.map((_, i) => (
@@ -98,16 +98,16 @@ export default function OnboardingPage() {
             />
           ))}
         </div>
-        <div className="flex gap-3">
-          {/* دکمه قبلی — فقط از اسلاید دوم به بعد فعال است */}
-          <button
-            onClick={() => setIndex((i) => Math.max(0, i - 1))}
-            disabled={index === 0}
-            className="w-24 h-12 rounded-xl border border-ig-border text-foreground font-bold text-sm flex items-center justify-center gap-1.5 transition-all disabled:opacity-0 disabled:pointer-events-none active:scale-[0.98]"
-          >
-            <ArrowRight className="w-4 h-4" />
-            قبلی
-          </button>
+        <div className="flex items-center gap-3">
+          {index > 0 && (
+            <button
+              onClick={() => setIndex((i) => i - 1)}
+              className="h-12 px-5 rounded-xl border border-ig-border text-foreground font-bold text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-transform ig-fade-in"
+            >
+              <ArrowRight className="w-4 h-4" />
+              قبلی
+            </button>
+          )}
           <button
             onClick={() => (isLast ? finish() : setIndex((i) => i + 1))}
             className="flex-1 h-12 rounded-xl bg-ig-blue text-white font-bold text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
