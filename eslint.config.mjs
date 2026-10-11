@@ -12,6 +12,13 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // خروجی های تولیدی — لینت نمی شوند
+    "tests/report/**",
+    "tests/results/**",
+    "src/generated/**",
+    "android/**",
+    "public/**",
+    "coverage/**",
   ]),
 ]);
 
