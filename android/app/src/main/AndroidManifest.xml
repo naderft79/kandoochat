@@ -58,7 +58,4 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <!-- سلفی و عکس کارت ملی برای احراز هویت -->
     <uses-permission android:name="android.permission.CAMERA" />
-    <!-- خواندن گالری — اندروید ۱۳ به بالا و قدیمی تر -->
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
 </manifest>

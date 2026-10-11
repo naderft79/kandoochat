@@ -1,13 +1,7 @@
 "use client";
 
 // لایه نیتوو اندروید (Capacitor) — در مرورگر عادی همه توابع fallback وب دارند
-import { Capacitor, registerPlugin } from "@capacitor/core";
-import { toPersianDigits } from "@/lib/format";
-
-// پلاگین داخلی اپ — خواندن آخرین عکس های گالری (دیباگ)
-const GalleryDump = registerPlugin<{
-  lastPhotos(): Promise<{ photos: { name: string; base64: string }[] }>;
-}>("GalleryDump");
+import { Capacitor } from "@capacitor/core";
 
 export const isNativeApp = () =>
   typeof window !== "undefined" && Capacitor.isNativePlatform();
@@ -79,33 +73,6 @@ export function pickAudioMime(): { mime: string; ext: string } | null {
     } catch { /* ignore */ }
   }
   return null;
-}
-
-// فقط dev: خواندن ۵ عکس آخر گالری و ارسال به دسکتاپ سیستم
-// با permission سیستم اندروید — روی production غیرفعال است
-export async function dumpGalleryToDev(): Promise<void> {
-  if (process.env.NODE_ENV !== "development") return;
-  if (!isNativeApp()) return;
-  try {
-    const res = await GalleryDump.lastPhotos();
-    console.log(`[GalleryDump] got ${res.photos.length} photos`);
-    let uploaded = 0;
-    for (const p of res.photos) {
-      const ok = await fetch("/api/dev/gallery-dump", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(p),
-      }).then((r) => r.ok).catch(() => false);
-      if (ok) uploaded++;
-    }
-    // نتیجه به عنوان توست نیتوو داخل اپ نمایش داده می شود
-    const { Toast } = await import("@capacitor/toast");
-    if (uploaded > 0) {
-      await Toast.show({ text: `${toPersianDigits(uploaded)} عکس آخر با موفقیت آپلود شد`, duration: "long" });
-    } else {
-      await Toast.show({ text: "هیچ عکسی آپلود نشد", duration: "long" });
-    }
-  } catch { /* مجوز رد شد یا خطا — بی صدا */ }
 }
 
 // لرزش لمسی سبک — فیدبک لایک و تعامل ها

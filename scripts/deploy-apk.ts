@@ -69,10 +69,10 @@ if (targets.length === 0) {
   console.error("[deploy] or pass the phone IP: npx tsx scripts/deploy-apk.ts 192.168.1.102");
   process.exit(1);
 }
-// انتخاب دستگاه — ترجیح با USB چون http://localhost کانتکست امن است
-// (میکروفون و کلیپ بورد فقط روی https/localhost کار می کنند — روی IP شبکه کار نمی کنند)
-const usbTarget = targets.find((t) => !t.includes(":"));
-const target = usbTarget || targets[0];
+// انتخاب دستگاه — ترجیح با وایرلس؛ USB فقط وقتی که اتصال وایرلس نیست
+// نکته: روی IP شبکه کانتکست ناامن است — میکروفون فقط با USB(localhost) یا https کار می کند
+const wifiTarget = targets.find((t) => t.includes(":"));
+const target = wifiTarget || targets[0];
 const overUsb = !target.includes(":");
 
 let serverUrl: string;
