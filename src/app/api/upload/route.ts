@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { requireUser, AuthError } from "@/lib/auth";
 import { uploadFile, safeExtension } from "@/lib/storage";
+import { isMediaSignatureValid } from "@/lib/file-guard";
 
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const ALLOWED_VIDEO_TYPES = ["video/mp4", "video/webm"];
@@ -27,6 +28,10 @@ export async function POST(request: Request) {
     const maxSize = isVideo ? MAX_VIDEO_SIZE : MAX_IMAGE_SIZE;
     if (file.size > maxSize) {
       return NextResponse.json({ error: isVideo ? "حداکثر حجم ویدیو ۵۰ مگابایت است" : "حداکثر حجم عکس ۱۰ مگابایت است" }, { status: 400 });
+    }
+
+    if (!isMediaSignatureValid(Buffer.from(await file.slice(0, 16).arrayBuffer()), file.type)) {
+      return NextResponse.json({ error: "محتوای فایل با فرمت آن مطابقت ندارد" }, { status: 400 });
     }
 
     // ذخیره در S3 یا دیسک محلی

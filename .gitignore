@@ -65,3 +65,11 @@ android/app/build/
 android/build/
 android/capacitor-cordova-android-plugins/
 android/app/src/main/assets/public/
+
+# داده های محلی و دیتابیس — هرگز کامیت نشود (فاز ۰ امنیت)
+/.postgres/
+/dev.db
+/*.db
+/_face.log
+/eslint-errors.txt
+/prisma/migrations_sqlite_bak/

@@ -56,6 +56,9 @@ export async function proxy(request: NextRequest) {
       } catch {
         // referer نامعتبر — رد نمی کنیم
       }
+    } else if (request.cookies.has(COOKIE_NAME) && process.env.NODE_ENV === "production") {
+      // درخواست با کوکی نشست ولی بدون Origin و Referer — احتمال CSRF
+      return NextResponse.json({ error: "درخواست از منبع نامعتبر" }, { status: 403 });
     }
   }
 

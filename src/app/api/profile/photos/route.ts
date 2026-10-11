@@ -4,6 +4,7 @@ import { requireUser, AuthError } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { uploadFile, deleteFile, safeExtension } from "@/lib/storage";
 import { detectFaces } from "@/lib/face";
+import { isMediaSignatureValid } from "@/lib/file-guard";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_SIZE = 10 * 1024 * 1024;
@@ -44,6 +45,10 @@ export async function POST(request: Request) {
 
     if (file.size > MAX_SIZE) {
       return NextResponse.json({ error: "حداکثر حجم فایل ۱۰ مگابایت است" }, { status: 400 });
+    }
+
+    if (!isMediaSignatureValid(Buffer.from(await file.slice(0, 16).arrayBuffer()), file.type)) {
+      return NextResponse.json({ error: "محتوای فایل با فرمت آن مطابقت ندارد" }, { status: 400 });
     }
 
     if (!isProfile) {

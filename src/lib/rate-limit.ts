@@ -2,6 +2,10 @@
 import { getRedis } from "@/lib/redis";
 
 const redis = getRedis();
+// هشدار: بدون Redis در production هر نمونه سرور شمارنده جدا دارد و محدودیت دور زده می شود
+if (!redis && process.env.NODE_ENV === "production") {
+  console.warn("[rate-limit] Redis is not configured; using per-instance memory store");
+}
 
 type LimitRule = { windowMs: number; maxRequests: number };
 

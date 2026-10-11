@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { requireUser, AuthError } from "@/lib/auth";
 import { uploadFile, safeExtension } from "@/lib/storage";
+import { isMediaSignatureValid } from "@/lib/file-guard";
 
 const ALLOWED_TYPES = [
   "audio/webm", "audio/mp3", "audio/wav", "audio/ogg", "audio/mpeg",
@@ -26,6 +27,10 @@ export async function POST(request: Request) {
 
     if (file.size > MAX_SIZE) {
       return NextResponse.json({ error: "حداکثر حجم فایل صوتی ۱۰ مگابایت است" }, { status: 400 });
+    }
+
+    if (!isMediaSignatureValid(Buffer.from(await file.slice(0, 16).arrayBuffer()), file.type)) {
+      return NextResponse.json({ error: "محتوای فایل با فرمت آن مطابقت ندارد" }, { status: 400 });
     }
 
     const ext = safeExtension(file.name, file.type);
