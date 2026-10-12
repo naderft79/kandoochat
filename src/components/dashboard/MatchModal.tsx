@@ -37,7 +37,7 @@ export default function MatchModal({
       <div className="px-6 pt-8 pb-5">
         <div className="flex items-center justify-center -space-x-5 space-x-reverse mb-5" aria-hidden>
           <Face src={myPhoto} name="شما" />
-          <div className="z-10 -mx-3 self-center w-11 h-11 rounded-full bg-white shadow flex items-center justify-center">
+          <div className="z-10 -mx-3 self-center w-11 h-11 rounded-full bg-surface shadow flex items-center justify-center">
             <Heart className="w-6 h-6 text-ig-like ig-heart-pop" fill="currentColor" />
           </div>
           <Face src={otherPhoto} name={otherName} />

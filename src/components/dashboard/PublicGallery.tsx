@@ -19,7 +19,7 @@ export default function PublicGallery({ photos, name }: { photos: { id: string; 
           <button
             key={p.id}
             onClick={() => setIndex(i)}
-            className="relative aspect-square overflow-hidden bg-neutral-100"
+            className="relative aspect-square overflow-hidden bg-ig-btn2"
             aria-label={`بزرگ نمایی عکس ${i + 1}`}
           >
             <Image src={p.url} alt={name} fill className="object-cover" sizes="(max-width: 768px) 33vw, 200px" />
@@ -40,7 +40,7 @@ export default function PublicGallery({ photos, name }: { photos: { id: string; 
           <button
             onClick={() => setIndex(null)}
             aria-label="بستن"
-            className="absolute top-3 left-3 z-10 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+            className="absolute top-3 left-3 z-10 w-10 h-10 rounded-full bg-surface/10 hover:bg-surface/20 flex items-center justify-center transition-colors"
           >
             <X className="w-6 h-6 text-white" />
           </button>
@@ -48,7 +48,7 @@ export default function PublicGallery({ photos, name }: { photos: { id: string; 
             <button
               onClick={(e) => { e.stopPropagation(); setIndex((i) => (i ?? 1) - 1); }}
               aria-label="عکس قبلی"
-              className="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-surface/10 hover:bg-surface/20 flex items-center justify-center transition-colors"
             >
               <ChevronRight className="w-6 h-6 text-white" />
             </button>
@@ -57,7 +57,7 @@ export default function PublicGallery({ photos, name }: { photos: { id: string; 
             <button
               onClick={(e) => { e.stopPropagation(); setIndex((i) => (i ?? 0) + 1); }}
               aria-label="عکس بعدی"
-              className="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+              className="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-surface/10 hover:bg-surface/20 flex items-center justify-center transition-colors"
             >
               <ChevronLeft className="w-6 h-6 text-white" />
             </button>

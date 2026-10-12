@@ -104,7 +104,7 @@ export default function SupportPage() {
           <p className="text-sm text-ig-gray">در حال بارگذاری...</p>
         </div>
       ) : tickets.length === 0 ? (
-        <div className="bg-white border border-ig-border rounded-2xl p-8 text-center">
+        <div className="bg-surface border border-ig-border rounded-2xl p-8 text-center">
           <div className="w-16 h-16 rounded-full bg-ig-gray-bg flex items-center justify-center mx-auto mb-3">
             <MessageCircle className="w-8 h-8 text-ig-gray" strokeWidth={1.5} />
           </div>
@@ -123,7 +123,7 @@ export default function SupportPage() {
               <Link
                 key={ticket.id}
                 href={`/dashboard/support/${ticket.id}`}
-                className="block bg-white border border-ig-border rounded-2xl p-4 hover:shadow-md transition-all"
+                className="block bg-surface border border-ig-border rounded-2xl p-4 hover:shadow-md transition-all"
               >
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-bold text-foreground line-clamp-1">{ticket.subject}</span>
@@ -163,7 +163,7 @@ export default function SupportPage() {
           onClick={() => setShowNew(false)}
         >
           <div
-            className="bg-white rounded-2xl w-full max-w-md p-5 ig-modal-in"
+            className="bg-surface rounded-2xl w-full max-w-md p-5 ig-modal-in"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-4">

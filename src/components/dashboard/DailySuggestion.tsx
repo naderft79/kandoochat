@@ -97,7 +97,7 @@ export default function DailySuggestion({ city, province }: { city?: string; pro
 
   if (loading) {
     return (
-      <div className="rounded-3xl bg-white border border-ig-border p-5 ig-shadow-sm">
+      <div className="rounded-3xl bg-surface border border-ig-border p-5 ig-shadow-sm">
         <div className="flex items-center gap-2 mb-4">
           <Skeleton className="w-5 h-5 rounded-full" />
           <Skeleton className="h-3 w-28" />
@@ -117,23 +117,23 @@ export default function DailySuggestion({ city, province }: { city?: string; pro
 
   return (
     <div className="relative overflow-hidden rounded-2xl bg-ig-border p-px ig-shadow-md">
-      <div className="rounded-2xl bg-white/95 backdrop-blur-xl px-3.5 py-3">
+      <div className="rounded-2xl bg-surface/95 backdrop-blur-xl px-3.5 py-3">
         {/* هدر کارت */}
         <div className="flex items-center justify-between mb-2.5">
           <div className="flex items-center gap-1.5">
             <div className="w-6 h-6 rounded-lg bg-ig-gray-bg flex items-center justify-center">
               <Sparkles className="w-3.5 h-3.5 text-ig-gold" fill="currentColor" />
             </div>
-            <span className="text-xs font-black text-neutral-800">
+            <span className="text-xs font-black text-foreground">
               پیشنهاد امروز
             </span>
           </div>
-          <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-neutral-100 border border-neutral-200">
-            <Clock className="w-3 h-3 text-neutral-600" />
-            <span className="text-xs font-bold text-neutral-600">
+          <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-ig-btn2 border border-neutral-200">
+            <Clock className="w-3 h-3 text-ig-gray" />
+            <span className="text-xs font-bold text-ig-gray">
               تا پیشنهاد بعدی
             </span>
-            <span className="text-xs font-bold text-neutral-600 tabular-nums">
+            <span className="text-xs font-bold text-ig-gray tabular-nums">
               {toPersianDigits(timeLeft.h)}:{toPersianDigits(timeLeft.m).padStart(2, "۰")}:{toPersianDigits(timeLeft.s).padStart(2, "۰")}
             </span>
           </div>
@@ -162,7 +162,7 @@ export default function DailySuggestion({ city, province }: { city?: string; pro
           {/* اطلاعات */}
           <div className="flex-1 min-w-0">
             <Link href={`/profile/${suggestion.username}`}>
-              <p className="text-sm font-black text-foreground flex items-center gap-1 hover:text-neutral-600 transition-colors">
+              <p className="text-sm font-black text-foreground flex items-center gap-1 hover:text-ig-gray transition-colors">
                 {suggestion.firstName}
                 {suggestion.isVerified && <VerifiedBadge className="w-3.5 h-3.5" />}
               </p>
@@ -173,7 +173,7 @@ export default function DailySuggestion({ city, province }: { city?: string; pro
               </span>
               <span className="text-foreground/20">|</span>
               <span className="text-xs font-bold text-foreground/70 flex items-center gap-0.5">
-                <MapPin className="w-2.5 h-2.5 text-neutral-500" />
+                <MapPin className="w-2.5 h-2.5 text-ig-gray" />
                 {suggestion.city}
               </span>
             </div>
@@ -204,7 +204,7 @@ export default function DailySuggestion({ city, province }: { city?: string; pro
             )}
             <Link
               href={`/profile/${suggestion.username}`}
-              className="px-3 py-2 rounded-xl bg-white border border-neutral-200 text-neutral-800 text-xs font-black flex items-center justify-center hover:bg-neutral-50 active:scale-95 transition-all"
+              className="px-3 py-2 rounded-xl bg-surface border border-neutral-200 text-foreground text-xs font-black flex items-center justify-center hover:bg-ig-gray-bg active:scale-95 transition-all"
             >
               پروفایل
             </Link>

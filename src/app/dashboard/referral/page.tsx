@@ -137,7 +137,7 @@ export default function ReferralPage() {
       </div>
 
       {/* کد و لینک دعوت */}
-      <div className="bg-white border border-ig-border rounded-2xl p-5">
+      <div className="bg-surface border border-ig-border rounded-2xl p-5">
         <p className="text-xs font-bold text-ig-gray mb-2 text-center">کد دعوت شما</p>
         <button
           onClick={() => copyText(data.code, "code")}
@@ -199,7 +199,7 @@ export default function ReferralPage() {
         {/* QR کد */}
         {qrUrl && (
           <div className="mt-4 flex flex-col items-center">
-            <div className="p-3 bg-white border border-ig-border rounded-2xl">
+            <div className="p-3 bg-surface border border-ig-border rounded-2xl">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={qrUrl} alt="QR کد دعوت" className="w-36 h-36" />
             </div>
@@ -212,7 +212,7 @@ export default function ReferralPage() {
       </div>
 
       {/* چطور سکه بگیرید */}
-      <div className="bg-white border border-ig-border rounded-2xl p-5">
+      <div className="bg-surface border border-ig-border rounded-2xl p-5">
         <h2 className="font-bold text-foreground text-center mb-4">چطور سکه بگیرید؟</h2>
         <div className="space-y-3">
           {steps.map((step, i) => (
@@ -239,7 +239,7 @@ export default function ReferralPage() {
       </div>
 
       {/* پیشرفت مایلستون */}
-      <div className="bg-white border border-ig-border rounded-2xl p-5">
+      <div className="bg-surface border border-ig-border rounded-2xl p-5">
         <div className="flex items-center justify-between mb-2">
           <p className="text-sm font-bold text-foreground">جایزه مایلستون</p>
           {data.milestone.paidAt ? (
@@ -274,7 +274,7 @@ export default function ReferralPage() {
           { icon: BadgeCheck, label: "فعال", value: data.stats.paid },
           { icon: Coins, label: "سکه کسب شده", value: data.stats.earned },
         ].map((s, i) => (
-          <div key={i} className="bg-white border border-ig-border rounded-2xl p-3 text-center">
+          <div key={i} className="bg-surface border border-ig-border rounded-2xl p-3 text-center">
             <s.icon className="w-5 h-5 text-foreground mx-auto mb-1" strokeWidth={1.75} />
             <p className="text-lg md:text-xl font-bold text-foreground leading-6">{toPersianDigits(s.value)}</p>
             <p className="text-[10px] md:text-xs text-ig-gray mt-0.5">{s.label}</p>
@@ -284,7 +284,7 @@ export default function ReferralPage() {
 
       {/* لیدربورد ناشناس */}
       {data.leaderboard.length > 0 && (
-        <div className="bg-white border border-ig-border rounded-2xl p-5">
+        <div className="bg-surface border border-ig-border rounded-2xl p-5">
           <div className="flex items-center gap-2 mb-3">
             <Crown className="w-5 h-5 text-amber-500" />
             <p className="text-sm font-bold text-foreground">برترین دعوت کننده ها</p>
@@ -322,7 +322,7 @@ export default function ReferralPage() {
 
       {/* لیست دعوت ها */}
       {data.referrals.length > 0 ? (
-        <div className="bg-white border border-ig-border rounded-2xl p-5">
+        <div className="bg-surface border border-ig-border rounded-2xl p-5">
           <p className="text-sm font-bold text-foreground mb-3">دوستان دعوت شده</p>
           <div className="space-y-1">
             {data.referrals.map((r) => (
@@ -358,7 +358,7 @@ export default function ReferralPage() {
           </div>
         </div>
       ) : (
-        <div className="bg-white border border-ig-border rounded-2xl p-6 text-center">
+        <div className="bg-surface border border-ig-border rounded-2xl p-6 text-center">
           <div className="w-16 h-16 rounded-full bg-ig-btn2 flex items-center justify-center mx-auto mb-3">
             <UserPlus className="w-8 h-8 text-ig-gray" strokeWidth={1.5} />
           </div>

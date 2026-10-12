@@ -129,7 +129,7 @@ export default function FeedCard({
           } active:scale-95 transition-transform shrink-0`}
         >
           <div
-            className={`w-9 h-9 rounded-full bg-white ${
+            className={`w-9 h-9 rounded-full bg-surface ${
               match.hasStory ? "p-0.5" : ""
             } flex items-center justify-center`}
           >
@@ -172,7 +172,7 @@ export default function FeedCard({
         className="w-full aspect-square max-h-[470px] relative bg-ig-gray-bg select-none flex flex-col overflow-hidden"
         onClick={onBodyTap}
       >
-        <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/90">
+        <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-surface/90">
           <MapPin className="w-3.5 h-3.5 text-ig-gray" aria-hidden />
           <span className="text-xs text-foreground font-medium">
             {match.province ? `${match.province}، ` : ""}
@@ -417,9 +417,9 @@ export default function FeedCard({
               <button
                 onClick={() => setPhotoModalUrl(null)}
                 aria-label="بستن"
-                className="absolute -top-3 -right-3 z-10 w-9 h-9 rounded-full bg-white ig-shadow-lg flex items-center justify-center active:scale-90 transition-transform"
+                className="absolute -top-3 -right-3 z-10 w-9 h-9 rounded-full bg-surface ig-shadow-lg flex items-center justify-center active:scale-90 transition-transform"
               >
-                <X className="w-5 h-5 text-neutral-800" />
+                <X className="w-5 h-5 text-foreground" />
               </button>
 
               <div className="rounded-2xl overflow-hidden ig-shadow-lg relative aspect-square">
@@ -451,14 +451,14 @@ export default function FeedCard({
                       chat.start();
                     }}
                     disabled={chat.loading}
-                    className="w-11 h-11 rounded-full bg-white hover:bg-neutral-100 text-black flex items-center justify-center ig-shadow-lg active:scale-90 transition-all disabled:opacity-50"
+                    className="w-11 h-11 rounded-full bg-surface hover:bg-ig-btn2 text-foreground flex items-center justify-center ig-shadow-lg active:scale-90 transition-all disabled:opacity-50"
                     title="گفتگو"
                   >
                     <MessageCircle className="w-5 h-5" />
                   </button>
                   <button
                     onClick={like.toggle}
-                    className="w-11 h-11 rounded-full bg-white hover:bg-neutral-100 text-black flex items-center justify-center ig-shadow-lg active:scale-90 transition-all"
+                    className="w-11 h-11 rounded-full bg-surface hover:bg-ig-btn2 text-foreground flex items-center justify-center ig-shadow-lg active:scale-90 transition-all"
                     title="لایک"
                   >
                     <Heart
@@ -469,14 +469,14 @@ export default function FeedCard({
                   </button>
                   <button
                     onClick={share}
-                    className="w-11 h-11 rounded-full bg-white hover:bg-neutral-100 text-black flex items-center justify-center ig-shadow-lg active:scale-90 transition-all"
+                    className="w-11 h-11 rounded-full bg-surface hover:bg-ig-btn2 text-foreground flex items-center justify-center ig-shadow-lg active:scale-90 transition-all"
                     title="اشتراک گذاری"
                   >
                     <Send className="w-5 h-5 -scale-x-100" />
                   </button>
                   <button
                     onClick={() => router.push(`/profile/${match.username}`)}
-                    className="w-11 h-11 rounded-full bg-white hover:bg-neutral-100 text-black flex items-center justify-center ig-shadow-lg active:scale-90 transition-all"
+                    className="w-11 h-11 rounded-full bg-surface hover:bg-ig-btn2 text-foreground flex items-center justify-center ig-shadow-lg active:scale-90 transition-all"
                     title="مشاهده پروفایل"
                   >
                     <User className="w-5 h-5" />

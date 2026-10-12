@@ -116,7 +116,7 @@ export default function ProfileForm({ initial, onClose }: { initial: ProfileData
       <div className="py-2">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="sm:col-span-2">
-            <label className="block text-xs font-bold text-neutral-600 mb-1">یوزرنیم</label>
+            <label className="block text-xs font-bold text-ig-gray mb-1">یوزرنیم</label>
             <div className="relative">
               <input
                 dir="ltr"
@@ -129,7 +129,7 @@ export default function ProfileForm({ initial, onClose }: { initial: ProfileData
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-neutral-400">...</span>
               )}
               {!usernameStatus.checking && usernameStatus.available === true && (
-                <Check className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-600" />
+                <Check className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ig-gray" />
               )}
               {!usernameStatus.checking && usernameStatus.available === false && (
                 <X className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ig-red" />
@@ -140,7 +140,7 @@ export default function ProfileForm({ initial, onClose }: { initial: ProfileData
             )}
           </div>
           <div>
-            <label className="block text-xs font-bold text-neutral-600 mb-1">نام</label>
+            <label className="block text-xs font-bold text-ig-gray mb-1">نام</label>
             <input
               value={form.firstName}
               onChange={(e) => set("firstName", e.target.value)}
@@ -148,7 +148,7 @@ export default function ProfileForm({ initial, onClose }: { initial: ProfileData
             />
           </div>
           <div>
-            <label className="block text-xs font-bold text-neutral-600 mb-1">نام خانوادگی</label>
+            <label className="block text-xs font-bold text-ig-gray mb-1">نام خانوادگی</label>
             <input
               value={form.lastName}
               onChange={(e) => set("lastName", e.target.value)}
@@ -156,7 +156,7 @@ export default function ProfileForm({ initial, onClose }: { initial: ProfileData
             />
           </div>
           <div>
-            <label className="block text-xs font-bold text-neutral-600 mb-1">استان</label>
+            <label className="block text-xs font-bold text-ig-gray mb-1">استان</label>
             <select
               value={form.province}
               onChange={(e) => {
@@ -171,7 +171,7 @@ export default function ProfileForm({ initial, onClose }: { initial: ProfileData
             </select>
           </div>
           <div>
-            <label className="block text-xs font-bold text-neutral-600 mb-1">شهر</label>
+            <label className="block text-xs font-bold text-ig-gray mb-1">شهر</label>
             <select
               value={form.city}
               onChange={(e) => set("city", e.target.value)}
@@ -184,7 +184,7 @@ export default function ProfileForm({ initial, onClose }: { initial: ProfileData
             </select>
           </div>
           <div>
-            <label className="block text-xs font-bold text-neutral-600 mb-1">سن</label>
+            <label className="block text-xs font-bold text-ig-gray mb-1">سن</label>
             <input
               type="number"
               dir="ltr"
@@ -194,7 +194,7 @@ export default function ProfileForm({ initial, onClose }: { initial: ProfileData
             />
           </div>
           <div>
-            <label className="block text-xs font-bold text-neutral-600 mb-1">قد (سانتی متر)</label>
+            <label className="block text-xs font-bold text-ig-gray mb-1">قد (سانتی متر)</label>
             <input
               type="number"
               dir="ltr"
@@ -204,7 +204,7 @@ export default function ProfileForm({ initial, onClose }: { initial: ProfileData
             />
           </div>
           <div>
-            <label className="block text-xs font-bold text-neutral-600 mb-1">وزن (کیلوگرم)</label>
+            <label className="block text-xs font-bold text-ig-gray mb-1">وزن (کیلوگرم)</label>
             <input
               type="number"
               dir="ltr"
@@ -214,7 +214,7 @@ export default function ProfileForm({ initial, onClose }: { initial: ProfileData
             />
           </div>
           <div>
-            <label className="block text-xs font-bold text-neutral-600 mb-1">درآمد ماهانه (تومان)</label>
+            <label className="block text-xs font-bold text-ig-gray mb-1">درآمد ماهانه (تومان)</label>
             <input
               type="number"
               dir="ltr"
@@ -224,7 +224,7 @@ export default function ProfileForm({ initial, onClose }: { initial: ProfileData
             />
           </div>
           <div>
-            <label className="block text-xs font-bold text-neutral-600 mb-1">شغل</label>
+            <label className="block text-xs font-bold text-ig-gray mb-1">شغل</label>
             <input
               value={form.job}
               onChange={(e) => set("job", e.target.value)}
@@ -232,7 +232,7 @@ export default function ProfileForm({ initial, onClose }: { initial: ProfileData
             />
           </div>
           <div>
-            <label className="block text-xs font-bold text-neutral-600 mb-1">مدل ماشین</label>
+            <label className="block text-xs font-bold text-ig-gray mb-1">مدل ماشین</label>
             <input
               value={form.carModel}
               onChange={(e) => set("carModel", e.target.value)}
@@ -240,7 +240,7 @@ export default function ProfileForm({ initial, onClose }: { initial: ProfileData
             />
           </div>
           <div className="sm:col-span-2">
-            <label className="block text-xs font-bold text-neutral-600 mb-1">محله خانه</label>
+            <label className="block text-xs font-bold text-ig-gray mb-1">محله خانه</label>
             <input
               value={form.neighborhood}
               onChange={(e) => set("neighborhood", e.target.value)}
@@ -248,7 +248,7 @@ export default function ProfileForm({ initial, onClose }: { initial: ProfileData
             />
           </div>
           <div className="sm:col-span-2">
-            <label className="block text-xs font-bold text-neutral-600 mb-1">درباره من</label>
+            <label className="block text-xs font-bold text-ig-gray mb-1">درباره من</label>
             <textarea
               value={form.bio}
               onChange={(e) => set("bio", e.target.value)}
@@ -263,7 +263,7 @@ export default function ProfileForm({ initial, onClose }: { initial: ProfileData
         {message && (
           <p
             className={`text-xs rounded-lg px-3 py-2.5 mt-3 ${
-              message.ok ? "bg-neutral-100 text-neutral-700" : "bg-ig-gray-bg text-ig-red"
+              message.ok ? "bg-ig-btn2 text-neutral-700" : "bg-ig-gray-bg text-ig-red"
             }`}
           >
             {message.text}

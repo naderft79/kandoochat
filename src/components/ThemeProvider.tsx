@@ -1,57 +1,70 @@
 "use client";
 
-// مدیریت تم — فقط حالت روشن (light)
-import { useSyncExternalStore, useCallback } from "react";
+// تم روشن و تاریک (مشترک بین کاربر و ادمین) — کلاس dark روی html و ذخیره در localStorage
+import { useCallback, useSyncExternalStore, type MouseEvent, type ReactNode } from "react";
+import { ThemeProvider as NextThemesProvider, useTheme } from "next-themes";
+import { Moon, Sun } from "lucide-react";
 
-type Theme = "light";
+const STORAGE_KEY = "kandoo-theme";
 
-function subscribe(callback: () => void) {
-  window.addEventListener("storage", callback);
-  return () => window.removeEventListener("storage", callback);
+export function ThemeProvider({ children }: { children: ReactNode }) {
+  return (
+    <NextThemesProvider attribute="class" defaultTheme="light" enableSystem={false} storageKey={STORAGE_KEY}>
+      {children}
+    </NextThemesProvider>
+  );
 }
 
-function getSnapshot(): Theme {
-  return "light";
-}
+const subscribeNoop = () => () => {};
+const useMounted = () => useSyncExternalStore(subscribeNoop, () => true, () => false);
 
-function getServerSnapshot(): Theme {
-  return "light";
-}
+type ViewTransitionDocument = Document & {
+  startViewTransition?: (update: () => void) => { ready: Promise<void> };
+};
 
-function subscribeMounted(callback: () => void) {
-  callback();
-  return () => {};
-}
+export function ThemeToggle({ className = "" }: { className?: string }) {
+  const { resolvedTheme, setTheme } = useTheme();
+  const mounted = useMounted();
+  const isDark = mounted && resolvedTheme === "dark";
 
-function getMountedSnapshot(): boolean {
-  return true;
-}
+  const toggle = useCallback(
+    (event: MouseEvent<HTMLButtonElement>) => {
+      const next = isDark ? "light" : "dark";
+      const doc = document as ViewTransitionDocument;
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (!doc.startViewTransition || reduceMotion) {
+        setTheme(next);
+        return;
+      }
+      // انیمیشن دایره ای از محل کلیک: تغییر کلاس داخل همان انتقال انجام می شود
+      const x = event.clientX;
+      const y = event.clientY;
+      const radius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+      const transition = doc.startViewTransition(() => {
+        // ذخیره همزمان: اگر کاربر همین لحظه ریلود کند، انتخابش از دست نمی رود
+        localStorage.setItem(STORAGE_KEY, next);
+        document.documentElement.classList.toggle("dark", next === "dark");
+        setTheme(next);
+      });
+      void transition.ready.then(() => {
+        document.documentElement.animate(
+          { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`] },
+          { duration: 450, easing: "ease-in-out", pseudoElement: "::view-transition-new(root)" }
+        );
+      });
+    },
+    [isDark, setTheme]
+  );
 
-function getMountedServerSnapshot(): boolean {
-  return false;
-}
-
-export function useTheme() {
-  const theme = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-  const mounted = useSyncExternalStore(subscribeMounted, getMountedSnapshot, getMountedServerSnapshot);
-
-  const setTheme = useCallback((_t: Theme) => {
-    void _t; // همیشه light
-  }, []);
-
-  return { theme, resolved: theme, setTheme, mounted };
-}
-
-export function ThemeToggle() {
   return (
     <button
-      className="w-9 h-9 rounded-xl bg-ig-gray-bg flex items-center justify-center shrink-0 transition-colors"
-      title="روشن"
+      type="button"
+      onClick={toggle}
+      aria-label={isDark ? "تغییر به حالت روشن" : "تغییر به حالت تاریک"}
+      title={isDark ? "حالت روشن" : "حالت تاریک"}
+      className={`w-9 h-9 rounded-xl bg-ig-gray-bg hover:bg-ig-btn2-hover flex items-center justify-center shrink-0 transition-colors active:scale-95 ${className}`}
     >
-      <svg className="w-4 h-4 text-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <circle cx="12" cy="12" r="5" strokeLinecap="round" strokeLinejoin="round" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-      </svg>
+      {isDark ? <Sun className="w-4 h-4 text-foreground" aria-hidden /> : <Moon className="w-4 h-4 text-foreground" aria-hidden />}
     </button>
   );
 }

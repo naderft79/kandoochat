@@ -55,7 +55,7 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-dvh bg-white flex flex-col">
+    <div className="min-h-dvh bg-surface flex flex-col">
       {/* دکمه رد کردن بالای صفحه */}
       <div className="flex justify-end p-4">
         <button

@@ -64,7 +64,7 @@ export default function ShareButton({
               onClick={() => setShowMenu(false)}
             />
           </Portal>
-          <div className="absolute left-0 top-full mt-2 z-50 bg-white border border-ig-border rounded-2xl shadow-lg p-2 min-w-[180px] ig-modal-in">
+          <div className="absolute left-0 top-full mt-2 z-50 bg-surface border border-ig-border rounded-2xl shadow-lg p-2 min-w-[180px] ig-modal-in">
             <div className="flex items-center justify-between px-2 py-1 mb-1">
               <span className="text-xs font-bold text-foreground">اشتراک گذاری</span>
               <button onClick={() => setShowMenu(false)} className="text-ig-gray hover:text-foreground">

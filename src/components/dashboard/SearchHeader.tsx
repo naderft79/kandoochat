@@ -77,10 +77,10 @@ export default function SearchHeader({ onSearch }: Props) {
             onFocus={() => setFocused(true)}
             onBlur={() => setTimeout(() => setFocused(false), 150)}
             onKeyDown={(e) => e.key === "Enter" && remember(value)}
-            className="w-full h-10 bg-ig-gray-bg rounded-lg pr-10 pl-4 text-base outline-none focus:bg-white focus:ring-1 focus:ring-ig-border transition-all"
+            className="w-full h-10 bg-ig-gray-bg rounded-lg pr-10 pl-4 text-base outline-none focus:bg-surface focus:ring-1 focus:ring-ig-border transition-all"
           />
           {showRecents && (
-            <div className="absolute top-full mt-1 inset-x-0 z-40 bg-white border border-ig-border rounded-lg shadow-lg overflow-hidden">
+            <div className="absolute top-full mt-1 inset-x-0 z-40 bg-surface border border-ig-border rounded-lg shadow-lg overflow-hidden">
               <div className="flex items-center justify-between px-3 py-2 text-xs text-ig-gray">
                 <span>جستجوهای اخیر</span>
                 <button onMouseDown={(e) => e.preventDefault()} onClick={clearRecents} className="font-semibold text-ig-blue">

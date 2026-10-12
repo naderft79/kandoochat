@@ -101,7 +101,7 @@ function SettingRow({
 }) {
   return (
     <div className="flex items-center gap-3 px-4 py-3">
-      <div className="w-9 h-9 rounded-xl bg-neutral-100 flex items-center justify-center shrink-0">
+      <div className="w-9 h-9 rounded-xl bg-ig-btn2 flex items-center justify-center shrink-0">
         <Icon className="w-4 h-4 text-neutral-700" />
       </div>
       <div className="flex-1 min-w-0">
@@ -125,9 +125,9 @@ function LinkRow({
   return (
     <Link
       href={href}
-      className="flex items-center gap-3 px-4 py-3 hover:bg-neutral-50 transition-colors"
+      className="flex items-center gap-3 px-4 py-3 hover:bg-ig-gray-bg transition-colors"
     >
-      <div className="w-9 h-9 rounded-xl bg-neutral-100 flex items-center justify-center shrink-0">
+      <div className="w-9 h-9 rounded-xl bg-ig-btn2 flex items-center justify-center shrink-0">
         <Icon className="w-4 h-4 text-neutral-700" />
       </div>
       <span className="flex-1 text-sm font-bold text-foreground">{title}</span>
@@ -254,7 +254,7 @@ export default function SettingsPage() {
       {loading ? (
         <div className="space-y-3">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="bg-white border border-ig-border rounded-2xl overflow-hidden">
+            <div key={i} className="bg-surface border border-ig-border rounded-2xl overflow-hidden">
               <SkeletonRow />
             </div>
           ))}
@@ -267,7 +267,7 @@ export default function SettingsPage() {
               <Bell className="w-3.5 h-3.5" />
               نوتیفیکیشن
             </h2>
-            <div className="bg-white border border-ig-border rounded-2xl divide-y divide-ig-border/50 overflow-hidden">
+            <div className="bg-surface border border-ig-border rounded-2xl divide-y divide-ig-border/50 overflow-hidden">
               <SettingRow
                 icon={Heart}
                 title="لایک ها"
@@ -319,7 +319,7 @@ export default function SettingsPage() {
               <Lock className="w-3.5 h-3.5" />
               حریم خصوصی
             </h2>
-            <div className="bg-white border border-ig-border rounded-2xl divide-y divide-ig-border/50 overflow-hidden">
+            <div className="bg-surface border border-ig-border rounded-2xl divide-y divide-ig-border/50 overflow-hidden">
               <SettingRow
                 icon={Eye}
                 title="نمایش آنلاین بودن"
@@ -357,7 +357,7 @@ export default function SettingsPage() {
               <User className="w-3.5 h-3.5" />
               حساب کاربری
             </h2>
-            <div className="bg-white border border-ig-border rounded-2xl divide-y divide-ig-border/50 overflow-hidden">
+            <div className="bg-surface border border-ig-border rounded-2xl divide-y divide-ig-border/50 overflow-hidden">
               <LinkRow
                 icon={User}
                 title="ویرایش پروفایل"
@@ -370,9 +370,9 @@ export default function SettingsPage() {
               />
               <button
                 onClick={() => setShowPasswordModal(true)}
-                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-neutral-50 transition-colors text-right"
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-ig-gray-bg transition-colors text-right"
               >
-                <div className="w-9 h-9 rounded-xl bg-neutral-100 flex items-center justify-center shrink-0">
+                <div className="w-9 h-9 rounded-xl bg-ig-btn2 flex items-center justify-center shrink-0">
                   <KeyRound className="w-4 h-4 text-neutral-700" />
                 </div>
                 <span className="flex-1 text-sm font-bold text-foreground">تغییر رمز عبور</span>
@@ -415,7 +415,7 @@ export default function SettingsPage() {
           <section>
             <button
               onClick={logout}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-2xl bg-white border border-ig-border text-ig-red font-bold text-sm hover:bg-ig-red/5 transition-colors active:scale-[0.98]"
+              className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-2xl bg-surface border border-ig-border text-ig-red font-bold text-sm hover:bg-ig-red/5 transition-colors active:scale-[0.98]"
             >
               <LogOut className="w-4 h-4" />
               خروج از حساب
@@ -435,7 +435,7 @@ export default function SettingsPage() {
           onClick={() => !changingPassword && setShowPasswordModal(false)}
         >
           <div
-            className="w-full max-w-sm bg-white rounded-2xl p-6 space-y-4"
+            className="w-full max-w-sm bg-surface rounded-2xl p-6 space-y-4"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between">
@@ -471,7 +471,7 @@ export default function SettingsPage() {
                       dir="ltr"
                       value={currentPassword}
                       onChange={(e) => setCurrentPassword(e.target.value)}
-                      className="w-full px-3 py-2.5 rounded-lg border border-ig-border bg-ig-gray-bg focus:bg-white focus:border-ig-gray outline-none transition-colors text-sm text-left pl-10"
+                      className="w-full px-3 py-2.5 rounded-lg border border-ig-border bg-ig-gray-bg focus:bg-surface focus:border-ig-gray outline-none transition-colors text-sm text-left pl-10"
                       placeholder="••••••••"
                     />
                     <button
@@ -495,7 +495,7 @@ export default function SettingsPage() {
                       dir="ltr"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      className="w-full px-3 py-2.5 rounded-lg border border-ig-border bg-ig-gray-bg focus:bg-white focus:border-ig-gray outline-none transition-colors text-sm text-left pl-10"
+                      className="w-full px-3 py-2.5 rounded-lg border border-ig-border bg-ig-gray-bg focus:bg-surface focus:border-ig-gray outline-none transition-colors text-sm text-left pl-10"
                       placeholder="••••••••"
                     />
                     <button
@@ -518,7 +518,7 @@ export default function SettingsPage() {
                     dir="ltr"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-lg border border-ig-border bg-ig-gray-bg focus:bg-white focus:border-ig-gray outline-none transition-colors text-sm text-left"
+                    className="w-full px-3 py-2.5 rounded-lg border border-ig-border bg-ig-gray-bg focus:bg-surface focus:border-ig-gray outline-none transition-colors text-sm text-left"
                     placeholder="••••••••"
                   />
                 </div>

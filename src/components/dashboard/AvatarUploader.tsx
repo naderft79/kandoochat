@@ -151,14 +151,14 @@ export default function AvatarUploader({ initialUrl, firstName, isVerified, phot
           onClick={() => setShowOptions(false)}
         >
           <div
-            className="bg-white rounded-2xl max-w-xs w-full p-4 ig-modal-in"
+            className="bg-surface rounded-2xl max-w-xs w-full p-4 ig-modal-in"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-black text-foreground">عکس پروفایل</h3>
               <button
                 onClick={() => setShowOptions(false)}
-                className="w-7 h-7 rounded-full bg-neutral-100 flex items-center justify-center"
+                className="w-7 h-7 rounded-full bg-ig-btn2 flex items-center justify-center"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -169,7 +169,7 @@ export default function AvatarUploader({ initialUrl, firstName, isVerified, phot
                   setShowOptions(false);
                   setShowFaceWarning(true);
                 }}
-                className="flex flex-col items-center gap-2 p-4 rounded-xl bg-neutral-100 hover:bg-neutral-200 transition-colors"
+                className="flex flex-col items-center gap-2 p-4 rounded-xl bg-ig-btn2 hover:bg-neutral-200 transition-colors"
               >
                 <RefreshCw className="w-6 h-6 text-foreground" />
                 <span className="text-xs font-bold">تغییر عکس</span>

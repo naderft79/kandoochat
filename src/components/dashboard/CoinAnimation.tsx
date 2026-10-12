@@ -34,7 +34,7 @@ export default function CoinAnimation({ amount, reason, show, onClose }: CoinAni
       }`}
     >
       <div className="bg-ig-gray-bg rounded-2xl px-6 py-4 ig-shadow-lg flex items-center gap-3 min-w-[200px]">
-        <div className="w-12 h-12 rounded-full bg-white/30 flex items-center justify-center animate-bounce">
+        <div className="w-12 h-12 rounded-full bg-surface/30 flex items-center justify-center animate-bounce">
           <Coins className="w-7 h-7 text-white" fill="currentColor" />
         </div>
         <div className="flex-1">

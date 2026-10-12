@@ -9,6 +9,7 @@ import PageHeader from "@/components/dashboard/PageHeader";
 import { BottomSheet } from "@/components/ui/Modal";
 import IconButton from "@/components/ui/IconButton";
 import ListRow from "@/components/ui/ListRow";
+import { ThemeToggle } from "@/components/ThemeProvider";
 
 const items = [
   { href: "/dashboard/support", label: "پشتیبانی", icon: Headset },
@@ -41,15 +42,18 @@ export default function ProfileHeader({ username }: { username: string }) {
       <PageHeader
         center={<h1 className="text-lg font-bold text-foreground truncate" dir="ltr">{username}</h1>}
         right={
-          /* دکمه اشتراک — استایل چیپ طوسی مثل دکمه سکه در هدر خانه */
-          <Link
-            href="/dashboard/subscription"
-            aria-label="اشتراک"
-            className="flex items-center gap-1.5 h-9 px-3 rounded-full bg-ig-divider hover:bg-ig-btn2-hover transition-colors active:scale-95"
-          >
-            <span className="text-sm font-bold text-foreground">اشتراک</span>
-            <Crown className="w-4 h-4 text-ig-gold" fill="currentColor" aria-hidden />
-          </Link>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            {/* دکمه اشتراک — استایل چیپ طوسی مثل دکمه سکه در هدر خانه */}
+            <Link
+              href="/dashboard/subscription"
+              aria-label="اشتراک"
+              className="flex items-center gap-1.5 h-9 px-3 rounded-full bg-ig-divider hover:bg-ig-btn2-hover transition-colors active:scale-95"
+            >
+              <span className="text-sm font-bold text-foreground">اشتراک</span>
+              <Crown className="w-4 h-4 text-ig-gold" fill="currentColor" aria-hidden />
+            </Link>
+          </div>
         }
         left={
           <IconButton aria-label="منو" onClick={() => setMenuOpen(true)}>

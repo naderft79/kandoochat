@@ -47,7 +47,7 @@ function LoginForm() {
 
   return (
     <div className="w-full max-w-[350px]">
-      <div className="bg-white border border-ig-border rounded-xl p-8 mb-3">
+      <div className="bg-surface border border-ig-border rounded-xl p-8 mb-3">
         <h1 className="text-3xl font-bold text-center mb-8">کندو</h1>
 
         <form onSubmit={handleSubmit} className="space-y-3" noValidate>
@@ -90,7 +90,7 @@ function LoginForm() {
         </p>
       </div>
 
-      <div className="bg-white border border-ig-border rounded-xl p-5 text-center">
+      <div className="bg-surface border border-ig-border rounded-xl p-5 text-center">
         <p className="text-sm text-foreground">
           حساب ندارید؟{" "}
           <Link href="/register" className="text-ig-blue font-bold">
@@ -104,7 +104,7 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <div className="min-h-dvh bg-white flex flex-col items-center justify-center p-4">
+    <div className="min-h-dvh bg-surface flex flex-col items-center justify-center p-4">
       <Suspense>
         <LoginForm />
       </Suspense>

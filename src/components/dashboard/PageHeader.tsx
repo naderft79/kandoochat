@@ -31,7 +31,7 @@ export default function PageHeader({
   children,
 }: Props) {
   return (
-    <header className="sticky top-0 z-30 bg-white/80 ig-glass border-b border-ig-border">
+    <header className="sticky top-0 z-30 bg-surface/80 ig-glass border-b border-ig-border">
       {children ? (
         <div className="h-14 md:h-16 px-4 md:px-6 flex items-center">{children}</div>
       ) : (

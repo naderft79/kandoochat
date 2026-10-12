@@ -370,7 +370,7 @@ export default function CoinsActions({
   return (
     <div className="space-y-4">
       {/* === کارت موجودی با شمارش متحرک و دکمه های سریع === */}
-      <div className="rounded-xl border border-ig-border bg-white p-6 ig-rise">
+      <div className="rounded-xl border border-ig-border bg-surface p-6 ig-rise">
         <p className="text-sm text-ig-gray text-center mb-1">موجودی سکه</p>
         <div className="flex items-center justify-center gap-2">
           <Coins
@@ -439,7 +439,7 @@ export default function CoinsActions({
           {/* پکیج های سکه */}
           <form
             onSubmit={handleBuy}
-            className="bg-white border border-ig-border rounded-2xl p-5 space-y-4"
+            className="bg-surface border border-ig-border rounded-2xl p-5 space-y-4"
           >
             <h2 className="text-sm font-bold text-foreground flex items-center gap-2">
               <Coins
@@ -503,7 +503,7 @@ export default function CoinsActions({
             </div>
 
             {pkg.discount > 0 && (
-              <div className="flex items-center justify-between text-xs bg-neutral-100 rounded-lg px-3 py-2">
+              <div className="flex items-center justify-between text-xs bg-ig-btn2 rounded-lg px-3 py-2">
                 <span className="text-foreground font-bold">تخفیف شما:</span>
                 <span className="text-foreground font-bold">
                   {formatToman(discountAmount)}
@@ -522,7 +522,7 @@ export default function CoinsActions({
               <p
                 className={`text-sm rounded-lg px-4 py-3 ${
                   buyMsg.ok
-                    ? "bg-neutral-100 text-foreground"
+                    ? "bg-ig-btn2 text-foreground"
                     : "bg-ig-gray-bg text-ig-red"
                 }`}
               >
@@ -541,7 +541,7 @@ export default function CoinsActions({
           </form>
 
           {/* ماموریت های روزانه */}
-          <div className="bg-white border border-ig-border rounded-2xl p-5 space-y-3">
+          <div className="bg-surface border border-ig-border rounded-2xl p-5 space-y-3">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-bold text-foreground flex items-center gap-2">
                 <Sparkles
@@ -574,7 +574,7 @@ export default function CoinsActions({
                       className={`rounded-2xl p-3 border transition-all ig-rise ${
                         m.claimed
                           ? "border-ig-border bg-ig-gray-bg"
-                          : "border-neutral-200 bg-neutral-50"
+                          : "border-neutral-200 bg-ig-gray-bg"
                       }`}
                     >
                       <div className="flex items-center gap-2.5">
@@ -603,7 +603,7 @@ export default function CoinsActions({
                                 )}
                               </button>
                             ) : (
-                              <span className="text-xs font-bold text-neutral-500 shrink-0">
+                              <span className="text-xs font-bold text-ig-gray shrink-0">
                                 +{toPersianDigits(m.rewardCoins)} سکه
                               </span>
                             )}
@@ -635,7 +635,7 @@ export default function CoinsActions({
           </div>
 
           {/* دعوت دوستان */}
-          <div className="bg-white border border-ig-border rounded-2xl p-5 space-y-3">
+          <div className="bg-surface border border-ig-border rounded-2xl p-5 space-y-3">
             <h2 className="text-sm font-bold text-foreground flex items-center gap-2">
               <Gift className="w-5 h-5 text-foreground" strokeWidth={1.5} />
               سکه رایگان با دعوت دوستان
@@ -673,20 +673,20 @@ export default function CoinsActions({
       {resolvedTab === "sell" && (
         <div key="sell" className="space-y-4 ig-rise">
           {/* اطلاعات فروش */}
-          <div className="bg-white border border-ig-border rounded-2xl p-5 space-y-4">
+          <div className="bg-surface border border-ig-border rounded-2xl p-5 space-y-4">
             <h2 className="text-sm font-bold text-foreground flex items-center gap-2">
               <Banknote className="w-5 h-5 text-foreground" strokeWidth={1.5} />
               تبدیل سکه به ریال
             </h2>
 
             <div className="grid grid-cols-2 gap-3">
-              <div className="rounded-xl bg-neutral-50 border border-ig-border p-3 text-center">
+              <div className="rounded-xl bg-ig-gray-bg border border-ig-border p-3 text-center">
                 <p className="text-xs text-ig-gray font-bold">موجودی شما</p>
                 <p className="text-base font-black text-foreground mt-1">
                   {formatCoins(balance)}
                 </p>
               </div>
-              <div className="rounded-xl bg-neutral-50 border border-ig-border p-3 text-center">
+              <div className="rounded-xl bg-ig-gray-bg border border-ig-border p-3 text-center">
                 <p className="text-xs text-ig-gray font-bold">ارزش هر سکه</p>
                 <p className="text-base font-black text-foreground mt-1">
                   {formatToman(coinValue)}
@@ -695,7 +695,7 @@ export default function CoinsActions({
             </div>
 
             {!hasMinBalance && (
-              <p className="text-sm bg-neutral-100 text-ig-gray rounded-lg px-4 py-3">
+              <p className="text-sm bg-ig-btn2 text-ig-gray rounded-lg px-4 py-3">
                 برای برداشت باید حداقل {toPersianDigits(MIN_BALANCE_FOR_WITHDRAW)}{" "}
                 سکه موجودی داشته باشید
               </p>
@@ -756,7 +756,7 @@ export default function CoinsActions({
                 )}
               </div>
 
-              <div className="space-y-2 bg-neutral-100 rounded-lg px-4 py-3">
+              <div className="space-y-2 bg-ig-btn2 rounded-lg px-4 py-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-ig-gray font-bold">
                     مبلغ اولیه
@@ -788,7 +788,7 @@ export default function CoinsActions({
                 <p
                   className={`text-sm rounded-lg px-4 py-3 ${
                     wMsg.ok
-                      ? "bg-neutral-100 text-foreground"
+                      ? "bg-ig-btn2 text-foreground"
                       : "bg-ig-gray-bg text-ig-red"
                   }`}
                 >
@@ -845,7 +845,7 @@ export default function CoinsActions({
             </div>
           )}
           {transactions.length === 0 ? (
-            <div className="bg-white border border-ig-border rounded-2xl p-8 text-center">
+            <div className="bg-surface border border-ig-border rounded-2xl p-8 text-center">
               <Clock
                 className="w-10 h-10 text-neutral-300 mx-auto mb-3"
                 strokeWidth={1.5}
@@ -861,7 +861,7 @@ export default function CoinsActions({
             <>
               {/* خلاصه تراکنش ها */}
               <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-xl bg-white border border-ig-border p-3 text-center">
+                <div className="rounded-xl bg-surface border border-ig-border p-3 text-center">
                   <ArrowDown
                     className="w-5 h-5 text-ig-gray mx-auto mb-1"
                     strokeWidth={2}
@@ -875,7 +875,7 @@ export default function CoinsActions({
                   </p>
                   <p className="text-xs text-ig-gray font-bold">ورودی</p>
                 </div>
-                <div className="rounded-xl bg-white border border-ig-border p-3 text-center">
+                <div className="rounded-xl bg-surface border border-ig-border p-3 text-center">
                   <ArrowUp
                     className="w-5 h-5 text-ig-red mx-auto mb-1"
                     strokeWidth={2}
@@ -895,13 +895,13 @@ export default function CoinsActions({
 
               {/* لیست تراکنش ها — صفحه بندی */}
               {pagedTransactions.length === 0 ? (
-                <div className="bg-white border border-ig-border rounded-2xl p-6 text-center">
+                <div className="bg-surface border border-ig-border rounded-2xl p-6 text-center">
                   <p className="text-sm font-bold text-foreground">
                     تراکنشی با این فیلتر نیست
                   </p>
                 </div>
               ) : null}
-              <div className="bg-white border border-ig-border rounded-2xl overflow-hidden divide-y divide-ig-border">
+              <div className="bg-surface border border-ig-border rounded-2xl overflow-hidden divide-y divide-ig-border">
                 {pagedTransactions.map((t, idx) => {
                   const isFailed = t.status === "FAILED";
                   const isPositive = t.coins > 0;

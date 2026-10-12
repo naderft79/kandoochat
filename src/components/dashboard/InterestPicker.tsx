@@ -64,7 +64,7 @@ export default function InterestPicker({ initialInterestIds }: { initialInterest
         <button
           onClick={save}
           disabled={loading}
-          className="text-xs font-bold text-neutral-600 hover:text-black disabled:opacity-40 transition-colors"
+          className="text-xs font-bold text-ig-gray hover:text-foreground disabled:opacity-40 transition-colors"
         >
           {loading ? "در حال ذخیره..." : "ذخیره"}
         </button>
@@ -80,7 +80,7 @@ export default function InterestPicker({ initialInterestIds }: { initialInterest
               className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-bold transition-all active:scale-95 ${
                 isSelected
                   ? "bg-ig-blue text-white"
-                  : "bg-neutral-100 text-neutral-500 hover:bg-neutral-200"
+                  : "bg-ig-btn2 text-ig-gray hover:bg-neutral-200"
               }`}
             >
               <Icon className="w-3 h-3" />

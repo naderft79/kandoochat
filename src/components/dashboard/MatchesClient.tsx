@@ -281,7 +281,7 @@ export default function MatchesClient({ currentCity, currentProvince, initialMat
         {matches.length === 0 ? (
           <div className="py-16 ig-fade-in">
             <div className="flex flex-col items-center justify-center text-center px-6">
-              <div className="w-20 h-20 rounded-full bg-neutral-100 flex items-center justify-center mb-4">
+              <div className="w-20 h-20 rounded-full bg-ig-btn2 flex items-center justify-center mb-4">
                 <Heart className="w-10 h-10 text-neutral-400" strokeWidth={1.5} />
               </div>
               <h3 className="text-base font-bold text-foreground mb-1.5">
@@ -302,7 +302,7 @@ export default function MatchesClient({ currentCity, currentProvince, initialMat
               return (
                 <div
                   key={m.id}
-                  className="group relative bg-white rounded-2xl border border-ig-border ig-shadow-sm overflow-hidden flex flex-col items-center pt-4 pb-3 px-3 ig-fade-in"
+                  className="group relative bg-surface rounded-2xl border border-ig-border ig-shadow-sm overflow-hidden flex flex-col items-center pt-4 pb-3 px-3 ig-fade-in"
                 >
                   {/* عکس دایره ای وسط کارت — حدود ۷۰٪ عرض کارت */}
                   <div
@@ -330,7 +330,7 @@ export default function MatchesClient({ currentCity, currentProvince, initialMat
                       <span className="absolute bottom-[8%] right-[8%] w-4 h-4 bg-ig-online rounded-full border-2 border-white ig-pulse" />
                     )}
                     {isLiked && (
-                      <span className="absolute top-[7%] left-[9%] w-7 h-7 rounded-full bg-white/95 flex items-center justify-center ig-shadow-sm">
+                      <span className="absolute top-[7%] left-[9%] w-7 h-7 rounded-full bg-surface/95 flex items-center justify-center ig-shadow-sm">
                         <Heart className="w-3.5 h-3.5 text-ig-red" fill="currentColor" strokeWidth={0} />
                       </span>
                     )}
@@ -433,16 +433,16 @@ export default function MatchesClient({ currentCity, currentProvince, initialMat
           onClick={() => setProfileModal(null)}
         >
           <div
-            className="bg-white rounded-2xl max-w-md w-full ig-modal-in overflow-hidden ig-shadow-lg max-h-[90vh] flex flex-col"
+            className="bg-surface rounded-2xl max-w-md w-full ig-modal-in overflow-hidden ig-shadow-lg max-h-[90vh] flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             {/* هدر با عکس */}
             <div className="relative p-6 bg-ig-gray-bg shrink-0">
               <button
                 onClick={() => setProfileModal(null)}
-                className="cursor-pointer absolute top-3 left-3 w-8 h-8 rounded-full bg-white/80 hover:bg-white flex items-center justify-center transition-colors"
+                className="cursor-pointer absolute top-3 left-3 w-8 h-8 rounded-full bg-surface/80 hover:bg-surface flex items-center justify-center transition-colors"
               >
-                <X className="w-5 h-5 text-neutral-800" />
+                <X className="w-5 h-5 text-foreground" />
               </button>
               <div className="flex flex-col items-center text-center">
                 <div
@@ -549,9 +549,9 @@ export default function MatchesClient({ currentCity, currentProvince, initialMat
             {/* دکمه ضربدر */}
             <button
               onClick={() => setPhotoModal(null)}
-              className="absolute -top-3 -right-3 z-10 w-9 h-9 rounded-full bg-white ig-shadow-lg flex items-center justify-center active:scale-90 transition-transform"
+              className="absolute -top-3 -right-3 z-10 w-9 h-9 rounded-full bg-surface ig-shadow-lg flex items-center justify-center active:scale-90 transition-transform"
             >
-              <X className="w-5 h-5 text-neutral-800" />
+              <X className="w-5 h-5 text-foreground" />
             </button>
 
             {/* عکس بزرگ */}
@@ -592,7 +592,7 @@ export default function MatchesClient({ currentCity, currentProvince, initialMat
                 <button
                   onClick={() => startChat(photoModal.id)}
                   disabled={chatLoading}
-                  className="w-11 h-11 rounded-full bg-white hover:bg-neutral-100 text-black flex items-center justify-center ig-shadow-lg active:scale-90 transition-all disabled:opacity-50"
+                  className="w-11 h-11 rounded-full bg-surface hover:bg-ig-btn2 text-foreground flex items-center justify-center ig-shadow-lg active:scale-90 transition-all disabled:opacity-50"
                   title="گفتگو"
                 >
                   <MessageCircle className="w-5 h-5" />
@@ -600,21 +600,21 @@ export default function MatchesClient({ currentCity, currentProvince, initialMat
                 <button
                   onClick={() => sendLike(photoModal.id)}
                   disabled={likeLoading || likedIds.has(photoModal.id)}
-                  className="w-11 h-11 rounded-full bg-white hover:bg-neutral-100 text-black flex items-center justify-center ig-shadow-lg active:scale-90 transition-all disabled:opacity-50"
+                  className="w-11 h-11 rounded-full bg-surface hover:bg-ig-btn2 text-foreground flex items-center justify-center ig-shadow-lg active:scale-90 transition-all disabled:opacity-50"
                   title="لایک"
                 >
                   <Heart className="w-5 h-5" fill={likedIds.has(photoModal.id) ? "currentColor" : "none"} strokeWidth={2} />
                 </button>
                 <button
                   onClick={() => openCoinTransfer(photoModal.id)}
-                  className="w-11 h-11 rounded-full bg-white hover:bg-neutral-100 text-black flex items-center justify-center ig-shadow-lg active:scale-90 transition-all"
+                  className="w-11 h-11 rounded-full bg-surface hover:bg-ig-btn2 text-foreground flex items-center justify-center ig-shadow-lg active:scale-90 transition-all"
                   title="انتقال سکه"
                 >
                   <Coins className="w-5 h-5" />
                 </button>
                 <button
                   onClick={() => router.push(`/profile/${photoModal.username}`)}
-                  className="w-11 h-11 rounded-full bg-white hover:bg-neutral-100 text-black flex items-center justify-center ig-shadow-lg active:scale-90 transition-all"
+                  className="w-11 h-11 rounded-full bg-surface hover:bg-ig-btn2 text-foreground flex items-center justify-center ig-shadow-lg active:scale-90 transition-all"
                   title="مشاهده پروفایل"
                 >
                   <User className="w-5 h-5" />

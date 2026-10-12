@@ -89,8 +89,8 @@ export default function SubscriptionPlans({
               onClick={() => setSelected(p.key)}
               className={`relative w-full text-right rounded-2xl border-2 p-4 transition-colors ${
                 active
-                  ? "border-foreground bg-white"
-                  : "border-ig-border bg-white hover:border-neutral-400"
+                  ? "border-foreground bg-surface"
+                  : "border-ig-border bg-surface hover:border-neutral-400"
               }`}
             >
               <div className="flex items-center justify-between gap-3">

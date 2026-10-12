@@ -7,7 +7,7 @@ import { cn } from "./cn";
 
 const field =
   "w-full rounded-lg border bg-ig-gray-bg px-3 text-base text-foreground placeholder:text-ig-gray outline-none transition-colors " +
-  "focus:bg-white focus:border-ig-gray disabled:opacity-50";
+  "focus:bg-surface focus:border-ig-gray disabled:opacity-50";
 
 type Common = { label?: string; error?: string; hint?: string };
 

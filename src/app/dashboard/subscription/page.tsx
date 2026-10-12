@@ -40,7 +40,7 @@ export default async function SubscriptionPage() {
       />
       <div className="max-w-[600px] mx-auto px-4 md:px-6 pt-4 md:pt-6 pb-4 space-y-4">
         {active && (
-          <div className="rounded-xl border border-ig-border bg-white p-4 flex items-center gap-3">
+          <div className="rounded-xl border border-ig-border bg-surface p-4 flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-ig-gray-bg flex items-center justify-center shrink-0">
               <Check className="w-5 h-5 text-foreground" strokeWidth={2.5} />
             </div>

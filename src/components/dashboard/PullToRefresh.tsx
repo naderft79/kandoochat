@@ -136,7 +136,7 @@ export default function PullToRefresh({ children }: { children: ReactNode }) {
         }}
       >
         <div
-          className="w-11 h-11 rounded-full bg-white border border-ig-border shadow-md flex items-center justify-center"
+          className="w-11 h-11 rounded-full bg-surface border border-ig-border shadow-md flex items-center justify-center"
           style={{ transform: refreshing ? undefined : `rotate(${progress * 360}deg)` }}
         >
           <Loader2

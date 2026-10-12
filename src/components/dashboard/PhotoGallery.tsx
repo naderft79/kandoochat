@@ -128,7 +128,7 @@ export default function PhotoGallery({ initialPhotos }: { initialPhotos: Photo[]
           <button
             key={photo.id}
             onClick={() => setSelectedPhoto(photo)}
-            className="relative aspect-square overflow-hidden group bg-neutral-100 text-left"
+            className="relative aspect-square overflow-hidden group bg-ig-btn2 text-left"
           >
             <Image
               src={photo.url}
@@ -150,7 +150,7 @@ export default function PhotoGallery({ initialPhotos }: { initialPhotos: Photo[]
             key={`empty-${i}`}
             onClick={() => !uploading && setShowFaceWarning(true)}
             disabled={uploading}
-            className="aspect-square border border-dashed border-neutral-300 bg-neutral-50 flex items-center justify-center hover:bg-neutral-100 transition-colors"
+            className="aspect-square border border-dashed border-neutral-300 bg-ig-gray-bg flex items-center justify-center hover:bg-ig-btn2 transition-colors"
           >
             {uploading ? (
               <Loader2 className="w-5 h-5 text-neutral-400 animate-spin" />
@@ -178,10 +178,10 @@ export default function PhotoGallery({ initialPhotos }: { initialPhotos: Photo[]
           onClick={() => setSelectedPhoto(null)}
         >
           <div
-            className="bg-white rounded-2xl max-w-sm w-full p-4 ig-modal-in"
+            className="bg-surface rounded-2xl max-w-sm w-full p-4 ig-modal-in"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="relative w-full aspect-square rounded-xl overflow-hidden bg-neutral-100 mb-4">
+            <div className="relative w-full aspect-square rounded-xl overflow-hidden bg-ig-btn2 mb-4">
               <Image
                 src={selectedPhoto.url}
                 alt="عکس گالری"
@@ -199,7 +199,7 @@ export default function PhotoGallery({ initialPhotos }: { initialPhotos: Photo[]
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => startReplace(selectedPhoto)}
-                className="flex items-center justify-center gap-2 p-3 rounded-xl bg-neutral-100 hover:bg-neutral-200 transition-colors"
+                className="flex items-center justify-center gap-2 p-3 rounded-xl bg-ig-btn2 hover:bg-neutral-200 transition-colors"
               >
                 <RefreshCw className="w-5 h-5" />
                 <span className="text-sm font-bold">تغییر عکس</span>

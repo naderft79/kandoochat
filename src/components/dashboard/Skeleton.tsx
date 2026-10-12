@@ -19,7 +19,7 @@ export function SkeletonText({ lines = 3 }: { lines?: number }) {
 
 export function SkeletonCard() {
   return (
-    <div className="bg-white border border-ig-border rounded-2xl p-4 space-y-3">
+    <div className="bg-surface border border-ig-border rounded-2xl p-4 space-y-3">
       <div className="flex items-center gap-3">
         <Skeleton className="w-12 h-12 rounded-full" />
         <div className="flex-1 space-y-2">

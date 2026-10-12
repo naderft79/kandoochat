@@ -203,7 +203,7 @@ export default function NotificationsList({ items }: { items: Item[] }) {
                             ? "hover:border-ig-border hover:bg-ig-gray-bg/60 active:bg-ig-gray-bg cursor-pointer"
                             : "cursor-default",
                           n.isRead
-                            ? "bg-white border-ig-divider"
+                            ? "bg-surface border-ig-divider"
                             : "bg-ig-blue/[0.04] border-ig-blue/20"
                         )}
                       >

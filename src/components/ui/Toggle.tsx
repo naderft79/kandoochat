@@ -27,7 +27,7 @@ export default function Toggle({ checked, onChange, disabled, ...rest }: Props) 
     >
       <span
         className={cn(
-          "absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-all",
+          "absolute top-0.5 w-5 h-5 rounded-full bg-surface shadow-sm transition-all",
           checked ? "right-0.5" : "right-5"
         )}
       />

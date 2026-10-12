@@ -89,7 +89,7 @@ export default function DashboardNav({
   return (
     <>
       {/* سایدبار دسکتاپ — دقیقا مثل اینستاگرام */}
-      <aside className="hidden lg:flex flex-col w-16 lg:w-56 xl:w-64 shrink-0 bg-white border-l border-ig-border min-h-dvh sticky top-0 h-screen transition-all duration-300">
+      <aside className="hidden lg:flex flex-col w-16 lg:w-56 xl:w-64 shrink-0 bg-surface border-l border-ig-border min-h-dvh sticky top-0 h-screen transition-all duration-300">
         {/* لوگو + سکه */}
         <div className="px-3 lg:px-6 pt-8 pb-4">
           <KandooLogo href="/dashboard" iconClassName="w-8 h-8 xl:w-9 xl:h-9" textClassName="text-xl xl:text-2xl lg:block hidden" />
@@ -160,7 +160,7 @@ export default function DashboardNav({
           onClick={() => setMoreOpen(false)}
         >
           <div
-            className="absolute right-0 top-0 h-full w-56 xl:w-64 bg-white border-l border-ig-border ig-modal-in"
+            className="absolute right-0 top-0 h-full w-56 xl:w-64 bg-surface border-l border-ig-border ig-modal-in"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between px-6 pt-8 pb-6">
@@ -194,7 +194,7 @@ export default function DashboardNav({
       )}
 
       {/* نوار پایین موبایل — ۵ آیکن مثل اینستاگرام */}
-      <nav className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-ig-border flex items-center justify-around px-2 py-1 pb-[env(safe-area-inset-bottom)]">
+      <nav className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-surface border-t border-ig-border flex items-center justify-around px-2 py-1 pb-[env(safe-area-inset-bottom)]">
         {mainItems.map((item) => {
           const active = isActive(item.href);
           return (

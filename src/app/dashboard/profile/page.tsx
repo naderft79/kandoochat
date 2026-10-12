@@ -81,7 +81,7 @@ export default async function ProfilePage() {
   ];
 
   return (
-    <div className="min-h-dvh bg-white">
+    <div className="min-h-dvh bg-surface">
       <ProfileHeader username={user.username} />
 
       <div className="max-w-[600px] mx-auto px-4 md:px-6 pb-20">
@@ -92,7 +92,7 @@ export default async function ProfilePage() {
               <SpecialMissionsButton />
             </div>
           )}
-          <div className="relative overflow-hidden rounded-2xl border border-ig-border bg-white p-5 md:p-6">
+          <div className="relative overflow-hidden rounded-2xl border border-ig-border bg-surface p-5 md:p-6">
             {/* ردیف اول: آواتار + ۳ آمار با جداکننده در یک ردیف */}
             <div className="flex items-center gap-5 md:gap-8">
               <AvatarUploader
@@ -186,7 +186,7 @@ export default async function ProfilePage() {
 
         {/* === تکمیل پروفایل — فقط در حالت ناقص === */}
         {completion < 100 && (
-          <div className="mt-4 rounded-2xl border border-ig-border bg-white p-4">
+          <div className="mt-4 rounded-2xl border border-ig-border bg-surface p-4">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-bold text-foreground">
                 تکمیل پروفایل
@@ -229,7 +229,7 @@ export default async function ProfilePage() {
           <h3 className="text-sm font-black text-foreground mb-3 flex items-center gap-1.5">
             اطلاعات شخصی
           </h3>
-          <div className="rounded-2xl border border-ig-border bg-white p-1.5">
+          <div className="rounded-2xl border border-ig-border bg-surface p-1.5">
             <div className="grid grid-cols-2">
               {infoItems.map((item, i) => (
                 <div
@@ -263,7 +263,7 @@ export default async function ProfilePage() {
           >
             قابلیت های ویژه
           </h3>
-          <div className="rounded-xl border border-ig-border bg-white divide-y divide-ig-divider overflow-hidden">
+          <div className="rounded-xl border border-ig-border bg-surface divide-y divide-ig-divider overflow-hidden">
             <FeaturedButton />
             <GoldenStoryButton />
             <BoostButton />

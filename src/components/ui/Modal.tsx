@@ -110,7 +110,7 @@ export function Modal({ open, onClose, title, children, className, dismissible =
           aria-modal="true"
           aria-label={title}
           tabIndex={-1}
-          className={cn("relative w-full max-w-md max-h-[90dvh] overflow-y-auto rounded-xl bg-white ig-modal-in outline-none", className)}
+          className={cn("relative w-full max-w-md max-h-[90dvh] overflow-y-auto rounded-xl bg-surface ig-modal-in outline-none", className)}
         >
           {!hideClose && (
             <button
@@ -165,7 +165,7 @@ export function BottomSheet({ open, onClose, title, children, className, dismiss
           aria-label={title}
           tabIndex={-1}
           className={cn(
-            "relative w-full lg:max-w-md max-h-[90dvh] overflow-y-auto bg-white outline-none",
+            "relative w-full lg:max-w-md max-h-[90dvh] overflow-y-auto bg-surface outline-none",
             "rounded-t-2xl lg:rounded-xl ig-slide-up lg:ig-modal-in pb-[env(safe-area-inset-bottom)]",
             className
           )}

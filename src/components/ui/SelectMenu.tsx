@@ -57,7 +57,7 @@ export default function SelectMenu({ label, value, options, onChange, placeholde
           }}
           className={cn(
             "w-full h-11 px-3 rounded-lg border bg-ig-gray-bg text-base flex items-center justify-between gap-2 outline-none transition-colors",
-            "focus:bg-white focus:border-ig-gray disabled:opacity-50",
+            "focus:bg-surface focus:border-ig-gray disabled:opacity-50",
             error ? "border-ig-red" : "border-ig-border"
           )}
         >
@@ -68,9 +68,9 @@ export default function SelectMenu({ label, value, options, onChange, placeholde
         </button>
 
         {open && (
-          <div className="absolute z-40 top-full mt-1 inset-x-0 bg-white border border-ig-border rounded-xl shadow-lg overflow-hidden">
+          <div className="absolute z-40 top-full mt-1 inset-x-0 bg-surface border border-ig-border rounded-xl shadow-lg overflow-hidden">
             {options.length > 15 && (
-              <div className="sticky top-0 bg-white p-2 border-b border-ig-border">
+              <div className="sticky top-0 bg-surface p-2 border-b border-ig-border">
                 <input
                   value={q}
                   onChange={(e) => setQ(e.target.value)}

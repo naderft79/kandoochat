@@ -88,7 +88,7 @@ export default async function DashboardPage() {
         {/* پروفایل خود کاربر */}
         <div className="flex items-center gap-4 mb-6">
           <div className="ig-story-ring">
-            <div className="w-12 h-12 rounded-full bg-white p-0.5 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-full bg-surface p-0.5 flex items-center justify-center">
               {user.photos?.[0]?.url ? (
                 <Image src={user.photos[0].url} alt={user.firstName} width={44} height={44} className="w-full h-full rounded-full object-cover" />
               ) : (
@@ -107,17 +107,17 @@ export default async function DashboardPage() {
 
         {/* وضعیت اشتراک */}
         {!subscription && !user.isSpecial ? (
-          <div className="rounded-2xl p-4 mb-4 bg-neutral-50">
+          <div className="rounded-2xl p-4 mb-4 bg-ig-gray-bg">
             <div className="flex items-center gap-2 mb-2">
               <Crown className="w-5 h-5 text-neutral-700" />
               <span className="text-sm font-bold">اشتراک فعال نیست</span>
             </div>
-            <p className="text-xs text-neutral-500 mb-3 leading-5">
+            <p className="text-xs text-ig-gray mb-3 leading-5">
               برای شروع گفتگو با کاربران، اشتراک ماهانه تهیه کنید
             </p>
             <Link
               href="/dashboard/subscription"
-              className="inline-flex items-center gap-1 text-xs font-bold text-neutral-700 hover:text-black transition-colors"
+              className="inline-flex items-center gap-1 text-xs font-bold text-neutral-700 hover:text-foreground transition-colors"
             >
               خرید اشتراک
               <span>←</span>
@@ -131,7 +131,7 @@ export default async function DashboardPage() {
             </div>
           </div>
         ) : (
-          <div className="rounded-2xl p-4 mb-4 bg-neutral-50">
+          <div className="rounded-2xl p-4 mb-4 bg-ig-gray-bg">
             <div className="flex items-center gap-2">
               <Crown className="w-5 h-5 text-neutral-700" />
               <span className="text-sm font-bold">اشتراک فعال</span>

@@ -189,7 +189,7 @@ export default function StoryBar({
                 myStories.length > 0 ? (myIsGolden ? "ig-story-ring-golden" : "ig-story-ring") : ""
               }`}
             >
-              <div className="w-full h-full rounded-full bg-white p-0.5 flex items-center justify-center overflow-hidden">
+              <div className="w-full h-full rounded-full bg-surface p-0.5 flex items-center justify-center overflow-hidden">
                 {currentUserPhoto ? (
                   <div className="relative w-full h-full rounded-full overflow-hidden">
                     <Image src={currentUserPhoto} alt={currentUserFirstName} fill className="object-cover" sizes="64px" />
@@ -231,7 +231,7 @@ export default function StoryBar({
               className="flex flex-col items-center gap-1.5 shrink-0 active:scale-95 transition-transform"
             >
               <div className={userStory.isGolden ? "ig-story-ring-golden" : allViewed ? "ig-story-ring-seen" : "ig-story-ring"}>
-                <div className="w-16 h-16 rounded-full bg-white p-0.5 flex items-center justify-center overflow-hidden">
+                <div className="w-16 h-16 rounded-full bg-surface p-0.5 flex items-center justify-center overflow-hidden">
                   {userStory.photo ? (
                     <div className="relative w-full h-full rounded-full overflow-hidden">
                       <Image src={userStory.photo} alt={userStory.firstName} fill className="object-cover" sizes="64px" />

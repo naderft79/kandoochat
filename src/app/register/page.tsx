@@ -304,8 +304,8 @@ function RegisterForm() {
   const st = strength(form.password);
 
   return (
-    <div className="min-h-dvh bg-white flex items-center justify-center p-4">
-      <div className="w-full max-w-[400px] bg-white border border-ig-border rounded-xl p-6 sm:p-8">
+    <div className="min-h-dvh bg-surface flex items-center justify-center p-4">
+      <div className="w-full max-w-[400px] bg-surface border border-ig-border rounded-xl p-6 sm:p-8">
         <h1 className="text-2xl font-bold text-center mb-1">کندو</h1>
         <p className="text-sm text-ig-gray text-center mb-5">ثبت نام در کندو</p>
 
@@ -395,7 +395,7 @@ function RegisterForm() {
                     aria-invalid={!!errors.referral || undefined}
                     className={cn(
                       "flex-1 h-11 px-3 rounded-lg border bg-ig-gray-bg text-base text-left outline-none transition-colors",
-                      "focus:bg-white focus:border-ig-gray",
+                      "focus:bg-surface focus:border-ig-gray",
                       errors.referral || refState === "invalid" ? "border-ig-red" : refState === "ok" ? "border-ig-online" : "border-ig-border"
                     )}
                     value={referralCode}

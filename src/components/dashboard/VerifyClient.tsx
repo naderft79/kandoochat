@@ -109,7 +109,7 @@ function ImageSlot({
 function StatusBanner({ kind }: { kind: "ok" | "pending" }) {
   if (kind === "ok") {
     return (
-      <div className="bg-white border border-ig-border rounded-2xl p-5 flex items-center gap-3 ig-rise">
+      <div className="bg-surface border border-ig-border rounded-2xl p-5 flex items-center gap-3 ig-rise">
         <span className="w-11 h-11 rounded-full bg-ig-blue/10 flex items-center justify-center shrink-0">
           <BadgeCheck className="w-6 h-6 text-ig-blue" />
         </span>
@@ -123,7 +123,7 @@ function StatusBanner({ kind }: { kind: "ok" | "pending" }) {
     );
   }
   return (
-    <div className="bg-white border border-ig-border rounded-2xl p-5 flex items-center gap-3 ig-rise">
+    <div className="bg-surface border border-ig-border rounded-2xl p-5 flex items-center gap-3 ig-rise">
       <span className="w-11 h-11 rounded-full bg-ig-gray-bg flex items-center justify-center shrink-0">
         <Clock className="w-6 h-6 text-ig-gray" />
       </span>
@@ -322,7 +322,7 @@ export default function VerifyClient({
           ) : (
             <form
               onSubmit={submitBlueTick}
-              className="bg-white border border-ig-border rounded-2xl p-5 space-y-4"
+              className="bg-surface border border-ig-border rounded-2xl p-5 space-y-4"
             >
               <h2 className="text-sm font-bold text-foreground flex items-center gap-2">
                 <BadgeCheck className="w-5 h-5 text-foreground" strokeWidth={1.5} />
@@ -397,7 +397,7 @@ export default function VerifyClient({
                 <p
                   className={`text-sm rounded-lg px-4 py-3 ${
                     btMsg.ok
-                      ? "bg-neutral-100 text-foreground"
+                      ? "bg-ig-btn2 text-foreground"
                       : "bg-ig-gray-bg text-ig-red"
                   }`}
                 >
@@ -429,7 +429,7 @@ export default function VerifyClient({
           ) : (
             <form
               onSubmit={submitKyc}
-              className="bg-white border border-ig-border rounded-2xl p-5 space-y-4"
+              className="bg-surface border border-ig-border rounded-2xl p-5 space-y-4"
             >
               <h2 className="text-sm font-bold text-foreground flex items-center gap-2">
                 <ShieldCheck
@@ -493,7 +493,7 @@ export default function VerifyClient({
                       const monthNum = Number(kycMonth) || null;
                       const maxDay = yearNum && monthNum ? jalaliMonthDays(yearNum, monthNum) : 31;
                       const selectCls =
-                        "w-full px-3 py-3 rounded-lg border border-ig-border focus:border-neutral-400 outline-none transition-colors bg-white text-sm";
+                        "w-full px-3 py-3 rounded-lg border border-ig-border focus:border-neutral-400 outline-none transition-colors bg-surface text-sm";
                       return (
                         <>
                           <select
@@ -606,7 +606,7 @@ export default function VerifyClient({
                 <p
                   className={`text-sm rounded-lg px-4 py-3 ${
                     kycMsg.ok
-                      ? "bg-neutral-100 text-foreground"
+                      ? "bg-ig-btn2 text-foreground"
                       : "bg-ig-gray-bg text-ig-red"
                   }`}
                 >

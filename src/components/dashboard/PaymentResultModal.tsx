@@ -74,7 +74,7 @@ function PaymentResultContent() {
   return (
     <Portal>
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl">
+      <div className="bg-surface rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl">
         {result ? (
           <>
             <div className={`w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center ${result.ok ? "bg-ig-gray-bg" : "bg-ig-gray-bg"}`}>

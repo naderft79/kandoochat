@@ -21,7 +21,7 @@ export default async function DashboardLayout({
   const impersonating = await isImpersonating();
 
   return (
-    <div className="flex h-[100dvh] overflow-hidden bg-white">
+    <div className="flex h-[100dvh] overflow-hidden bg-surface">
       {/* LiveDataProvider در root layout است — اینجا فقط مصرف کننده ایم */}
       <DashboardNav
         fullName={`${user.firstName} ${user.lastName}`}

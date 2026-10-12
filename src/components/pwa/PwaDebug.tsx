@@ -35,8 +35,8 @@ export default function PwaDebug() {
       <h2 className="font-bold text-sm mb-2">PWA Debug Info</h2>
       {Object.entries(info).map(([k, v]) => (
         <div key={k} className="flex justify-between gap-4 border-b border-neutral-100 py-1">
-          <span className="text-neutral-500">{k}</span>
-          <span className={`font-bold ${v === "YES" ? "text-green-600" : v === "NO" ? "text-red-500" : "text-neutral-800"}`}>
+          <span className="text-ig-gray">{k}</span>
+          <span className={`font-bold ${v === "YES" ? "text-green-600" : v === "NO" ? "text-red-500" : "text-foreground"}`}>
             {v}
           </span>
         </div>

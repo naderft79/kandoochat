@@ -21,7 +21,7 @@ export default function PrivacyPage() {
         </div>
 
         <div className="space-y-4">
-          <section className="bg-white border border-ig-border rounded-2xl p-6">
+          <section className="bg-surface border border-ig-border rounded-2xl p-6">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 rounded-xl ig-gradient flex items-center justify-center shrink-0">
                 <Shield className="w-5 h-5 text-white" />
@@ -33,7 +33,7 @@ export default function PrivacyPage() {
             </p>
           </section>
 
-          <section className="bg-white border border-ig-border rounded-2xl p-6">
+          <section className="bg-surface border border-ig-border rounded-2xl p-6">
             <h2 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
               <Eye className="w-4 h-4 text-ig-blue" />
               اطلاعاتی که جمع آوری می کنیم
@@ -47,7 +47,7 @@ export default function PrivacyPage() {
             </ul>
           </section>
 
-          <section className="bg-white border border-ig-border rounded-2xl p-6">
+          <section className="bg-surface border border-ig-border rounded-2xl p-6">
             <h2 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
               <UserCheck className="w-4 h-4 text-ig-blue" />
               نحوه استفاده از اطلاعات
@@ -61,7 +61,7 @@ export default function PrivacyPage() {
             </ul>
           </section>
 
-          <section className="bg-white border border-ig-border rounded-2xl p-6">
+          <section className="bg-surface border border-ig-border rounded-2xl p-6">
             <h2 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
               <Lock className="w-4 h-4 text-ig-blue" />
               کنترل شما

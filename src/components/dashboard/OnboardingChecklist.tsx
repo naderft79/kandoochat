@@ -35,16 +35,16 @@ export default function OnboardingChecklist({
   if (percent === 100) return null;
 
   return (
-    <div className="mx-3 lg:mx-0 mb-4 rounded-2xl border border-ig-border bg-white p-4 ig-fade-in">
+    <div className="mx-3 lg:mx-0 mb-4 rounded-2xl border border-ig-border bg-surface p-4 ig-fade-in">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-bold text-foreground">پروفایل خود را کامل کنید</h3>
-        <span className="text-xs font-bold text-neutral-500">
+        <span className="text-xs font-bold text-ig-gray">
           {toPersianDigits(percent)}٪
         </span>
       </div>
 
       {/* نوار پیشرفت */}
-      <div className="h-1.5 rounded-full bg-neutral-100 overflow-hidden mb-3">
+      <div className="h-1.5 rounded-full bg-ig-btn2 overflow-hidden mb-3">
         <div
           className="h-full rounded-full bg-neutral-800 transition-all"
           style={{ width: `${percent}%` }}
@@ -62,7 +62,7 @@ export default function OnboardingChecklist({
             ) : (
               <Link
                 href={item.href}
-                className="flex items-center gap-2 text-xs text-foreground hover:text-neutral-500 transition-colors"
+                className="flex items-center gap-2 text-xs text-foreground hover:text-ig-gray transition-colors"
               >
                 <Circle className="w-4 h-4 text-neutral-300 shrink-0" />
                 {item.label}

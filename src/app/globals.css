@@ -5,9 +5,28 @@
 :root {
   --background: #ffffff;
   --foreground: #262626;
+  --surface: #ffffff;
   --ig-border: #dbdbdb;
   --ig-gray-bg: #fafafa;
   --ig-gray-text: #737373;
+  --ig-divider: #efefef;
+  --ig-btn2: #efefef;
+  --ig-btn2-hover: #dbdbdb;
+  color-scheme: light;
+}
+
+/* حالت تاریک: با کلاس dark روی html فعال می شود (next-themes) */
+.dark {
+  --background: #000000;
+  --foreground: #f5f5f5;
+  --surface: #000000;
+  --ig-border: #262626;
+  --ig-gray-bg: #121212;
+  --ig-gray-text: #a8a8a8;
+  --ig-divider: #262626;
+  --ig-btn2: #262626;
+  --ig-btn2-hover: #363636;
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -18,9 +37,10 @@
   --color-ig-border: var(--ig-border);
   --color-ig-gray: var(--ig-gray-text);
   --color-ig-gray-bg: var(--ig-gray-bg);
-  --color-ig-divider: #efefef;
-  --color-ig-btn2: #efefef;
-  --color-ig-btn2-hover: #dbdbdb;
+  --color-surface: var(--surface);
+  --color-ig-divider: var(--ig-divider);
+  --color-ig-btn2: var(--ig-btn2);
+  --color-ig-btn2-hover: var(--ig-btn2-hover);
   --color-ig-blue: #0074c7;
   --color-ig-blue-hover: #005fa3;
   --color-ig-blue-bright: #0095f6;
@@ -324,6 +344,64 @@ html, body {
 /* فاصله محتوا از ناچ و نوار وضعیت */
 body {
   padding-top: env(safe-area-inset-top);
+}
+
+/* انیمیشن تعویض تم: انتقال دایره ای از محل دکمه؛ انتقال پیش فرض مرورگر خاموش است */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* پنل ادمین در حالت روشن (تم مشترک با کاربر) */
+html:not(.dark) .lux-admin-bg {
+  background: #f7f5ef !important;
+  color: #1f1f1f;
+}
+html:not(.dark) .lux-sidebar {
+  background: #ffffff;
+  border-left-color: rgba(176, 140, 30, 0.25);
+}
+html:not(.dark) .lux-card {
+  background: #ffffff;
+  border-color: rgba(176, 140, 30, 0.25);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+html:not(.dark) .lux-card:hover {
+  border-color: rgba(176, 140, 30, 0.45);
+}
+html:not(.dark) .lux-nav-item {
+  color: #555;
+}
+html:not(.dark) .lux-nav-item:hover {
+  color: #1f1f1f;
+}
+html:not(.dark) .lux-admin-bg .bg-white {
+  background: #ffffff !important;
+}
+html:not(.dark) .lux-admin-bg .text-foreground,
+html:not(.dark) .lux-admin-bg .text-\[\#e8e8e8\] {
+  color: #1f1f1f !important;
+}
+html:not(.dark) .lux-admin-bg .text-ig-gray,
+html:not(.dark) .lux-admin-bg .text-\[\#888\] {
+  color: #6b6b6b !important;
+}
+html:not(.dark) .lux-admin-bg .text-\[\#d4af37\] {
+  color: #8a6d12 !important;
+}
+html:not(.dark) .lux-admin-bg .bg-ig-gray-bg,
+html:not(.dark) .lux-admin-bg .bg-neutral-100,
+html:not(.dark) .lux-admin-bg .bg-neutral-50 {
+  background: rgba(176, 140, 30, 0.08) !important;
+  color: #444 !important;
+}
+html:not(.dark) .lux-admin-bg input,
+html:not(.dark) .lux-admin-bg textarea,
+html:not(.dark) .lux-admin-bg select {
+  background: #ffffff !important;
+  color: #1f1f1f !important;
+  border-color: rgba(176, 140, 30, 0.3) !important;
 }
 
 /* قفل حالت عمودی: روی گوشی افقی (لمسی و کوتاه) پیام چرخش نمایش داده می شود */

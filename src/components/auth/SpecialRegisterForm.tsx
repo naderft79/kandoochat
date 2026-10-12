@@ -10,7 +10,7 @@ import { PROVINCES, PROVINCE_NAMES } from "@/lib/iran";
 import { toPersianDigits } from "@/lib/format";
 
 const inputClass =
-  "w-full px-3 py-2.5 rounded-lg border border-ig-border bg-ig-gray-bg focus:bg-white focus:border-ig-gray outline-none transition-colors text-sm";
+  "w-full px-3 py-2.5 rounded-lg border border-ig-border bg-ig-gray-bg focus:bg-surface focus:border-ig-gray outline-none transition-colors text-sm";
 
 const SPECIAL_FEATURES = [
   { icon: InfinityIcon, title: "اشتراک نامحدود", desc: "بدون محدودیت در چت و مشاهده پروفایل ها" },
@@ -145,12 +145,12 @@ function SpecialRegisterFormInner() {
   const steps = ["حساب کاربری", "مشخصات فردی", "جزئیات بیشتر"];
 
   return (
-    <div className="min-h-dvh bg-white flex items-center justify-center p-4">
+    <div className="min-h-dvh bg-surface flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-[400px] bg-white border border-ig-border rounded-lg p-8"
+        className="w-full max-w-[400px] bg-surface border border-ig-border rounded-lg p-8"
       >
         {/* هدر ویژه */}
         <div className="flex flex-col items-center mb-4">
@@ -170,7 +170,7 @@ function SpecialRegisterFormInner() {
             type="button"
             onClick={() => setActiveTab("register")}
             className={`flex-1 py-2 rounded-md text-xs font-bold transition-colors ${
-              activeTab === "register" ? "bg-white text-foreground ig-shadow-sm" : "text-ig-gray"
+              activeTab === "register" ? "bg-surface text-foreground ig-shadow-sm" : "text-ig-gray"
             }`}
           >
             ثبت نام
@@ -179,7 +179,7 @@ function SpecialRegisterFormInner() {
             type="button"
             onClick={() => setActiveTab("missions")}
             className={`flex-1 py-2 rounded-md text-xs font-bold transition-colors flex items-center justify-center gap-1 ${
-              activeTab === "missions" ? "bg-white text-foreground ig-shadow-sm" : "text-ig-gray"
+              activeTab === "missions" ? "bg-surface text-foreground ig-shadow-sm" : "text-ig-gray"
             }`}
           >
             <Check className="w-3.5 h-3.5" />

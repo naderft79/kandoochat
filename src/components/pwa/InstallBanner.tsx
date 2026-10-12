@@ -74,7 +74,7 @@ export default function InstallBanner() {
   if (!show) return null;
 
   return (
-    <div className="fixed bottom-16 lg:bottom-4 inset-x-3 z-40 max-w-md mx-auto bg-white border border-ig-border rounded-2xl shadow-lg p-3.5 flex items-center gap-3 ig-fade-in">
+    <div className="fixed bottom-16 lg:bottom-4 inset-x-3 z-40 max-w-md mx-auto bg-surface border border-ig-border rounded-2xl shadow-lg p-3.5 flex items-center gap-3 ig-fade-in">
       <Image src="/bee-colori-logo.png" alt="کندو" width={40} height={40} className="rounded-xl shrink-0" />
       <div className="flex-1 min-w-0">
         <p className="text-sm font-bold text-foreground">کندو را نصب کنید</p>

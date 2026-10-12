@@ -201,7 +201,7 @@ export default function SupportChat({
           <p className="text-sm text-ig-gray font-bold">این تیکت بسته شده است</p>
         </div>
       ) : (
-        <div className="border-t border-ig-border px-3 py-2.5 flex items-center gap-2 bg-white">
+        <div className="border-t border-ig-border px-3 py-2.5 flex items-center gap-2 bg-surface">
           <input
             ref={fileInputRef}
             type="file"

@@ -72,7 +72,7 @@ export default function FAQAccordion({
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="جستجو در سوالات..."
-          className="w-full pr-11 pl-4 py-3 rounded-2xl bg-white border border-ig-border text-sm outline-none focus:border-ig-gray transition-colors"
+          className="w-full pr-11 pl-4 py-3 rounded-2xl bg-surface border border-ig-border text-sm outline-none focus:border-ig-gray transition-colors"
         />
       </div>
 
@@ -83,7 +83,7 @@ export default function FAQAccordion({
           className={`px-4 py-2 rounded-full text-xs font-bold transition-colors ${
             activeCategory === "all"
               ? "ig-gradient text-white"
-              : "bg-white border border-ig-border text-foreground hover:bg-neutral-50"
+              : "bg-surface border border-ig-border text-foreground hover:bg-ig-gray-bg"
           }`}
         >
           همه
@@ -97,7 +97,7 @@ export default function FAQAccordion({
               className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold transition-colors ${
                 activeCategory === cat.key
                   ? "ig-gradient text-white"
-                  : "bg-white border border-ig-border text-foreground hover:bg-neutral-50"
+                  : "bg-surface border border-ig-border text-foreground hover:bg-ig-gray-bg"
               }`}
             >
               <Icon className="w-3.5 h-3.5" />
@@ -109,7 +109,7 @@ export default function FAQAccordion({
 
       {/* لیست سوالات */}
       {filtered.length === 0 ? (
-        <div className="bg-white border border-ig-border rounded-2xl p-8 text-center">
+        <div className="bg-surface border border-ig-border rounded-2xl p-8 text-center">
           <div className="w-14 h-14 rounded-full bg-ig-gray-bg flex items-center justify-center mx-auto mb-3">
             <HelpCircle className="w-7 h-7 text-ig-gray" strokeWidth={1.5} />
           </div>
@@ -129,9 +129,9 @@ export default function FAQAccordion({
                   setOpenIndex(null);
                 }
               }}
-              className="group bg-white border border-ig-border rounded-2xl overflow-hidden"
+              className="group bg-surface border border-ig-border rounded-2xl overflow-hidden"
             >
-              <summary className="cursor-pointer list-none flex items-center justify-between gap-3 px-5 py-4 hover:bg-neutral-50 transition-colors">
+              <summary className="cursor-pointer list-none flex items-center justify-between gap-3 px-5 py-4 hover:bg-ig-gray-bg transition-colors">
                 <span className="text-sm font-bold text-foreground">{item.q}</span>
                 <ChevronDown className="w-4 h-4 text-ig-gray shrink-0 group-open:rotate-180 transition-transform" />
               </summary>

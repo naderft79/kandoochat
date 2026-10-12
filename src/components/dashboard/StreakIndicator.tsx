@@ -21,9 +21,9 @@ export default function StreakIndicator() {
   if (loading || streak === 0) return null;
 
   return (
-    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neutral-100 border border-neutral-200">
+    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-ig-btn2 border border-neutral-200">
       <Flame className="w-4 h-4 text-neutral-700" fill="currentColor" />
-      <span className="text-sm font-bold text-neutral-800">
+      <span className="text-sm font-bold text-foreground">
         {toPersianDigits(streak)} روز
       </span>
     </div>

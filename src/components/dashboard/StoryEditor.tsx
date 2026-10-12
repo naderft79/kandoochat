@@ -426,12 +426,12 @@ export default function StoryEditor({
     >
       {/* نوار بالا */}
       <div className="flex items-center justify-between px-4 py-3 shrink-0 z-10">
-        <button onClick={onClose} className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center active:scale-90 transition-transform">
+        <button onClick={onClose} className="w-10 h-10 rounded-full bg-surface/10 flex items-center justify-center active:scale-90 transition-transform">
           <X className="w-5 h-5 text-white" />
         </button>
         <div className="flex items-center gap-2">
           <button onClick={undoLast} disabled={elements.length === 0 && strokes.length === 0}
-            className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center active:scale-90 transition-transform disabled:opacity-30">
+            className="w-10 h-10 rounded-full bg-surface/10 flex items-center justify-center active:scale-90 transition-transform disabled:opacity-30">
             <Undo2 className="w-5 h-5 text-white" />
           </button>
           <span className="text-white text-sm font-bold mr-1">ویرایش استوری</span>
@@ -502,7 +502,7 @@ export default function StoryEditor({
 
       {/* پنل ویرایش عنصر */}
       {selectedEl && activeTool === "elements" && (
-        <div className="shrink-0 bg-white/10 backdrop-blur-md px-4 py-3 max-h-[35vh] overflow-y-auto">
+        <div className="shrink-0 bg-surface/10 backdrop-blur-md px-4 py-3 max-h-[35vh] overflow-y-auto">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-white text-xs font-bold">{selectedEl.type === "text" ? "متن" : selectedEl.type === "coinButton" ? "دکمه سکه" : "استیکر"}</span>
             <button onClick={() => deleteElement(selectedEl.id)} className="mr-auto text-ig-red text-xs flex items-center gap-1">
@@ -511,7 +511,7 @@ export default function StoryEditor({
           </div>
           {selectedEl.type !== "sticker" && (
             <input type="text" value={selectedEl.text} onChange={(e) => updateElement(selectedEl.id, { text: e.target.value })}
-              className="w-full bg-white/10 text-white text-sm rounded-lg px-3 py-2 mb-2 outline-none border border-white/20 focus:border-ig-border" placeholder="متن..." />
+              className="w-full bg-surface/10 text-white text-sm rounded-lg px-3 py-2 mb-2 outline-none border border-white/20 focus:border-ig-border" placeholder="متن..." />
           )}
           <div className="flex items-center gap-2 mb-2">
             <span className="text-white/70 text-xs w-12">سایز</span>
@@ -543,10 +543,10 @@ export default function StoryEditor({
                 </div>
               </div>
               <div className="flex gap-2 mb-2">
-                <button onClick={() => updateElement(selectedEl.id, { bold: !selectedEl.bold })} className={`w-9 h-9 rounded-lg flex items-center justify-center ${selectedEl.bold ? "bg-ig-blue" : "bg-white/10"}`}>
+                <button onClick={() => updateElement(selectedEl.id, { bold: !selectedEl.bold })} className={`w-9 h-9 rounded-lg flex items-center justify-center ${selectedEl.bold ? "bg-ig-blue" : "bg-surface/10"}`}>
                   <Bold className="w-4 h-4 text-white" />
                 </button>
-                <button onClick={() => updateElement(selectedEl.id, { italic: !selectedEl.italic })} className={`w-9 h-9 rounded-lg flex items-center justify-center ${selectedEl.italic ? "bg-ig-blue" : "bg-white/10"}`}>
+                <button onClick={() => updateElement(selectedEl.id, { italic: !selectedEl.italic })} className={`w-9 h-9 rounded-lg flex items-center justify-center ${selectedEl.italic ? "bg-ig-blue" : "bg-surface/10"}`}>
                   <Italic className="w-4 h-4 text-white" />
                 </button>
               </div>
@@ -557,9 +557,9 @@ export default function StoryEditor({
 
       {/* پنل متن */}
       {activeTool === "text" && (
-        <div className="shrink-0 bg-white/10 backdrop-blur-md px-4 py-3">
+        <div className="shrink-0 bg-surface/10 backdrop-blur-md px-4 py-3">
           <div className="flex items-center gap-2 mb-2">
-            <input type="text" value={textValue} onChange={(e) => setTextValue(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") addText(); }} autoFocus placeholder="متن خود را بنویسید..." className="flex-1 bg-white/10 text-white text-sm rounded-lg px-3 py-2 outline-none border border-white/20 focus:border-ig-border" />
+            <input type="text" value={textValue} onChange={(e) => setTextValue(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") addText(); }} autoFocus placeholder="متن خود را بنویسید..." className="flex-1 bg-surface/10 text-white text-sm rounded-lg px-3 py-2 outline-none border border-white/20 focus:border-ig-border" />
             <button onClick={addText} className="w-9 h-9 rounded-full bg-ig-blue flex items-center justify-center active:scale-90 transition-transform">
               <Check className="w-4 h-4 text-white" />
             </button>
@@ -569,7 +569,7 @@ export default function StoryEditor({
 
       {/* پنل نقاشی */}
       {activeTool === "draw" && (
-        <div className="shrink-0 bg-white/10 backdrop-blur-md px-4 py-3">
+        <div className="shrink-0 bg-surface/10 backdrop-blur-md px-4 py-3">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-white/70 text-xs">رنگ</span>
             <div className="flex gap-1.5 flex-wrap">
@@ -584,7 +584,7 @@ export default function StoryEditor({
             <span className="text-white/70 text-xs w-6 text-left">{drawWidth}</span>
           </div>
           <div className="flex gap-2">
-            <button onClick={clearDrawing} className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/10 text-white text-xs active:scale-95 transition-transform">
+            <button onClick={clearDrawing} className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-surface/10 text-white text-xs active:scale-95 transition-transform">
               <Eraser className="w-3.5 h-3.5" />پاک کردن نقاشی
             </button>
           </div>
@@ -593,10 +593,10 @@ export default function StoryEditor({
 
       {/* پنل استیکر */}
       {activeTool === "stickers" && (
-        <div className="shrink-0 bg-white/10 backdrop-blur-md px-4 py-3 max-h-[30vh] overflow-y-auto">
+        <div className="shrink-0 bg-surface/10 backdrop-blur-md px-4 py-3 max-h-[30vh] overflow-y-auto">
           <div className="grid grid-cols-6 gap-2 mb-3">
             {STICKERS.map((s) => (
-              <button key={s.emoji} onClick={() => addSticker(s.emoji)} className="aspect-square rounded-xl bg-white/10 flex items-center justify-center text-2xl active:scale-90 transition-transform">{s.emoji}</button>
+              <button key={s.emoji} onClick={() => addSticker(s.emoji)} className="aspect-square rounded-xl bg-surface/10 flex items-center justify-center text-2xl active:scale-90 transition-transform">{s.emoji}</button>
             ))}
           </div>
           <button onClick={addCoinButton} className="w-full py-2.5 rounded-xl bg-ig-blue text-white text-sm font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform">
@@ -607,7 +607,7 @@ export default function StoryEditor({
 
       {/* پنل فیلتر */}
       {activeTool === "filters" && (
-        <div className="shrink-0 bg-white/10 backdrop-blur-md px-4 py-3">
+        <div className="shrink-0 bg-surface/10 backdrop-blur-md px-4 py-3">
           <div className="flex gap-3 overflow-x-auto no-scrollbar">
             {FILTERS.map((f) => (
               <button key={f.id} onClick={() => setActiveFilter(f.id)} className="flex flex-col items-center gap-1.5 shrink-0 active:scale-95 transition-transform">
@@ -626,27 +626,27 @@ export default function StoryEditor({
       {activeTool === "elements" && !selectedEl && (
         <div className="shrink-0 flex items-center justify-center gap-4 py-4 bg-black/40 backdrop-blur-md">
           <button onClick={() => setActiveTool("text")} className="flex flex-col items-center gap-1 active:scale-95 transition-transform">
-            <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center"><Type className="w-5 h-5 text-white" /></div>
+            <div className="w-12 h-12 rounded-full bg-surface/10 flex items-center justify-center"><Type className="w-5 h-5 text-white" /></div>
             <span className="text-white/70 text-xs">متن</span>
           </button>
           <button onClick={() => setActiveTool("draw")} className="flex flex-col items-center gap-1 active:scale-95 transition-transform">
-            <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center"><Pencil className="w-5 h-5 text-white" /></div>
+            <div className="w-12 h-12 rounded-full bg-surface/10 flex items-center justify-center"><Pencil className="w-5 h-5 text-white" /></div>
             <span className="text-white/70 text-xs">نقاشی</span>
           </button>
           <button onClick={() => setActiveTool("stickers")} className="flex flex-col items-center gap-1 active:scale-95 transition-transform">
-            <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center"><Sticker className="w-5 h-5 text-white" /></div>
+            <div className="w-12 h-12 rounded-full bg-surface/10 flex items-center justify-center"><Sticker className="w-5 h-5 text-white" /></div>
             <span className="text-white/70 text-xs">استیکر</span>
           </button>
           <button onClick={() => setActiveTool("filters")} className="flex flex-col items-center gap-1 active:scale-95 transition-transform">
-            <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center"><Sparkles className="w-5 h-5 text-white" /></div>
+            <div className="w-12 h-12 rounded-full bg-surface/10 flex items-center justify-center"><Sparkles className="w-5 h-5 text-white" /></div>
             <span className="text-white/70 text-xs">فیلتر</span>
           </button>
           <button onClick={addCoinButton} className="flex flex-col items-center gap-1 active:scale-95 transition-transform">
-            <div className="w-12 h-12 rounded-full bg-ig-gold flex items-center justify-center"><Coins className="w-5 h-5 text-black" /></div>
+            <div className="w-12 h-12 rounded-full bg-ig-gold flex items-center justify-center"><Coins className="w-5 h-5 text-foreground" /></div>
             <span className="text-white/70 text-xs">سکه</span>
           </button>
           <button onClick={() => setShowGoldenModal(true)} className="flex flex-col items-center gap-1 active:scale-95 transition-transform">
-            <div className={`w-12 h-12 rounded-full flex items-center justify-center ${goldenActive ? "bg-ig-gray-bg shadow-lg shadow-amber-400/30" : "bg-white/10"}`}>
+            <div className={`w-12 h-12 rounded-full flex items-center justify-center ${goldenActive ? "bg-ig-gray-bg shadow-lg shadow-amber-400/30" : "bg-surface/10"}`}>
               <Crown className={`w-5 h-5 ${goldenActive ? "text-white" : "text-ig-gold"}`} fill={goldenActive ? "currentColor" : "none"} />
             </div>
             <span className={`text-xs ${goldenActive ? "text-ig-gold font-bold" : "text-white/70"}`}>{goldenActive ? "طلایی" : "طلایی"}</span>
@@ -657,7 +657,7 @@ export default function StoryEditor({
       {/* دکمه بازگشت */}
       {activeTool !== "elements" && !selectedEl && (
         <div className="shrink-0 flex items-center justify-center py-3 bg-black/40 backdrop-blur-md">
-          <button onClick={() => setActiveTool("elements")} className="px-4 py-2 rounded-full bg-white/10 text-white text-sm font-bold active:scale-95 transition-transform">بازگشت</button>
+          <button onClick={() => setActiveTool("elements")} className="px-4 py-2 rounded-full bg-surface/10 text-white text-sm font-bold active:scale-95 transition-transform">بازگشت</button>
         </div>
       )}
 
@@ -670,7 +670,7 @@ export default function StoryEditor({
           onClick={() => setShowGoldenModal(false)}
         >
           <div
-            className="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl"
+            className="bg-surface rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             {goldenActive ? (
@@ -679,7 +679,7 @@ export default function StoryEditor({
                   <Crown className="w-9 h-9 text-white" fill="currentColor" />
                 </div>
                 <h2 className="text-lg font-bold text-foreground mb-2">استوری طلایی فعال است</h2>
-                <p className="text-sm text-neutral-500 mb-4">
+                <p className="text-sm text-ig-gray mb-4">
                   استوری شما پس از انتشار به صورت طلایی نمایش داده می‌شود.
                 </p>
                 <button
@@ -697,7 +697,7 @@ export default function StoryEditor({
 
                 <h2 className="text-lg font-bold text-foreground mb-2">استوری طلایی</h2>
 
-                <p className="text-sm text-neutral-500 mb-4 leading-6">
+                <p className="text-sm text-ig-gray mb-4 leading-6">
                   با خرید استوری طلایی، استوری شما برای مدت ۲۴ ساعت ویژه می‌شود:
                 </p>
 
@@ -708,7 +708,7 @@ export default function StoryEditor({
                     </div>
                     <div>
                       <p className="text-sm font-bold text-foreground">نمایش اولویت دار</p>
-                      <p className="text-xs text-neutral-500">استوری شما در صدر لیست استوری کاربران نمایش داده می‌شود</p>
+                      <p className="text-xs text-ig-gray">استوری شما در صدر لیست استوری کاربران نمایش داده می‌شود</p>
                     </div>
                   </div>
 
@@ -718,7 +718,7 @@ export default function StoryEditor({
                     </div>
                     <div>
                       <p className="text-sm font-bold text-foreground">رینگ طلایی خاص</p>
-                      <p className="text-xs text-neutral-500">استوری شما با یک رینگ طلایی فوق خاص و درخشان برای همه کاربران نمایش داده می‌شود</p>
+                      <p className="text-xs text-ig-gray">استوری شما با یک رینگ طلایی فوق خاص و درخشان برای همه کاربران نمایش داده می‌شود</p>
                     </div>
                   </div>
 
@@ -728,7 +728,7 @@ export default function StoryEditor({
                     </div>
                     <div>
                       <p className="text-sm font-bold text-foreground">بازدید بیشتر</p>
-                      <p className="text-xs text-neutral-500">استوری طلایی بازدید بیشتری دریافت می‌کند و بیشتر دیده می‌شود</p>
+                      <p className="text-xs text-ig-gray">استوری طلایی بازدید بیشتری دریافت می‌کند و بیشتر دیده می‌شود</p>
                     </div>
                   </div>
                 </div>
@@ -738,7 +738,7 @@ export default function StoryEditor({
                     <Coins className="w-4 h-4 text-white" />
                   </div>
                   <span className="text-lg font-black text-ig-gold">{toPersianDigits(100)}</span>
-                  <span className="text-sm text-neutral-500">سکه</span>
+                  <span className="text-sm text-ig-gray">سکه</span>
                 </div>
 
                 {goldenError && (

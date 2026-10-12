@@ -43,17 +43,17 @@ export default function ImageCropperModal({ image, onCrop, onCancel }: Props) {
   return (
     <Portal>
     <div className="fixed inset-0 z-50 bg-black/80 ig-glass flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl w-full max-w-sm p-4 ig-modal-in">
+      <div className="bg-surface rounded-2xl w-full max-w-sm p-4 ig-modal-in">
         <div className="flex items-center justify-end mb-2">
           <button
             onClick={onCancel}
-            className="w-7 h-7 rounded-full bg-neutral-100 flex items-center justify-center"
+            className="w-7 h-7 rounded-full bg-ig-btn2 flex items-center justify-center"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="relative w-full aspect-square rounded-xl overflow-hidden bg-neutral-100 mb-4">
+        <div className="relative w-full aspect-square rounded-xl overflow-hidden bg-ig-btn2 mb-4">
           <Cropper
             image={image}
             crop={crop}
@@ -68,7 +68,7 @@ export default function ImageCropperModal({ image, onCrop, onCancel }: Props) {
         </div>
 
         <div className="mb-4">
-          <label className="text-xs text-neutral-500 font-bold block mb-1.5">بزرگنمایی</label>
+          <label className="text-xs text-ig-gray font-bold block mb-1.5">بزرگنمایی</label>
           <input
             type="range"
             min={1}
@@ -83,7 +83,7 @@ export default function ImageCropperModal({ image, onCrop, onCancel }: Props) {
         <div className="grid grid-cols-2 gap-3">
           <button
             onClick={onCancel}
-            className="py-2.5 rounded-xl bg-neutral-100 text-sm font-bold hover:bg-neutral-200 transition-colors"
+            className="py-2.5 rounded-xl bg-ig-btn2 text-sm font-bold hover:bg-neutral-200 transition-colors"
           >
             انصراف
           </button>

@@ -41,18 +41,18 @@ export default function FacePhotoWarningModal({ open, onConfirm, onCancel, title
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.92, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="relative bg-white rounded-3xl max-w-sm w-full overflow-hidden ig-shadow-lg"
+            className="relative bg-surface rounded-3xl max-w-sm w-full overflow-hidden ig-shadow-lg"
           >
             {/* هدر سیاه سفید */}
             <div className="relative px-5 pt-5 pb-4 bg-neutral-900">
               <button
                 onClick={onCancel}
-                className="absolute top-3 left-3 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+                className="absolute top-3 left-3 w-8 h-8 rounded-full bg-surface/10 hover:bg-surface/20 flex items-center justify-center transition-colors"
               >
                 <X className="w-4 h-4 text-white" />
               </button>
               <div className="flex flex-col items-center text-center">
-                <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center mb-2">
+                <div className="w-14 h-14 rounded-2xl bg-surface/10 flex items-center justify-center mb-2">
                   <Camera className="w-7 h-7 text-white" />
                 </div>
                 <h2 className="text-white font-black text-base">{title}</h2>
@@ -72,10 +72,10 @@ export default function FacePhotoWarningModal({ open, onConfirm, onCancel, title
                     transition={{ delay: 0.1 + i * 0.08 }}
                     className="flex items-center gap-2.5"
                   >
-                    <div className="w-7 h-7 rounded-lg bg-neutral-100 flex items-center justify-center shrink-0">
-                      <rule.icon className="w-3.5 h-3.5 text-neutral-600" />
+                    <div className="w-7 h-7 rounded-lg bg-ig-btn2 flex items-center justify-center shrink-0">
+                      <rule.icon className="w-3.5 h-3.5 text-ig-gray" />
                     </div>
-                    <p className="text-xs text-neutral-600 font-medium leading-4">
+                    <p className="text-xs text-ig-gray font-medium leading-4">
                       {rule.text}
                     </p>
                   </motion.div>
@@ -87,10 +87,10 @@ export default function FacePhotoWarningModal({ open, onConfirm, onCancel, title
                     transition={{ delay: 0.1 + RULES.length * 0.08 }}
                     className="flex items-center gap-2.5"
                   >
-                    <div className="w-7 h-7 rounded-lg bg-neutral-100 flex items-center justify-center shrink-0">
-                      <DUPLICATE_RULE.icon className="w-3.5 h-3.5 text-neutral-600" />
+                    <div className="w-7 h-7 rounded-lg bg-ig-btn2 flex items-center justify-center shrink-0">
+                      <DUPLICATE_RULE.icon className="w-3.5 h-3.5 text-ig-gray" />
                     </div>
-                    <p className="text-xs text-neutral-600 font-medium leading-4">
+                    <p className="text-xs text-ig-gray font-medium leading-4">
                       {DUPLICATE_RULE.text}
                     </p>
                   </motion.div>
@@ -105,7 +105,7 @@ export default function FacePhotoWarningModal({ open, onConfirm, onCancel, title
               <div className="flex gap-2 pt-1">
                 <button
                   onClick={onCancel}
-                  className="flex-1 py-3 rounded-2xl bg-neutral-100 text-neutral-600 text-sm font-bold hover:bg-neutral-200 transition-colors"
+                  className="flex-1 py-3 rounded-2xl bg-ig-btn2 text-ig-gray text-sm font-bold hover:bg-neutral-200 transition-colors"
                 >
                   انصراف
                 </button>

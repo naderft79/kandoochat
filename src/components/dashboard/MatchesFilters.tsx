@@ -108,7 +108,7 @@ export default function MatchesFilters({
   const draftCities = draft.province === "ALL" ? [] : (PROVINCES[draft.province] ?? []);
 
   const applyBar = (onReset: () => void) => (
-    <div className="sticky bottom-0 bg-white border-t border-ig-divider px-5 py-3 flex gap-2">
+    <div className="sticky bottom-0 bg-surface border-t border-ig-divider px-5 py-3 flex gap-2">
       <Button variant="secondary" onClick={onReset}>
         بازنشانی
       </Button>

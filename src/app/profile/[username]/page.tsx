@@ -137,7 +137,7 @@ export default async function PublicProfilePage({
             </div>
           )}
           <div className="relative overflow-hidden rounded-3xl bg-neutral-200 p-[1.5px] ig-shadow-lg">
-            <div className="rounded-3xl bg-white p-5 md:p-6">
+            <div className="rounded-3xl bg-surface p-5 md:p-6">
               {/* ردیف اول: آواتار + نام + آمار */}
               <div className="flex items-center gap-4 md:gap-5">
                 {/* آواتار */}
@@ -188,21 +188,21 @@ export default async function PublicProfilePage({
 
               {/* آمار — ۳ کارت */}
               <div className="grid grid-cols-3 gap-2 mt-4">
-                <div className="rounded-xl bg-neutral-100 px-2 py-2.5 text-center">
-                  <p className={`text-base font-black ${hasSubscription ? "text-neutral-800" : "text-neutral-400"}`}>
+                <div className="rounded-xl bg-ig-btn2 px-2 py-2.5 text-center">
+                  <p className={`text-base font-black ${hasSubscription ? "text-foreground" : "text-neutral-400"}`}>
                     {hasSubscription ? "فعال" : "غیرفعال"}
                   </p>
-                  <p className="text-xs text-neutral-500 font-bold">اشتراک</p>
+                  <p className="text-xs text-ig-gray font-bold">اشتراک</p>
                 </div>
-                <div className="rounded-xl bg-neutral-100 px-2 py-2.5 text-center">
-                  <p className="text-base font-black text-neutral-800">{toPersianDigits(likeCount)}</p>
-                  <p className="text-xs text-neutral-500 font-bold">لایک</p>
+                <div className="rounded-xl bg-ig-btn2 px-2 py-2.5 text-center">
+                  <p className="text-base font-black text-foreground">{toPersianDigits(likeCount)}</p>
+                  <p className="text-xs text-ig-gray font-bold">لایک</p>
                 </div>
-                <div className="rounded-xl bg-neutral-100 px-2 py-2.5 text-center">
+                <div className="rounded-xl bg-ig-btn2 px-2 py-2.5 text-center">
                   <p className={`text-base font-black flex items-center justify-center gap-0.5 ${user.isOnline ? "text-ig-gray" : "text-neutral-400"}`}>
                     {user.isOnline ? "آنلاین" : "آفلاین"}
                   </p>
-                  <p className="text-xs text-neutral-500 font-bold">
+                  <p className="text-xs text-ig-gray font-bold">
                     {user.isOnline ? "وضعیت" : `آخرین بازدید ${formatLastSeen(user.lastSeen)}`}
                   </p>
                 </div>
@@ -210,16 +210,16 @@ export default async function PublicProfilePage({
 
               {/* نوار وضعیت: تایید موبایل + تایید هویت */}
               <div className="flex flex-wrap gap-2 mt-3">
-                <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full ${user.phoneVerified ? "bg-neutral-100" : "bg-neutral-100"}`}>
+                <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full ${user.phoneVerified ? "bg-ig-btn2" : "bg-ig-btn2"}`}>
                   <Phone className={`w-3.5 h-3.5 ${user.phoneVerified ? "text-foreground" : "text-neutral-400"}`} />
                   <span className={`text-xs font-bold ${user.phoneVerified ? "text-foreground" : "text-neutral-400"}`}>
                     {user.phoneVerified ? "موبایل تایید شده" : "موبایل تایید نشده"}
                   </span>
                 </div>
 
-                <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full ${user.isVerified ? "bg-neutral-100" : "bg-neutral-100"}`}>
+                <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full ${user.isVerified ? "bg-ig-btn2" : "bg-ig-btn2"}`}>
                   <ShieldCheck className={`w-3.5 h-3.5 ${user.isVerified ? "text-foreground" : "text-neutral-400"}`} />
-                  <span className={`text-xs font-bold ${user.isVerified ? "text-foreground" : "text-neutral-500"}`}>
+                  <span className={`text-xs font-bold ${user.isVerified ? "text-foreground" : "text-ig-gray"}`}>
                     {user.isVerified ? "هویت تایید شده" : "هویت تایید نشده"}
                   </span>
                 </div>
@@ -280,7 +280,7 @@ export default async function PublicProfilePage({
             {infoItems.map((item) => (
               <div
                 key={item.label}
-                className="flex items-center gap-2.5 rounded-2xl bg-neutral-50 p-3 ig-shadow-sm"
+                className="flex items-center gap-2.5 rounded-2xl bg-ig-gray-bg p-3 ig-shadow-sm"
               >
                 <div className="w-8 h-8 rounded-xl bg-neutral-200 flex items-center justify-center shrink-0 text-neutral-700">
                   <item.icon className="w-4 h-4" />

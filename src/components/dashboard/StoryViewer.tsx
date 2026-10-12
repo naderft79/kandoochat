@@ -541,9 +541,9 @@ export default function StoryViewer({
         <div className="absolute top-0 left-0 right-0 z-20 pt-[max(0.75rem,env(safe-area-inset-top))] px-3">
           <div className="flex gap-1 mb-3">
             {currentUser.stories.map((s, i) => (
-              <div key={s.id} className="flex-1 h-[3px] bg-white/30 rounded-full overflow-hidden">
+              <div key={s.id} className="flex-1 h-[3px] bg-surface/30 rounded-full overflow-hidden">
                 <div
-                  className={`h-full rounded-full ${currentUser.isGolden ? "bg-ig-gold" : "bg-white"}`}
+                  className={`h-full rounded-full ${currentUser.isGolden ? "bg-ig-gold" : "bg-surface"}`}
                   style={{
                     width: i < storyIndex ? "100%" : i === storyIndex ? `${progress}%` : "0%",
                     transition: i === storyIndex && paused ? "none" : i === storyIndex ? "width 0.05s linear" : "none",
@@ -555,7 +555,7 @@ export default function StoryViewer({
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className={`w-9 h-9 rounded-full overflow-hidden bg-white/20 ${currentUser.isGolden ? "ring-2 ring-ig-border" : "ring-2 ring-white/30"}`}>
+              <div className={`w-9 h-9 rounded-full overflow-hidden bg-surface/20 ${currentUser.isGolden ? "ring-2 ring-ig-border" : "ring-2 ring-white/30"}`}>
                 {currentUser.photo ? (
                   <div className="relative w-full h-full">
                     <Image src={currentUser.photo} alt={currentUser.firstName} fill className="object-cover" sizes="36px" />
@@ -576,17 +576,17 @@ export default function StoryViewer({
 
             <div className="flex items-center gap-1">
               {isMyStory && viewCount !== null && (
-                <span className="flex items-center gap-1 text-xs text-white/80 px-2 py-1 rounded-full bg-white/10">
+                <span className="flex items-center gap-1 text-xs text-white/80 px-2 py-1 rounded-full bg-surface/10">
                   <Eye className="w-3.5 h-3.5" />
                   {toPersianDigits(viewCount)}
                 </span>
               )}
               {isMyStory && (
-                <button onClick={deleteStory} className="p-2 rounded-full hover:bg-white/20 transition-colors">
+                <button onClick={deleteStory} className="p-2 rounded-full hover:bg-surface/20 transition-colors">
                   <Trash2 className="w-5 h-5 text-white" />
                 </button>
               )}
-              <button onClick={onClose} className="p-2 rounded-full hover:bg-white/20 transition-colors">
+              <button onClick={onClose} className="p-2 rounded-full hover:bg-surface/20 transition-colors">
                 <X className="w-6 h-6 text-white" />
               </button>
             </div>
@@ -683,7 +683,7 @@ export default function StoryViewer({
         {showMenu && !isMyStory && (
           <>
             <div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)} />
-            <div className="absolute bottom-20 right-4 z-50 bg-white rounded-2xl shadow-xl overflow-hidden ig-modal-in min-w-[180px]">
+            <div className="absolute bottom-20 right-4 z-50 bg-surface rounded-2xl shadow-xl overflow-hidden ig-modal-in min-w-[180px]">
               <button onClick={startChat} className="flex items-center gap-3 w-full px-4 py-3 hover:bg-ig-gray-bg transition-colors text-right">
                 <MessageCircle className="w-5 h-5 text-ig-gray" strokeWidth={1.5} />
                 <span className="text-sm font-bold text-foreground">شروع گفتگو</span>
@@ -715,7 +715,7 @@ export default function StoryViewer({
             </div>
           ) : replySent ? (
             <div className="flex flex-col items-center gap-2 pb-3">
-              <span className="text-sm text-white/90 bg-white/10 px-4 py-2 rounded-full">
+              <span className="text-sm text-white/90 bg-surface/10 px-4 py-2 rounded-full">
                 ارسال شد ✓
               </span>
               <span className="text-xs text-white/60">در حال انتقال به چت...</span>
@@ -723,7 +723,7 @@ export default function StoryViewer({
           ) : !hasSubscription ? (
             /* کاربر بدون اشتراک */
             <div className="pb-2">
-              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-2xl px-4 py-3 border border-white/20 mb-2">
+              <div className="flex items-center gap-2 bg-surface/10 backdrop-blur-md rounded-2xl px-4 py-3 border border-white/20 mb-2">
                 <Crown className="w-5 h-5 text-ig-gold shrink-0" />
                 <p className="text-xs text-white/90 leading-5">
                   برای پاسخ و شروع گفتگو با این کاربر نیاز به خرید اشتراک می باشد
@@ -745,7 +745,7 @@ export default function StoryViewer({
               <button onClick={() => openCoinModal(false)} className="p-2 shrink-0 active:scale-90 transition-transform">
                 <Gift className="w-6 h-6 text-white" />
               </button>
-              <div className="flex-1 flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-full px-4 py-2.5 border border-white/20">
+              <div className="flex-1 flex items-center gap-2 bg-surface/10 backdrop-blur-md rounded-full px-4 py-2.5 border border-white/20">
                 <input
                   value={replyText}
                   onChange={(e) => setReplyText(e.target.value)}
@@ -771,7 +771,7 @@ export default function StoryViewer({
           {currentUser.stories.length > 1 && (
             <div className="flex items-center justify-center gap-1 pb-1">
               {currentUser.stories.map((_, i) => (
-                <span key={i} className={`w-1.5 h-1.5 rounded-full transition-all ${i === storyIndex ? "bg-white w-4" : "bg-white/40"}`} />
+                <span key={i} className={`w-1.5 h-1.5 rounded-full transition-all ${i === storyIndex ? "bg-surface w-4" : "bg-surface/40"}`} />
               ))}
             </div>
           )}
@@ -780,14 +780,14 @@ export default function StoryViewer({
         {/* مودال هدیه سکه — bottom sheet */}
         {showCoinModal && (
           <div className="absolute inset-0 z-50 flex items-end justify-center bg-black/40 ig-fade-in" onClick={() => setShowCoinModal(false)}>
-            <div className="bg-white w-full max-w-md rounded-t-2xl ig-slide-up overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-surface w-full max-w-md rounded-t-2xl ig-slide-up overflow-hidden" onClick={(e) => e.stopPropagation()}>
               <div className="flex items-center justify-between px-5 py-3.5 border-b border-neutral-100">
                 <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
                   <Gift className="w-4 h-4 text-neutral-700" />
                   هدیه سکه به {currentUser.firstName}
                 </h3>
-                <button onClick={() => setShowCoinModal(false)} className="w-8 h-8 rounded-lg hover:bg-neutral-100 flex items-center justify-center transition-colors">
-                  <X className="w-4 h-4 text-neutral-500" />
+                <button onClick={() => setShowCoinModal(false)} className="w-8 h-8 rounded-lg hover:bg-ig-btn2 flex items-center justify-center transition-colors">
+                  <X className="w-4 h-4 text-ig-gray" />
                 </button>
               </div>
               <div className="px-5 py-4">
@@ -830,7 +830,7 @@ export default function StoryViewer({
                         <button
                           key={amt}
                           onClick={() => setCoinAmount(String(amt))}
-                          className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${coinAmount === String(amt) ? "bg-neutral-800 text-white" : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"}`}
+                          className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${coinAmount === String(amt) ? "bg-neutral-800 text-white" : "bg-ig-btn2 text-ig-gray hover:bg-neutral-200"}`}
                         >
                           {toPersianDigits(amt)}
                         </button>
@@ -867,7 +867,7 @@ export default function StoryViewer({
         {/* مودال گزارش تخلف */}
         {showReportModal && (
           <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 ig-fade-in" onClick={() => setShowReportModal(false)}>
-            <div className="bg-white rounded-3xl mx-6 max-w-xs w-full overflow-hidden ig-modal-in" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-surface rounded-3xl mx-6 max-w-xs w-full overflow-hidden ig-modal-in" onClick={(e) => e.stopPropagation()}>
               <div className="p-6">
                 {reportSent ? (
                   <div className="text-center">
@@ -919,7 +919,7 @@ export default function StoryViewer({
         {/* مودال خرید اشتراک */}
         {showSubModal && (
           <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 ig-fade-in" onClick={() => setShowSubModal(false)}>
-            <div className="bg-white rounded-3xl mx-6 max-w-xs w-full overflow-hidden ig-modal-in" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-surface rounded-3xl mx-6 max-w-xs w-full overflow-hidden ig-modal-in" onClick={(e) => e.stopPropagation()}>
               <div className="p-6 text-center">
                 <div className="w-16 h-16 rounded-full bg-ig-gray-bg flex items-center justify-center mx-auto mb-4">
                   <Crown className="w-8 h-8 text-white" />

@@ -73,8 +73,8 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-dvh bg-white flex items-center justify-center p-4">
-      <div className="w-full max-w-[350px] bg-white border border-ig-border rounded-xl p-8">
+    <div className="min-h-dvh bg-surface flex items-center justify-center p-4">
+      <div className="w-full max-w-[350px] bg-surface border border-ig-border rounded-xl p-8">
         <h1 className="text-xl font-bold text-center mb-2">بازیابی رمز عبور</h1>
 
         {step === "phone" && (

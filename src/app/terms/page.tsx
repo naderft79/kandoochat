@@ -21,14 +21,14 @@ export default function TermsPage() {
         </div>
 
         <div className="space-y-4">
-          <section className="bg-white border border-ig-border rounded-2xl p-6">
+          <section className="bg-surface border border-ig-border rounded-2xl p-6">
             <h1 className="text-lg font-bold text-foreground mb-3">قوانین و مقررات کندو</h1>
             <p className="text-sm text-foreground/70 leading-7">
               با استفاده از کندو، شما موافقت می کنید که قوانین زیر را رعایت کنید. عدم رعایت این قوانین ممکن است منجر به مسدود شدن حساب شما شود.
             </p>
           </section>
 
-          <section className="bg-white border border-ig-border rounded-2xl p-6">
+          <section className="bg-surface border border-ig-border rounded-2xl p-6">
             <h2 className="text-sm font-bold text-foreground mb-3">۱. رفتار محترمانه</h2>
             <ul className="space-y-2 text-sm text-foreground/70 leading-6">
               <li>- با همه کاربران با احترام رفتار کنید</li>
@@ -37,7 +37,7 @@ export default function TermsPage() {
             </ul>
           </section>
 
-          <section className="bg-white border border-ig-border rounded-2xl p-6">
+          <section className="bg-surface border border-ig-border rounded-2xl p-6">
             <h2 className="text-sm font-bold text-foreground mb-3">۲. پروفایل واقعی</h2>
             <ul className="space-y-2 text-sm text-foreground/70 leading-6">
               <li>- اطلاعات پروفایل باید واقعی و دقیق باشد</li>
@@ -46,7 +46,7 @@ export default function TermsPage() {
             </ul>
           </section>
 
-          <section className="bg-white border border-ig-border rounded-2xl p-6">
+          <section className="bg-surface border border-ig-border rounded-2xl p-6">
             <h2 className="text-sm font-bold text-foreground mb-3">۳. محتوای مجاز</h2>
             <ul className="space-y-2 text-sm text-foreground/70 leading-6">
               <li>- ارسال محتوای غیراخلاقی، خشونت آمیز یا غیرقانونی ممنوع است</li>
@@ -55,7 +55,7 @@ export default function TermsPage() {
             </ul>
           </section>
 
-          <section className="bg-white border border-ig-border rounded-2xl p-6">
+          <section className="bg-surface border border-ig-border rounded-2xl p-6">
             <h2 className="text-sm font-bold text-foreground mb-3">۴. امنیت</h2>
             <ul className="space-y-2 text-sm text-foreground/70 leading-6">
               <li>- اطلاعات حساب خود را با دیگران به اشتراک نگذارید</li>
@@ -64,7 +64,7 @@ export default function TermsPage() {
             </ul>
           </section>
 
-          <section className="bg-white border border-ig-border rounded-2xl p-6">
+          <section className="bg-surface border border-ig-border rounded-2xl p-6">
             <h2 className="text-sm font-bold text-foreground mb-3">۵. پرداخت و بازگشت</h2>
             <ul className="space-y-2 text-sm text-foreground/70 leading-6">
               <li>- خرید سکه و اشتراک نهایی است</li>

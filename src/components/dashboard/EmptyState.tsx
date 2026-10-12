@@ -23,7 +23,7 @@ export default function EmptyState({
     <div className="flex flex-col items-center justify-center text-center py-16 px-6 ig-fade-in">
       <div
         className={`w-20 h-20 rounded-full flex items-center justify-center mb-4 ${
-          gradient ? "bg-ig-gray-bg" : "bg-neutral-100"
+          gradient ? "bg-ig-gray-bg" : "bg-ig-btn2"
         }`}
       >
         <Icon

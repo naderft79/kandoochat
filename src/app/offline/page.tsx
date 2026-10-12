@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function OfflinePage() {
   return (
-    <div className="min-h-dvh flex flex-col items-center justify-center px-6 text-center bg-white">
+    <div className="min-h-dvh flex flex-col items-center justify-center px-6 text-center bg-surface">
       <Image
         src="/bee-colori-logo.png"
         alt="کندو"
@@ -16,7 +16,7 @@ export default function OfflinePage() {
         height={96}
         className="mb-6"
       />
-      <div className="w-16 h-16 rounded-full bg-neutral-100 flex items-center justify-center mb-4">
+      <div className="w-16 h-16 rounded-full bg-ig-btn2 flex items-center justify-center mb-4">
         <WifiOff className="w-8 h-8 text-neutral-400" strokeWidth={1.5} />
       </div>
       <h1 className="text-lg font-black text-foreground mb-2">به اینترنت متصل نیستید</h1>

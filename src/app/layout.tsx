@@ -5,6 +5,7 @@ import ServiceWorkerRegister from "@/components/pwa/ServiceWorkerRegister";
 import InstallBanner from "@/components/pwa/InstallBanner";
 import AndroidBackHandler from "@/components/AndroidBackHandler";
 import PortraitGuard from "@/components/PortraitGuard";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import { ToastProvider } from "@/components/ToastProvider";
 import LiveDataProvider from "@/components/dashboard/LiveDataProvider";
 import { getSession } from "@/lib/auth";
@@ -90,15 +91,17 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     >
       <head />
       <body className="min-h-full flex flex-col font-sans" suppressHydrationWarning>
-        <ServiceWorkerRegister />
-        <AndroidBackHandler />
-        <PortraitGuard />
-        <ToastProvider>
-          <LiveDataProvider enabled={!!session}>
-            {children}
-          </LiveDataProvider>
-        </ToastProvider>
-        <InstallBanner />
+        <ThemeProvider>
+          <ServiceWorkerRegister />
+          <AndroidBackHandler />
+          <PortraitGuard />
+          <ToastProvider>
+            <LiveDataProvider enabled={!!session}>
+              {children}
+            </LiveDataProvider>
+          </ToastProvider>
+          <InstallBanner />
+        </ThemeProvider>
       </body>
     </html>
   );

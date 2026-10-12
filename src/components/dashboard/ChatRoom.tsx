@@ -723,9 +723,9 @@ export default function ChatRoom({
   const REACTIONS = ["❤️", "😂", "😍", "🔥", "👏", "😮"];
 
   return (
-    <div className={`flex flex-col h-[calc(100dvh-3.5rem)] lg:h-[100dvh] lg:mx-auto relative bg-white overflow-hidden ${(contextMessage || reactionFor || showTransfer || showMenu) ? "select-none" : ""}`}>
+    <div className={`flex flex-col h-[calc(100dvh-3.5rem)] lg:h-[100dvh] lg:mx-auto relative bg-surface overflow-hidden ${(contextMessage || reactionFor || showTransfer || showMenu) ? "select-none" : ""}`}>
       {/* هدر مدرن */}
-      <div className="flex items-center gap-3 px-3 py-2.5 border-b border-ig-border bg-white shrink-0 z-30 pt-[max(0.625rem,env(safe-area-inset-top))]">
+      <div className="flex items-center gap-3 px-3 py-2.5 border-b border-ig-border bg-surface shrink-0 z-30 pt-[max(0.625rem,env(safe-area-inset-top))]">
         <Link href="/dashboard/chat" aria-label="بازگشت به لیست گفتگوها" className="p-1.5 shrink-0 active:scale-90 transition-transform lg:hidden">
           <ArrowRight className="w-5 h-5 text-foreground" strokeWidth={2} />
         </Link>
@@ -776,7 +776,7 @@ export default function ChatRoom({
       {showMenu && (
         <>
           <div className="absolute inset-0 z-20" onClick={() => setShowMenu(false)} />
-          <div className="absolute top-14 left-3 z-30 bg-white rounded-xl shadow-lg border border-ig-border py-1 ig-modal-in">
+          <div className="absolute top-14 left-3 z-30 bg-surface rounded-xl shadow-lg border border-ig-border py-1 ig-modal-in">
             {!isAIChat && (
               <button
                 onClick={() => { setShowTransfer(true); setShowMenu(false); }}
@@ -947,7 +947,7 @@ export default function ChatRoom({
                     className={`relative px-3.5 py-2.5 rounded-3xl text-sm leading-6 ig-shadow-sm transition-all ${
                       mine
                         ? `bg-ig-blue text-white rounded-bl-lg ${m.status === "sending" ? "opacity-70" : ""}`
-                        : "bg-white text-foreground border border-ig-border rounded-br-lg"
+                        : "bg-surface text-foreground border border-ig-border rounded-br-lg"
                     }`}
                   >
                     {m.type === "IMAGE" && m.mediaUrl ? (
@@ -968,7 +968,7 @@ export default function ChatRoom({
 
                     {/* واکنش */}
                     {m.reaction && (
-                      <span className={`absolute -bottom-2 ${mine ? "-right-1" : "-left-1"} text-base bg-white rounded-full px-1 ig-shadow-sm`}>
+                      <span className={`absolute -bottom-2 ${mine ? "-right-1" : "-left-1"} text-base bg-surface rounded-full px-1 ig-shadow-sm`}>
                         {m.reaction}
                       </span>
                     )}
@@ -999,7 +999,7 @@ export default function ChatRoom({
                 {/* اکشن بار شناور در hover دسکتاپ */}
                 {!isSticker && (
                   <div className={`absolute ${mine ? "-left-1" : "-right-1"} top-1/2 -translate-y-1/2 ${mine ? "-translate-x-full" : "translate-x-full"} opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none group-hover:pointer-events-auto`}>
-                    <div className="flex items-center gap-0.5 bg-white rounded-full px-1 py-1 ig-shadow border border-ig-border">
+                    <div className="flex items-center gap-0.5 bg-surface rounded-full px-1 py-1 ig-shadow border border-ig-border">
                       <button
                         onClick={() => setReplyTo({ id: m.id, content: m.content, type: m.type, senderId: m.senderId })}
                         className="w-7 h-7 rounded-full hover:bg-ig-gray-bg flex items-center justify-center transition-colors active:scale-90"
@@ -1029,7 +1029,7 @@ export default function ChatRoom({
         })}
         {otherTyping && (
           <div className="flex justify-end ig-fade-in">
-            <div className="bg-white border border-ig-border rounded-3xl rounded-br-lg px-4 py-3 ig-shadow-sm">
+            <div className="bg-surface border border-ig-border rounded-3xl rounded-br-lg px-4 py-3 ig-shadow-sm">
               <div className="flex gap-1">
                 <span className="w-1.5 h-1.5 bg-ig-gray rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
                 <span className="w-1.5 h-1.5 bg-ig-gray rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
@@ -1054,28 +1054,28 @@ export default function ChatRoom({
       {/* مودال انتقال سکه */}
       {showTransfer && (
         <div className="absolute inset-0 bg-black/40 z-50 flex items-end lg:items-center justify-center" onClick={() => setShowTransfer(false)}>
-          <div className="bg-white w-full lg:w-96 rounded-t-2xl lg:rounded-2xl ig-slide-up lg:ig-modal-in overflow-hidden" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-surface w-full lg:w-96 rounded-t-2xl lg:rounded-2xl ig-slide-up lg:ig-modal-in overflow-hidden" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between px-5 py-3.5 border-b border-neutral-100">
               <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
                 <Coins className="w-4 h-4 text-neutral-700" />
                 {transferMode === "GIFT" ? "هدیه سکه" : "درخواست سکه"}
               </h3>
-              <button onClick={() => setShowTransfer(false)} className="w-8 h-8 rounded-lg hover:bg-neutral-100 flex items-center justify-center transition-colors">
-                <X className="w-4 h-4 text-neutral-500" />
+              <button onClick={() => setShowTransfer(false)} className="w-8 h-8 rounded-lg hover:bg-ig-btn2 flex items-center justify-center transition-colors">
+                <X className="w-4 h-4 text-ig-gray" />
               </button>
             </div>
             <div className="px-5 py-4">
             <div className="flex gap-2 mb-3">
               <button
                 onClick={() => setTransferMode("GIFT")}
-                className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${transferMode === "GIFT" ? "bg-ig-blue text-white" : "bg-neutral-100 text-neutral-600"}`}
+                className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${transferMode === "GIFT" ? "bg-ig-blue text-white" : "bg-ig-btn2 text-ig-gray"}`}
               >
                 <Gift className="w-3.5 h-3.5 inline ml-1" />
                 هدیه دادن
               </button>
               <button
                 onClick={() => setTransferMode("REQUEST")}
-                className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${transferMode === "REQUEST" ? "bg-ig-blue text-white" : "bg-neutral-100 text-neutral-600"}`}
+                className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${transferMode === "REQUEST" ? "bg-ig-blue text-white" : "bg-ig-btn2 text-ig-gray"}`}
               >
                 <ArrowDownLeft className="w-3.5 h-3.5 inline ml-1" />
                 درخواست سکه
@@ -1116,7 +1116,7 @@ export default function ChatRoom({
 
       {/* پنل استیکر */}
       {showStickers && (
-        <div className="border-t border-ig-border bg-white px-3 py-3 ig-slide-up pb-[max(0.75rem,env(safe-area-inset-bottom))] shrink-0">
+        <div className="border-t border-ig-border bg-surface px-3 py-3 ig-slide-up pb-[max(0.75rem,env(safe-area-inset-bottom))] shrink-0">
           <div className="grid grid-cols-6 gap-2">
             {STICKERS.map((s) => (
               <button
@@ -1133,7 +1133,7 @@ export default function ChatRoom({
 
       {/* ورودی پیام یا قفل اشتراک یا بلاک یا قفل پیام ادمین یا چت مدیریتی */}
       {isAdminChat ? (
-        <div className="px-4 py-6 border-t border-ig-border bg-white text-center shrink-0 pb-[max(1rem,env(safe-area-inset-bottom))]">
+        <div className="px-4 py-6 border-t border-ig-border bg-surface text-center shrink-0 pb-[max(1rem,env(safe-area-inset-bottom))]">
           <div className="w-14 h-14 rounded-full bg-ig-gray-bg mx-auto flex items-center justify-center mb-3">
             <Lock className="w-7 h-7 text-ig-gold" />
           </div>
@@ -1150,15 +1150,15 @@ export default function ChatRoom({
           </button>
         </div>
       ) : messageLockInfo ? (
-        <div className="px-4 py-6 border-t border-ig-border bg-white text-center shrink-0 pb-[max(1rem,env(safe-area-inset-bottom))]">
-          <div className="w-14 h-14 rounded-full bg-neutral-100 mx-auto flex items-center justify-center mb-3">
+        <div className="px-4 py-6 border-t border-ig-border bg-surface text-center shrink-0 pb-[max(1rem,env(safe-area-inset-bottom))]">
+          <div className="w-14 h-14 rounded-full bg-ig-btn2 mx-auto flex items-center justify-center mb-3">
             <Lock className="w-7 h-7 text-ig-red" />
           </div>
           <p className="text-sm font-bold text-foreground mb-1">ارسال پیام شما توسط مدیر محدود شده است</p>
           <p className="text-xs text-ig-gray mb-3 leading-5">علت محدودیت شما: {messageLockInfo.reason}</p>
-          <div className="inline-flex flex-col items-center gap-1 px-4 py-2.5 rounded-xl bg-neutral-100 border border-neutral-200">
-            <p className="text-xs font-bold text-neutral-500">زمان باقی مانده تا بازگشایی</p>
-            <p className="text-sm font-black text-neutral-800 tabular-nums tracking-tight" dir="rtl">
+          <div className="inline-flex flex-col items-center gap-1 px-4 py-2.5 rounded-xl bg-ig-btn2 border border-neutral-200">
+            <p className="text-xs font-bold text-ig-gray">زمان باقی مانده تا بازگشایی</p>
+            <p className="text-sm font-black text-foreground tabular-nums tracking-tight" dir="rtl">
               {lockCountdown || "..."}
             </p>
           </div>
@@ -1171,9 +1171,9 @@ export default function ChatRoom({
           </button>
         </div>
       ) : isBlocked ? (
-        <div className="px-4 py-6 border-t border-ig-border bg-white text-center shrink-0 pb-[max(1rem,env(safe-area-inset-bottom))]">
-          <div className="w-14 h-14 rounded-full bg-neutral-100 mx-auto flex items-center justify-center mb-3">
-            <Ban className="w-7 h-7 text-neutral-800" />
+        <div className="px-4 py-6 border-t border-ig-border bg-surface text-center shrink-0 pb-[max(1rem,env(safe-area-inset-bottom))]">
+          <div className="w-14 h-14 rounded-full bg-ig-btn2 mx-auto flex items-center justify-center mb-3">
+            <Ban className="w-7 h-7 text-foreground" />
           </div>
           <p className="text-sm font-bold text-foreground mb-1">شما {otherName} را بلاک کردید</p>
           <p className="text-xs text-ig-gray mb-4 leading-5">این کاربر دیگر نمی تواند با شما در ارتباط باشد</p>
@@ -1197,7 +1197,7 @@ export default function ChatRoom({
                 }
               }}
               disabled={unblocking}
-              className="flex-1 py-2.5 rounded-lg bg-neutral-100 text-foreground text-sm font-bold disabled:opacity-40 hover:bg-neutral-200 transition-colors"
+              className="flex-1 py-2.5 rounded-lg bg-ig-btn2 text-foreground text-sm font-bold disabled:opacity-40 hover:bg-neutral-200 transition-colors"
             >
               {unblocking ? "در حال رفع..." : "رفع بلاک"}
             </button>
@@ -1211,9 +1211,9 @@ export default function ChatRoom({
           </div>
         </div>
       ) : isBlockedByOther ? (
-        <div className="px-4 py-6 border-t border-ig-border bg-white text-center shrink-0 pb-[max(1rem,env(safe-area-inset-bottom))]">
-          <div className="w-14 h-14 rounded-full bg-neutral-100 mx-auto flex items-center justify-center mb-3">
-            <Ban className="w-7 h-7 text-neutral-800" />
+        <div className="px-4 py-6 border-t border-ig-border bg-surface text-center shrink-0 pb-[max(1rem,env(safe-area-inset-bottom))]">
+          <div className="w-14 h-14 rounded-full bg-ig-btn2 mx-auto flex items-center justify-center mb-3">
+            <Ban className="w-7 h-7 text-foreground" />
           </div>
           <p className="text-sm font-bold text-foreground mb-1">این کاربر شما را بلاک کرده است</p>
           <p className="text-xs text-ig-gray mb-4 leading-5">امکان گفتگو با این کاربر وجود ندارد</p>
@@ -1221,7 +1221,7 @@ export default function ChatRoom({
             <button
               onClick={() => setShowDeleteConv(true)}
               disabled={deletingConv}
-              className="flex-1 py-2.5 rounded-lg bg-neutral-100 text-foreground text-sm font-bold disabled:opacity-40 hover:bg-neutral-200 transition-colors"
+              className="flex-1 py-2.5 rounded-lg bg-ig-btn2 text-foreground text-sm font-bold disabled:opacity-40 hover:bg-neutral-200 transition-colors"
             >
               {deletingConv ? "در حال حذف..." : "حذف گفتگو"}
             </button>
@@ -1234,9 +1234,9 @@ export default function ChatRoom({
           </div>
         </div>
       ) : convDeleted ? (
-        <div className="px-4 py-6 border-t border-ig-border bg-white text-center shrink-0 pb-[max(1rem,env(safe-area-inset-bottom))]">
-          <div className="w-14 h-14 rounded-full bg-neutral-100 mx-auto flex items-center justify-center mb-3">
-            <X className="w-7 h-7 text-neutral-800" />
+        <div className="px-4 py-6 border-t border-ig-border bg-surface text-center shrink-0 pb-[max(1rem,env(safe-area-inset-bottom))]">
+          <div className="w-14 h-14 rounded-full bg-ig-btn2 mx-auto flex items-center justify-center mb-3">
+            <X className="w-7 h-7 text-foreground" />
           </div>
           <p className="text-sm font-bold text-foreground mb-1">این گفتگو حذف شد</p>
           <p className="text-xs text-ig-gray mb-4 leading-5">گفتگو از لیست شما پنهان شد. در صورت پیام جدید از طرف مقابل، دوباره نمایش داده می شود.</p>
@@ -1248,7 +1248,7 @@ export default function ChatRoom({
           </button>
         </div>
       ) : needSub ? (
-        <div className="px-4 py-6 border-t border-ig-border bg-white text-center shrink-0 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+        <div className="px-4 py-6 border-t border-ig-border bg-surface text-center shrink-0 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
           <div className="w-14 h-14 rounded-full bg-ig-gray-bg mx-auto flex items-center justify-center mb-3">
             <Crown className="w-7 h-7 text-foreground" strokeWidth={1.8} />
           </div>
@@ -1281,7 +1281,7 @@ export default function ChatRoom({
           <input ref={videoInputRef} type="file" accept="video/mp4,video/webm" onChange={handleVideoUpload} className="hidden" />
 
           {recording ? (
-            <div className="flex items-center gap-3 px-4 py-3 border-t border-ig-border bg-white pb-[max(0.75rem,env(safe-area-inset-bottom))] shrink-0">
+            <div className="flex items-center gap-3 px-4 py-3 border-t border-ig-border bg-surface pb-[max(0.75rem,env(safe-area-inset-bottom))] shrink-0">
               <span className="w-3 h-3 bg-ig-red rounded-full ig-pulse shrink-0" />
               <span className="text-sm font-bold text-ig-red">
                 در حال ضبط... {toPersianDigits(Math.floor(recordTime / 60))}:{toPersianDigits(recordTime % 60).padStart(2, "۰")}
@@ -1291,7 +1291,7 @@ export default function ChatRoom({
                 onClick={stopRecording}
                 className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-ig-red text-white text-sm font-bold active:scale-90 transition-transform shrink-0"
               >
-                <span className="w-3 h-3 bg-white rounded-sm" />
+                <span className="w-3 h-3 bg-surface rounded-sm" />
                 ارسال
               </button>
               <button
@@ -1304,7 +1304,7 @@ export default function ChatRoom({
           ) : (
             <form
               onSubmit={send}
-              className="flex items-center gap-1.5 px-2 sm:px-3 py-2 border-t border-ig-border bg-white pb-[max(0.5rem,env(safe-area-inset-bottom))] shrink-0"
+              className="flex items-center gap-1.5 px-2 sm:px-3 py-2 border-t border-ig-border bg-surface pb-[max(0.5rem,env(safe-area-inset-bottom))] shrink-0"
             >
               {/* راست: ایموجی (بیرون باکس) */}
               <button type="button" onClick={() => setShowStickers(!showStickers)} className="p-1.5 shrink-0 active:scale-90 transition-transform">
@@ -1367,7 +1367,7 @@ export default function ChatRoom({
           onClick={() => setContextMessage(null)}
         >
           <div
-            className="bg-white rounded-2xl ig-shadow-lg overflow-hidden w-72 ig-modal-in"
+            className="bg-surface rounded-2xl ig-shadow-lg overflow-hidden w-72 ig-modal-in"
             onClick={(e) => e.stopPropagation()}
           >
             {/* پیش نمایش پیام */}
@@ -1469,7 +1469,7 @@ export default function ChatRoom({
           onClick={() => setReactionFor(null)}
         >
           <div
-            className="bg-white rounded-2xl ig-shadow-lg p-4 ig-modal-in"
+            className="bg-surface rounded-2xl ig-shadow-lg p-4 ig-modal-in"
             onClick={(e) => e.stopPropagation()}
           >
             <p className="text-xs text-ig-gray text-center mb-3 font-medium">یک واکنش انتخاب کن</p>
@@ -1495,7 +1495,7 @@ export default function ChatRoom({
           onClick={() => setShowReportModal(false)}
         >
           <div
-            className="bg-white rounded-2xl ig-shadow-lg w-80 max-w-[90%] ig-modal-in overflow-hidden"
+            className="bg-surface rounded-2xl ig-shadow-lg w-80 max-w-[90%] ig-modal-in overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between px-5 py-3.5 border-b border-neutral-100">
@@ -1503,12 +1503,12 @@ export default function ChatRoom({
                 <Flag className="w-4 h-4 text-ig-red" />
                 گزارش کاربر
               </h3>
-              <button onClick={() => setShowReportModal(false)} className="w-8 h-8 rounded-lg hover:bg-neutral-100 flex items-center justify-center transition-colors">
-                <X className="w-4 h-4 text-neutral-500" />
+              <button onClick={() => setShowReportModal(false)} className="w-8 h-8 rounded-lg hover:bg-ig-btn2 flex items-center justify-center transition-colors">
+                <X className="w-4 h-4 text-ig-gray" />
               </button>
             </div>
             <div className="px-5 py-4 space-y-2">
-              <p className="text-xs text-neutral-500 mb-2">علت گزارش را انتخاب کنید (اجباری)</p>
+              <p className="text-xs text-ig-gray mb-2">علت گزارش را انتخاب کنید (اجباری)</p>
               {[
                 { value: "HARASSMENT", label: "آزار و اذیت" },
                 { value: "FAKE_PROFILE", label: "پروفایل جعلی" },
@@ -1522,7 +1522,7 @@ export default function ChatRoom({
                   className={`w-full px-4 py-2.5 rounded-lg text-sm font-bold text-right transition-colors ${
                     reportReason === r.value
                       ? "bg-ig-blue text-white border border-neutral-800"
-                      : "bg-neutral-50 text-foreground border border-transparent hover:bg-neutral-100"
+                      : "bg-ig-gray-bg text-foreground border border-transparent hover:bg-ig-btn2"
                   }`}
                 >
                   {r.label}
@@ -1533,7 +1533,7 @@ export default function ChatRoom({
                 onChange={(e) => setReportDetails(e.target.value)}
                 placeholder="توضیحات بیشتر (اختیاری)"
                 maxLength={500}
-                className="w-full mt-2 px-3 py-2 rounded-lg border border-neutral-200 bg-neutral-50 text-sm text-foreground outline-none focus:border-neutral-800 transition-colors resize-none"
+                className="w-full mt-2 px-3 py-2 rounded-lg border border-neutral-200 bg-ig-gray-bg text-sm text-foreground outline-none focus:border-neutral-800 transition-colors resize-none"
                 rows={2}
               />
               {/* هشدار بلاک شدن بعد از گزارش */}
@@ -1600,7 +1600,7 @@ export default function ChatRoom({
           onClick={() => setShowBlockModal(false)}
         >
           <div
-            className="bg-white rounded-2xl ig-shadow-lg w-80 max-w-[90%] ig-modal-in overflow-hidden"
+            className="bg-surface rounded-2xl ig-shadow-lg w-80 max-w-[90%] ig-modal-in overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between px-5 py-3.5 border-b border-neutral-100">
@@ -1608,8 +1608,8 @@ export default function ChatRoom({
                 <Ban className="w-4 h-4 text-ig-red" />
                 بلاک کردن کاربر
               </h3>
-              <button onClick={() => setShowBlockModal(false)} className="w-8 h-8 rounded-lg hover:bg-neutral-100 flex items-center justify-center transition-colors">
-                <X className="w-4 h-4 text-neutral-500" />
+              <button onClick={() => setShowBlockModal(false)} className="w-8 h-8 rounded-lg hover:bg-ig-btn2 flex items-center justify-center transition-colors">
+                <X className="w-4 h-4 text-ig-gray" />
               </button>
             </div>
             <div className="px-5 py-4">
@@ -1623,7 +1623,7 @@ export default function ChatRoom({
             <div className="px-5 py-3.5 border-t border-neutral-100 flex gap-2">
               <button
                 onClick={() => setShowBlockModal(false)}
-                className="flex-1 py-2.5 rounded-lg bg-neutral-100 text-foreground text-sm font-bold hover:bg-neutral-200 transition-colors"
+                className="flex-1 py-2.5 rounded-lg bg-ig-btn2 text-foreground text-sm font-bold hover:bg-neutral-200 transition-colors"
               >
                 انصراف
               </button>
@@ -1696,14 +1696,14 @@ function VoicePlayer({ url, duration, mine }: { url: string; duration: number | 
       <button
         onClick={toggle}
         className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${
-          mine ? "bg-white/20" : "bg-ig-gray-bg"
+          mine ? "bg-surface/20" : "bg-ig-gray-bg"
         }`}
       >
         {playing ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
       </button>
       <div className="flex-1">
-        <div className={`h-1.5 rounded-full overflow-hidden ${mine ? "bg-white/20" : "bg-ig-border"}`}>
-          <div className={`h-full rounded-full ${mine ? "bg-white" : "bg-ig-gray-bg"}`} style={{ width: playing ? "100%" : "30%", transition: "width 0.3s" }} />
+        <div className={`h-1.5 rounded-full overflow-hidden ${mine ? "bg-surface/20" : "bg-ig-border"}`}>
+          <div className={`h-full rounded-full ${mine ? "bg-surface" : "bg-ig-gray-bg"}`} style={{ width: playing ? "100%" : "30%", transition: "width 0.3s" }} />
         </div>
         <span className={`text-xs mt-0.5 block ${mine ? "text-white/80" : "text-ig-gray"}`}>
           {toPersianDigits(formatted)}

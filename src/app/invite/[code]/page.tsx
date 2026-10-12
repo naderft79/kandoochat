@@ -69,7 +69,7 @@ export default async function InvitePage({
       <div className="mx-auto max-w-md px-4 py-8 md:py-12 space-y-5">
 
         {/* کارت اصلی دعوت */}
-        <div className="bg-white rounded-2xl border border-ig-border p-6 text-center space-y-4">
+        <div className="bg-surface rounded-2xl border border-ig-border p-6 text-center space-y-4">
           <div className="w-16 h-16 mx-auto rounded-full bg-ig-btn2 flex items-center justify-center">
             <Gift className="w-8 h-8 text-ig-blue" />
           </div>
@@ -119,7 +119,7 @@ export default async function InvitePage({
         </div>
 
         {/* مراحل دریافت پاداش */}
-        <div className="bg-white rounded-2xl border border-ig-border p-5 space-y-4">
+        <div className="bg-surface rounded-2xl border border-ig-border p-5 space-y-4">
           <h2 className="font-bold text-foreground text-center">چطور پاداش بگیرید؟</h2>
           <div className="space-y-3">
             {steps.map((step, i) => (
@@ -139,7 +139,7 @@ export default async function InvitePage({
         </div>
 
         {/* جایزه مایلستون برای دعوت کننده */}
-        <div className="bg-white rounded-2xl border border-ig-border p-5">
+        <div className="bg-surface rounded-2xl border border-ig-border p-5">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center shrink-0">
               <Trophy className="w-5 h-5 text-amber-500" />

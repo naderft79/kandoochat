@@ -61,7 +61,7 @@ export default function ContactForm() {
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="نام و نام خانوادگی"
-        className="w-full px-4 py-3 rounded-xl bg-neutral-50 text-sm outline-none border border-transparent focus:border-ig-border transition-colors"
+        className="w-full px-4 py-3 rounded-xl bg-ig-gray-bg text-sm outline-none border border-transparent focus:border-ig-border transition-colors"
       />
       <input
         type="email"
@@ -69,14 +69,14 @@ export default function ContactForm() {
         onChange={(e) => setEmail(e.target.value)}
         placeholder="ایمیل"
         dir="ltr"
-        className="w-full px-4 py-3 rounded-xl bg-neutral-50 text-sm outline-none border border-transparent focus:border-ig-border transition-colors text-left"
+        className="w-full px-4 py-3 rounded-xl bg-ig-gray-bg text-sm outline-none border border-transparent focus:border-ig-border transition-colors text-left"
       />
       <textarea
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         placeholder="پیام شما"
         rows={4}
-        className="w-full px-4 py-3 rounded-xl bg-neutral-50 text-sm outline-none border border-transparent focus:border-ig-border transition-colors resize-none"
+        className="w-full px-4 py-3 rounded-xl bg-ig-gray-bg text-sm outline-none border border-transparent focus:border-ig-border transition-colors resize-none"
       />
       {error && <p className="text-xs text-ig-red">{error}</p>}
       <button

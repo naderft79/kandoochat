@@ -58,9 +58,9 @@ export default function LandingClient({
   const ctaHref = isLoggedIn ? "/dashboard" : "/register";
 
   return (
-    <div className="min-h-dvh bg-white overflow-x-hidden">
+    <div className="min-h-dvh bg-surface overflow-x-hidden">
       {/* نوار بالا — مثل هدر اینستاگرام */}
-      <header className="sticky top-0 z-40 backdrop-blur-lg bg-white/80 border-b border-ig-border">
+      <header className="sticky top-0 z-40 backdrop-blur-lg bg-surface/80 border-b border-ig-border">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
           <KandooLogo href="/" iconClassName="w-8 h-8" textClassName="text-xl sm:text-2xl" />
           <nav className="flex items-center gap-2 sm:gap-3">
@@ -179,7 +179,7 @@ export default function LandingClient({
                 custom={i * 0.5}
                 variants={fadeUp}
                 whileHover={{ y: -4 }}
-                className="bg-white border border-ig-border rounded-lg p-3 sm:p-5 text-center hover:shadow-md transition-shadow flex flex-col items-center"
+                className="bg-surface border border-ig-border rounded-lg p-3 sm:p-5 text-center hover:shadow-md transition-shadow flex flex-col items-center"
               >
                 {p.photos?.[0]?.url ? (
                   <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden shrink-0">
@@ -250,7 +250,7 @@ export default function LandingClient({
                 viewport={{ once: true, margin: "-40px" }}
                 custom={i}
                 variants={fadeUp}
-                className="p-6 rounded-lg bg-white border border-ig-border hover:border-ig-gray transition-colors"
+                className="p-6 rounded-lg bg-surface border border-ig-border hover:border-ig-gray transition-colors"
               >
                 <div className="w-10 h-10 rounded-lg ig-gradient flex items-center justify-center mb-4">
                   <f.icon className="w-5 h-5 text-white" strokeWidth={1.5} />
@@ -302,7 +302,7 @@ export default function LandingClient({
               viewport={{ once: true, margin: "-40px" }}
               custom={i}
               variants={fadeUp}
-              className="relative bg-white border border-ig-border rounded-lg p-8 text-center"
+              className="relative bg-surface border border-ig-border rounded-lg p-8 text-center"
             >
               <span className="absolute -top-5 right-1/2 translate-x-1/2 w-10 h-10 rounded-full ig-gradient text-white font-bold flex items-center justify-center">
                 {s.step}
@@ -334,7 +334,7 @@ export default function LandingClient({
           </p>
           <Link
             href={ctaHref}
-            className="inline-block mt-8 px-10 py-3 rounded-lg bg-white text-foreground font-bold text-base hover:scale-[1.02] active:scale-[0.98] transition-transform"
+            className="inline-block mt-8 px-10 py-3 rounded-lg bg-surface text-foreground font-bold text-base hover:scale-[1.02] active:scale-[0.98] transition-transform"
           >
             شروع رایگان
           </Link>
@@ -342,7 +342,7 @@ export default function LandingClient({
       </section>
 
       {/* فوتر */}
-      <footer className="border-t border-ig-border bg-white py-8">
+      <footer className="border-t border-ig-border bg-surface py-8">
         <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <KandooLogo color iconClassName="w-6 h-6" textClassName="text-lg" />

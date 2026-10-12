@@ -133,7 +133,7 @@ export default function SpecialMissionsModal({ onClose }: { onClose: () => void 
         animate={{ y: 0 }}
         exit={{ y: "100%" }}
         transition={{ type: "spring", damping: 30, stiffness: 300 }}
-        className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl flex flex-col"
+        className="fixed bottom-0 left-0 right-0 z-50 bg-surface rounded-t-3xl flex flex-col"
         style={{ maxHeight: "80vh" }}
       >
         {/* handle bar */}
@@ -158,16 +158,16 @@ export default function SpecialMissionsModal({ onClose }: { onClose: () => void 
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-neutral-100 hover:bg-neutral-200 flex items-center justify-center transition-colors"
+            className="w-8 h-8 rounded-full bg-ig-btn2 hover:bg-neutral-200 flex items-center justify-center transition-colors"
           >
-            <X className="w-4 h-4 text-neutral-600" />
+            <X className="w-4 h-4 text-ig-gray" />
           </button>
         </div>
 
         {/* تب ها */}
         {!loading && data && (
           <div className="px-5 pb-2 shrink-0">
-            <div className="flex gap-1 bg-neutral-100 rounded-xl p-1">
+            <div className="flex gap-1 bg-ig-btn2 rounded-xl p-1">
               {tabKeys.map((key) => {
                 const tab = data[key];
                 const done = tab.allDone && !tab.claimed;
@@ -177,8 +177,8 @@ export default function SpecialMissionsModal({ onClose }: { onClose: () => void 
                     onClick={() => { setActiveTab(key); setClaimResult(null); }}
                     className={`relative flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
                       activeTab === key
-                        ? "bg-white text-foreground shadow-sm"
-                        : "text-neutral-500"
+                        ? "bg-surface text-foreground shadow-sm"
+                        : "text-ig-gray"
                     }`}
                   >
                     {tab.label}
@@ -228,7 +228,7 @@ export default function SpecialMissionsModal({ onClose }: { onClose: () => void 
                       className={`rounded-2xl p-3 border transition-all ${
                         done
                           ? "border-ig-border bg-ig-gray-bg"
-                          : "border-neutral-200 bg-neutral-50"
+                          : "border-neutral-200 bg-ig-gray-bg"
                       }`}
                     >
                       <div className="flex items-center gap-2.5">
@@ -254,7 +254,7 @@ export default function SpecialMissionsModal({ onClose }: { onClose: () => void 
                                 <Check className="w-3 h-3 text-white" strokeWidth={3} />
                               </motion.span>
                             ) : (
-                              <span className="text-xs font-bold text-neutral-500 shrink-0">
+                              <span className="text-xs font-bold text-ig-gray shrink-0">
                                 {toPersianDigits(m.current)}/{toPersianDigits(m.target)} {m.unit}
                               </span>
                             )}
@@ -294,7 +294,7 @@ export default function SpecialMissionsModal({ onClose }: { onClose: () => void 
                 {/* دکمه دریافت جایزه */}
                 <div className="pt-2">
                   {currentTab.claimed ? (
-                    <div className="flex items-center justify-center gap-2 py-3 rounded-2xl bg-neutral-100 text-neutral-400 text-xs font-bold">
+                    <div className="flex items-center justify-center gap-2 py-3 rounded-2xl bg-ig-btn2 text-neutral-400 text-xs font-bold">
                       <Check className="w-4 h-4" />
                       جایزه این دوره دریافت شده
                     </div>
@@ -317,7 +317,7 @@ export default function SpecialMissionsModal({ onClose }: { onClose: () => void 
                       )}
                     </motion.button>
                   ) : (
-                    <div className="flex items-center justify-center gap-2 py-3 rounded-2xl bg-neutral-100 text-neutral-400 text-xs font-bold">
+                    <div className="flex items-center justify-center gap-2 py-3 rounded-2xl bg-ig-btn2 text-neutral-400 text-xs font-bold">
                       <Coins className="w-4 h-4" />
                       تکمیل همه ماموریت ها برای دریافت {toPersianDigits(currentTab.reward)} سکه
                     </div>
