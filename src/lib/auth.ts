@@ -64,6 +64,10 @@ export async function getSession(): Promise<SessionPayload | null> {
   const cookieStore = await cookies();
   const token = cookieStore.get(COOKIE_NAME)?.value;
   if (!token) return null;
+  return verifySessionToken(token);
+}
+
+async function verifySessionToken(token: string): Promise<SessionPayload | null> {
   try {
     const { payload } = await jwtVerify(token, getSecret(), {
       issuer: "kandoo",
@@ -156,6 +160,14 @@ export async function restoreAdminSession() {
   const cookieStore = await cookies();
   const backupToken = cookieStore.get(ADMIN_BACKUP_COOKIE)?.value;
   if (!backupToken) return false;
+  const backup = await verifySessionToken(backupToken);
+  const admin = backup
+    ? await prisma.user.findUnique({ where: { id: backup.userId }, select: { role: true, isActive: true } })
+    : null;
+  if (!admin || !admin.isActive || !(ADMIN_ROLES as readonly string[]).includes(admin.role)) {
+    cookieStore.delete(ADMIN_BACKUP_COOKIE);
+    return false;
+  }
   // بازگردانی سشن ادمین
   cookieStore.set(COOKIE_NAME, backupToken, {
     httpOnly: true,

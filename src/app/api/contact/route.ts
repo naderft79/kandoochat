@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { sanitizeString, sanitizeName } from "@/lib/sanitize";
+import { rateLimit, getClientIdentifier } from "@/lib/rate-limit";
 
 const contactSchema = z.object({
   name: z.string().min(2).max(100),
@@ -12,6 +13,8 @@ const contactSchema = z.object({
 
 export async function POST(request: Request) {
   try {
+    const rl = await rateLimit(`contact:${getClientIdentifier(request)}`, { windowMs: 60 * 60 * 1000, maxRequests: 5 });
+    if (!rl.allowed) return NextResponse.json({ error: "درخواست زیاد" }, { status: 429 });
     const body = await request.json();
     const parsed = contactSchema.safeParse(body);
     if (!parsed.success) {

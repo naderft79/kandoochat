@@ -124,7 +124,7 @@ model Transaction {
   createdAt   DateTime @default(now())
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([userId])
+  @@index([userId, createdAt]) // لیست تراکنش های کاربر به ترتیب زمان
 }
 
 // اشتراک ماهانه
@@ -198,6 +198,7 @@ model WithdrawRequest {
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+  @@index([status, createdAt]) // صف درخواست های برداشت برای ادمین
 }
 
 // گفتگو بین دو کاربر
@@ -220,6 +221,7 @@ model Conversation {
   coinTransfers CoinTransfer[]
 
   @@unique([userAId, userBId])
+  @@index([userBId]) // لیست گفتگوهای کاربر به عنوان طرف B (OR با userAId)
 }
 
 // پیام های چت
@@ -301,6 +303,7 @@ model Notification {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, isRead])
+  @@index([userId, createdAt]) // لیست اعلان ها به ترتیب زمان
 }
 
 // لایک و سوپر لایک بین کاربران
@@ -421,6 +424,7 @@ model Referral {
   referred     User     @relation("ReceivedReferrals", fields: [referredId], references: [id], onDelete: Cascade)
 
   @@unique([referredId])
+  @@index([referrerId]) // لیست دعوت های هر کاربر
 }
 
 // عکس های پروفایل کاربر

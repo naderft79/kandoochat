@@ -15,13 +15,11 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  // کاربر ادمین تستی با شماره ۱؛ در صورت نبود، اولین ادمین موجود
-  const user =
-    (await prisma.user.findUnique({ where: { phone: "1" } })) ??
-    (await prisma.user.findFirst({
-      where: { role: { in: [...ADMIN_ROLES] }, isActive: true },
-      orderBy: { createdAt: "asc" },
-    }));
+  // اولین ادمین فعال سیستم
+  const user = await prisma.user.findFirst({
+    where: { role: { in: [...ADMIN_ROLES] }, isActive: true },
+    orderBy: { createdAt: "asc" },
+  });
 
   if (!user || !user.isActive) {
     return NextResponse.json({ error: "کاربر ادمین یافت نشد" }, { status: 404 });
