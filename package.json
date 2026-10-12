@@ -45,6 +45,7 @@
     "@types/web-push": "3.6.4",
     "bcryptjs": "^3.0.3",
     "dotenv": "^17.4.2",
+    "echarts": "6.1.0",
     "framer-motion": "^13.1.1",
     "google-auth-library": "^10.9.1",
     "ioredis": "^5.11.1",
@@ -62,7 +63,6 @@
     "react-easy-crop": "^6.2.3",
     "react-icons": "^5.7.0",
     "react-image-crop": "^11.1.2",
-    "recharts": "^3.10.1",
     "web-push": "3.6.7",
     "zod": "^4.4.3"
   },

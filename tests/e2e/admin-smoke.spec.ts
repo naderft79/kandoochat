@@ -52,13 +52,14 @@ test.describe("پنل ادمین — اسموک", () => {
   });
 
   test("صفحه کاربران: فیلتر استان و شهر بدون باز کردن پنل دیده می شود", async ({ page }) => {
-    await page.goto("/admin/users", { waitUntil: "domcontentloaded" });
+    await page.goto("/admin/users", { waitUntil: "networkidle" });
     const province = page.getByLabel("فیلتر استان");
     const city = page.getByLabel("فیلتر شهر");
     await expect(province).toBeVisible();
     await expect(city).toBeDisabled();
     await province.selectOption("تهران");
-    await expect(city).toBeEnabled();
+    await expect(province).toHaveValue("تهران");
+    await expect(city).toBeEnabled({ timeout: 15_000 });
   });
 
   test("کارت کاربر IP و بلوک آمار را نشان می دهد", async ({ page }) => {

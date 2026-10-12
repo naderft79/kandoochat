@@ -1,17 +1,14 @@
 "use client";
 
-// کامپوننت نمودارهای آماری پیشرفته پنل ادمین
-import { useEffect, useState } from "react";
+// کامپوننت نمودارهای آماری پیشرفته پنل ادمین (ECharts با پالت تم روشن/تاریک)
+import { useEffect, useMemo, useState } from "react";
 import {
-  AreaChart, Area, BarChart, Bar,
-  PieChart, Pie, Cell, RadialBarChart, RadialBar,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
-} from "recharts";
-import {
-  DollarSign, MessageCircle, MapPin, Users,
-  Heart, Rocket, Crown, Coins, Activity, Gift, BarChart3,
+  MessageCircle, MapPin, Users, Heart, Rocket, Crown, Coins, Activity, DollarSign, BarChart3,
 } from "lucide-react";
-import { toPersianDigits, formatToman, formatCoins } from "@/lib/format";
+import { toPersianDigits, formatToman } from "@/lib/format";
+import EChart from "@/components/admin/charts/EChart";
+import { useChartPalette, type ChartPalette } from "@/components/admin/charts/palette";
+import { cartesianOption, donutOption, compactFa } from "@/components/admin/charts/options";
 
 type ChartData = {
   userGrowth: { date: string; count: number; total: number }[];
@@ -36,31 +33,7 @@ type ChartData = {
   };
 };
 
-const PIE_COLORS = [
-  "#6366f1", "#ec4899", "#f59e0b", "#10b981", "#8b5cf6",
-  "#ef4444", "#facc15", "#06b6d4", "#84cc16", "#a855f7",
-];
-const GENDER_COLORS = ["#6366f1", "#ec4899"];
-
-function CustomTooltip({ active, payload, label, formatter }: {
-  active?: boolean;
-  payload?: { name?: string; value?: number; color?: string }[];
-  label?: string;
-  formatter?: (val: number) => string;
-}) {
-  if (!active || !payload || payload.length === 0) return null;
-  return (
-    <div className="bg-[#141414]/95 backdrop-blur-md border border-[rgba(212,175,55,0.2)] rounded-xl px-3 py-2 shadow-lg">
-      {label && <p className="text-[10px] text-[#888] mb-1 font-bold">{label}</p>}
-      {payload.map((entry, i) => (
-        <p key={i} className="text-xs font-bold flex items-center gap-1.5" style={{ color: entry.color }}>
-          <span className="w-2 h-2 rounded-full" style={{ background: entry.color }} />
-          {entry.name}: {formatter ? formatter(entry.value ?? 0) : toPersianDigits(entry.value ?? 0)}
-        </p>
-      ))}
-    </div>
-  );
-}
+const countFa = (v: number) => toPersianDigits(Math.round(v).toLocaleString("en-US").replace(/,/g, "،"));
 
 function ChartCard({ icon: Icon, title, subtitle, children, className = "", stagger = "" }: {
   icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
@@ -77,7 +50,7 @@ function ChartCard({ icon: Icon, title, subtitle, children, className = "", stag
           <Icon className="w-4 h-4 text-[#d4af37]" strokeWidth={2} />
         </div>
         <div>
-          <h3 className="text-sm font-bold text-[#e8e8e8]">{title}</h3>
+          <h3 className="text-sm font-bold text-foreground">{title}</h3>
           {subtitle && <p className="text-[10px] text-[#888]">{subtitle}</p>}
         </div>
       </div>
@@ -101,8 +74,144 @@ function StatCard({ icon: Icon, label, value, color, trend }: {
         </div>
         <span className="text-[10px] text-[#888] font-bold">{label}</span>
       </div>
-      <p className="text-sm font-extrabold text-[#e8e8e8]">{value}</p>
+      <p className="text-sm font-extrabold text-foreground">{value}</p>
       {trend && <p className="text-[10px] text-[#888] mt-0.5">{trend}</p>}
+    </div>
+  );
+}
+
+// ساخت همه گزینه های نمودارها از یک داده و پالت (فقط وقتی داده یا تم عوض شود)
+function buildOptions(p: ChartPalette, data: ChartData) {
+  return {
+    userGrowth: cartesianOption(p, {
+      categories: data.userGrowth.map((d) => d.date),
+      series: [
+        { name: "کل کاربران", kind: "line", data: data.userGrowth.map((d) => d.total), color: p.series[2] },
+        { name: "کاربران جدید", kind: "area", data: data.userGrowth.map((d) => d.count), color: p.series[0] },
+      ],
+      valueFormatter: countFa,
+      axisFormatter: compactFa,
+    }),
+    dailyRevenue: cartesianOption(p, {
+      categories: data.dailyRevenue.map((d) => d.date),
+      series: [{ name: "درآمد", kind: "bar", data: data.dailyRevenue.map((d) => d.amount), color: p.series[1] }],
+      valueFormatter: (v) => formatToman(v),
+      axisFormatter: compactFa,
+    }),
+    dailyMessages: cartesianOption(p, {
+      categories: data.dailyMessages.map((d) => d.date),
+      series: [{ name: "پیام ها", kind: "area", data: data.dailyMessages.map((d) => d.count), color: p.series[4] }],
+      valueFormatter: countFa,
+      axisFormatter: compactFa,
+    }),
+    dailyLikes: cartesianOption(p, {
+      categories: data.dailyLikes.map((d) => d.date),
+      series: [
+        { name: "لایک", kind: "bar", data: data.dailyLikes.map((d) => d.likes), color: p.series[3] },
+        { name: "سوپرلایک", kind: "bar", data: data.dailyLikes.map((d) => d.superLikes), color: p.series[0] },
+      ],
+      valueFormatter: countFa,
+      axisFormatter: compactFa,
+    }),
+    dailyBoosts: cartesianOption(p, {
+      categories: data.dailyBoosts.map((d) => d.date),
+      series: [{ name: "بوست", kind: "bar", data: data.dailyBoosts.map((d) => d.count), color: p.series[5] }],
+      valueFormatter: countFa,
+      axisFormatter: compactFa,
+    }),
+    dailySubs: cartesianOption(p, {
+      categories: data.dailySubs.map((d) => d.date),
+      series: [{ name: "اشتراک جدید", kind: "area", data: data.dailySubs.map((d) => d.count), color: p.series[2] }],
+      valueFormatter: countFa,
+      axisFormatter: compactFa,
+    }),
+    dailyTransfers: cartesianOption(p, {
+      categories: data.dailyTransfers.map((d) => d.date),
+      series: [{ name: "حجم سکه", kind: "area", data: data.dailyTransfers.map((d) => d.volume), color: p.series[6] }],
+      valueFormatter: countFa,
+      axisFormatter: compactFa,
+    }),
+    cityDistribution: donutOption(p, data.cityDistribution, countFa),
+    genderDistribution: donutOption(p, data.genderDistribution, countFa),
+    ageDistribution: cartesianOption(p, {
+      categories: data.ageDistribution.map((d) => d.name),
+      series: [{ name: "کاربران", kind: "bar", data: data.ageDistribution.map((d) => d.value), color: p.series[7] }],
+      horizontal: true,
+      valueFormatter: countFa,
+      axisFormatter: compactFa,
+    }),
+    revenueByType: cartesianOption(p, {
+      categories: data.revenueByType.map((d) => d.name),
+      series: [{ name: "درآمد", kind: "bar", data: data.revenueByType.map((d) => d.value), color: p.series[0] }],
+      valueFormatter: (v) => formatToman(v),
+      axisFormatter: compactFa,
+    }),
+  };
+}
+
+function Dashboard({ data }: { data: ChartData }) {
+  const palette = useChartPalette();
+  const opts = useMemo(() => buildOptions(palette, data), [palette, data]);
+  const s = data.summary;
+
+  return (
+    <div className="space-y-4 mt-6">
+      {/* خلاصه عددی */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <StatCard icon={Heart} label="کل لایک ها" value={countFa(s.totalLikes)} color="#f87171" trend={`${countFa(s.totalSuperLikes)} سوپرلایک`} />
+        <StatCard icon={Rocket} label="بوست ها" value={countFa(s.totalBoosts)} color="#fb923c" />
+        <StatCard icon={Coins} label="انتقال سکه" value={countFa(s.totalTransfers)} color="#22d3ee" />
+        <StatCard icon={Crown} label="اشتراک فعال" value={countFa(s.activeSubs)} color="#34d399" trend={`${countFa(s.totalSubs)} کل خرید`} />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <ChartCard icon={Users} title="رشد کاربران" subtitle="۳۰ روز اخیر — جدید و تجمعی" stagger="stagger-1">
+          <EChart label="نمودار رشد کاربران" option={opts.userGrowth} height={240} />
+        </ChartCard>
+        <ChartCard icon={DollarSign} title="درآمد روزانه" subtitle="۳۰ روز اخیر — تومان" stagger="stagger-2">
+          <EChart label="نمودار درآمد روزانه" option={opts.dailyRevenue} height={240} />
+        </ChartCard>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <ChartCard icon={MessageCircle} title="پیام های روزانه" subtitle="۳۰ روز اخیر" stagger="stagger-1">
+          <EChart label="نمودار پیام های روزانه" option={opts.dailyMessages} height={240} />
+        </ChartCard>
+        <ChartCard icon={Heart} title="لایک و سوپرلایک" subtitle="۳۰ روز اخیر" stagger="stagger-2">
+          <EChart label="نمودار لایک و سوپرلایک" option={opts.dailyLikes} height={240} />
+        </ChartCard>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <ChartCard icon={Rocket} title="بوست های خریداری شده" subtitle="۳۰ روز اخیر" stagger="stagger-1">
+          <EChart label="نمودار بوست های خریداری شده" option={opts.dailyBoosts} height={240} />
+        </ChartCard>
+        <ChartCard icon={Crown} title="اشتراک های جدید" subtitle="۳۰ روز اخیر" stagger="stagger-2">
+          <EChart label="نمودار اشتراک های جدید" option={opts.dailySubs} height={240} />
+        </ChartCard>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <ChartCard icon={Coins} title="حجم انتقال سکه" subtitle="۳۰ روز اخیر" stagger="stagger-1">
+          <EChart label="نمودار حجم انتقال سکه" option={opts.dailyTransfers} height={240} />
+        </ChartCard>
+        <ChartCard icon={MapPin} title="توزیع کاربران (شهر)" subtitle="۱۰ شهر برتر" stagger="stagger-2">
+          <EChart label="نمودار توزیع کاربران بر اساس شهر" option={opts.cityDistribution} height={260} />
+        </ChartCard>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <ChartCard icon={Users} title="توزیع جنسیت" subtitle="کاربران فعال" stagger="stagger-1">
+          <EChart label="نمودار توزیع جنسیت" option={opts.genderDistribution} height={220} />
+        </ChartCard>
+        <ChartCard icon={Activity} title="توزیع سنی کاربران" subtitle="بازه های سنی" stagger="stagger-2">
+          <EChart label="نمودار توزیع سنی" option={opts.ageDistribution} height={220} />
+        </ChartCard>
+      </div>
+
+      <ChartCard icon={BarChart3} title="درآمد بر اساس نوع تراکنش" subtitle="کل درآمد — تفکیک شده" className="w-full" stagger="stagger-1">
+        <EChart label="نمودار درآمد بر اساس نوع تراکنش" option={opts.revenueByType} height={240} />
+      </ChartCard>
     </div>
   );
 }
@@ -144,242 +253,5 @@ export default function AdminCharts() {
     );
   }
 
-  return (
-    <div className="space-y-4 mt-6">
-      {/* ردیف اول: رشد کاربران + درآمد */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <ChartCard icon={Users} title="رشد کاربران" subtitle="۳۰ روز اخیر — روزانه و تجمعی" stagger="stagger-1">
-          <ResponsiveContainer width="100%" height={220}>
-            <AreaChart data={data.userGrowth}>
-              <defs>
-                <linearGradient id="gradUsers" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#6366f1" stopOpacity={0.4} />
-                  <stop offset="100%" stopColor="#6366f1" stopOpacity={0} />
-                </linearGradient>
-                <linearGradient id="gradTotal" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#a855f7" stopOpacity={0.2} />
-                  <stop offset="100%" stopColor="#a855f7" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
-              <XAxis dataKey="date" tick={{ fontSize: 9 }} interval={4} stroke="#8e8e8e" />
-              <YAxis tick={{ fontSize: 9 }} allowDecimals={false} stroke="#8e8e8e" />
-              <Tooltip content={<CustomTooltip />} />
-              <Area type="monotone" dataKey="total" stroke="#a855f7" strokeWidth={2} fill="url(#gradTotal)" name="کل کاربران" />
-              <Area type="monotone" dataKey="count" stroke="#6366f1" strokeWidth={2.5} fill="url(#gradUsers)" name="کاربران جدید" />
-            </AreaChart>
-          </ResponsiveContainer>
-        </ChartCard>
-
-        <ChartCard icon={DollarSign} title="درآمد روزانه" subtitle="۳۰ روز اخیر — تومان" stagger="stagger-2">
-          <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={data.dailyRevenue}>
-              <defs>
-                <linearGradient id="gradRevenue" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#10b981" stopOpacity={1} />
-                  <stop offset="100%" stopColor="#10b981" stopOpacity={0.3} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
-              <XAxis dataKey="date" tick={{ fontSize: 9 }} interval={4} stroke="#8e8e8e" />
-              <YAxis tick={{ fontSize: 9 }} stroke="#8e8e8e" tickFormatter={(v) => v >= 1000000 ? `${(v / 1000000).toFixed(1)}م` : v >= 1000 ? `${(v / 1000).toFixed(0)}ه` : v} />
-              <Tooltip content={<CustomTooltip formatter={(v) => formatToman(v)} />} />
-              <Bar dataKey="amount" fill="url(#gradRevenue)" name="درآمد" radius={[6, 6, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartCard>
-      </div>
-
-      {/* ردیف دوم: پیام ها + لایک ها */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <ChartCard icon={MessageCircle} title="پیام های روزانه" subtitle="۳۰ روز اخیر" stagger="stagger-1">
-          <ResponsiveContainer width="100%" height={220}>
-            <AreaChart data={data.dailyMessages}>
-              <defs>
-                <linearGradient id="gradMsg" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#ec4899" stopOpacity={0.35} />
-                  <stop offset="100%" stopColor="#ec4899" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
-              <XAxis dataKey="date" tick={{ fontSize: 9 }} interval={4} stroke="#8e8e8e" />
-              <YAxis tick={{ fontSize: 9 }} allowDecimals={false} stroke="#8e8e8e" />
-              <Tooltip content={<CustomTooltip />} />
-              <Area type="monotone" dataKey="count" stroke="#ec4899" strokeWidth={2.5} fill="url(#gradMsg)" name="پیام ها" />
-            </AreaChart>
-          </ResponsiveContainer>
-        </ChartCard>
-
-        <ChartCard icon={Heart} title="لایک و سوپرلایک" subtitle="۳۰ روز اخیر" stagger="stagger-2">
-          <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={data.dailyLikes}>
-              <defs>
-                <linearGradient id="gradLike" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#f43f5e" stopOpacity={1} />
-                  <stop offset="100%" stopColor="#f43f5e" stopOpacity={0.4} />
-                </linearGradient>
-                <linearGradient id="gradSuper" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#facc15" stopOpacity={1} />
-                  <stop offset="100%" stopColor="#facc15" stopOpacity={0.4} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
-              <XAxis dataKey="date" tick={{ fontSize: 9 }} interval={4} stroke="#8e8e8e" />
-              <YAxis tick={{ fontSize: 9 }} allowDecimals={false} stroke="#8e8e8e" />
-              <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(99,102,241,0.05)" }} />
-              <Legend wrapperStyle={{ fontSize: 10 }} />
-              <Bar dataKey="likes" fill="url(#gradLike)" name="لایک" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="superLikes" fill="url(#gradSuper)" name="سوپرلایک" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartCard>
-      </div>
-
-      {/* ردیف سوم: بوست + اشتراک */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <ChartCard icon={Rocket} title="بوست های خریداری شده" subtitle="۳۰ روز اخیر" stagger="stagger-1">
-          <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={data.dailyBoosts}>
-              <defs>
-                <linearGradient id="gradBoost" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#f59e0b" stopOpacity={1} />
-                  <stop offset="100%" stopColor="#f59e0b" stopOpacity={0.3} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
-              <XAxis dataKey="date" tick={{ fontSize: 9 }} interval={4} stroke="#8e8e8e" />
-              <YAxis tick={{ fontSize: 9 }} allowDecimals={false} stroke="#8e8e8e" />
-              <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(245,158,11,0.05)" }} />
-              <Bar dataKey="count" fill="url(#gradBoost)" name="بوست" radius={[5, 5, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartCard>
-
-        <ChartCard icon={Crown} title="اشتراک های جدید" subtitle="۳۰ روز اخیر" stagger="stagger-2">
-          <ResponsiveContainer width="100%" height={220}>
-            <AreaChart data={data.dailySubs}>
-              <defs>
-                <linearGradient id="gradSub" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#6366f1" stopOpacity={0.35} />
-                  <stop offset="100%" stopColor="#6366f1" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
-              <XAxis dataKey="date" tick={{ fontSize: 9 }} interval={4} stroke="#8e8e8e" />
-              <YAxis tick={{ fontSize: 9 }} allowDecimals={false} stroke="#8e8e8e" />
-              <Tooltip content={<CustomTooltip />} />
-              <Area type="monotone" dataKey="count" stroke="#6366f1" strokeWidth={2.5} fill="url(#gradSub)" name="اشتراک جدید" />
-            </AreaChart>
-          </ResponsiveContainer>
-        </ChartCard>
-      </div>
-
-      {/* ردیف چهارم: انتقال سکه + توزیع شهر */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <ChartCard icon={Coins} title="حجم انتقال سکه" subtitle="۳۰ روز اخیر" stagger="stagger-1">
-          <ResponsiveContainer width="100%" height={220}>
-            <AreaChart data={data.dailyTransfers}>
-              <defs>
-                <linearGradient id="gradTransfer" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#06b6d4" stopOpacity={0.35} />
-                  <stop offset="100%" stopColor="#06b6d4" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
-              <XAxis dataKey="date" tick={{ fontSize: 9 }} interval={4} stroke="#8e8e8e" />
-              <YAxis tick={{ fontSize: 9 }} stroke="#8e8e8e" />
-              <Tooltip content={<CustomTooltip formatter={(v) => formatCoins(v)} />} />
-              <Area type="monotone" dataKey="volume" stroke="#06b6d4" strokeWidth={2.5} fill="url(#gradTransfer)" name="حجم سکه" />
-            </AreaChart>
-          </ResponsiveContainer>
-        </ChartCard>
-
-        <ChartCard icon={MapPin} title="توزیع کاربران (شهر)" subtitle="۱۰ شهر برتر" stagger="stagger-2">
-          <ResponsiveContainer width="100%" height={220}>
-            <PieChart>
-              <Pie
-                data={data.cityDistribution}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                innerRadius={50}
-                outerRadius={80}
-                paddingAngle={2}
-                label={({ name, value }: { name?: string; value?: number }) => `${name ?? ""} (${toPersianDigits(value ?? 0)})`}
-                labelLine={false}
-              >
-                {data.cityDistribution.map((_, i) => (
-                  <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} stroke="none" />
-                ))}
-              </Pie>
-              <Tooltip content={<CustomTooltip />} />
-            </PieChart>
-          </ResponsiveContainer>
-        </ChartCard>
-      </div>
-
-      {/* ردیف پنجم: جنسیت + سن */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <ChartCard icon={Users} title="توزیع جنسیت" subtitle="کاربران فعال" stagger="stagger-1">
-          <ResponsiveContainer width="100%" height={220}>
-            <RadialBarChart
-              innerRadius="35%"
-              outerRadius="90%"
-              data={data.genderDistribution}
-              startAngle={90}
-              endAngle={-270}
-            >
-              <RadialBar background dataKey="value" cornerRadius={10}>
-                {data.genderDistribution.map((_, i) => (
-                  <Cell key={i} fill={GENDER_COLORS[i % GENDER_COLORS.length]} />
-                ))}
-              </RadialBar>
-              <Legend iconType="circle" layout="horizontal" verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 11 }} />
-              <Tooltip content={<CustomTooltip />} />
-            </RadialBarChart>
-          </ResponsiveContainer>
-        </ChartCard>
-
-        <ChartCard icon={Activity} title="توزیع سنی کاربران" subtitle="بازه های سنی" stagger="stagger-2">
-          <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={data.ageDistribution} layout="vertical">
-              <defs>
-                <linearGradient id="gradAge" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="#8b5cf6" stopOpacity={1} />
-                  <stop offset="100%" stopColor="#a855f7" stopOpacity={0.5} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" horizontal={false} />
-              <XAxis type="number" tick={{ fontSize: 9 }} allowDecimals={false} stroke="#8e8e8e" />
-              <YAxis type="category" dataKey="name" tick={{ fontSize: 10 }} stroke="#8e8e8e" width={60} />
-              <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(139,92,246,0.05)" }} />
-              <Bar dataKey="value" fill="url(#gradAge)" name="کاربران" radius={[0, 6, 6, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartCard>
-      </div>
-
-      {/* ردیف ششم: درآمد بر اساس نوع تراکنش */}
-      {data.revenueByType.length > 0 && (
-        <ChartCard icon={BarChart3} title="درآمد بر اساس نوع تراکنش" subtitle="کل درآمد — تفکیک شده" className="w-full" stagger="stagger-1">
-          <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={data.revenueByType}>
-              <defs>
-                <linearGradient id="gradRevType" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#6366f1" stopOpacity={1} />
-                  <stop offset="100%" stopColor="#6366f1" stopOpacity={0.3} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
-              <XAxis dataKey="name" tick={{ fontSize: 10 }} stroke="#8e8e8e" />
-              <YAxis tick={{ fontSize: 9 }} stroke="#8e8e8e" tickFormatter={(v) => v >= 1000000 ? `${(v / 1000000).toFixed(1)}م` : v >= 1000 ? `${(v / 1000).toFixed(0)}ه` : v} />
-              <Tooltip content={<CustomTooltip formatter={(v) => formatToman(v)} />} cursor={{ fill: "rgba(99,102,241,0.05)" }} />
-              <Bar dataKey="value" fill="url(#gradRevType)" name="درآمد" radius={[6, 6, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartCard>
-      )}
-    </div>
-  );
+  return <Dashboard data={data} />;
 }

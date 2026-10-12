@@ -1,10 +1,12 @@
 "use client";
 
 // داشبورد آمار زنده ادمین — ۶۴ شاخص در گروه ها، سری ۱۴ روزه و به‌روزرسانی هر ۳۰ ثانیه
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Activity } from "lucide-react";
+import EChart from "@/components/admin/charts/EChart";
+import { useChartPalette } from "@/components/admin/charts/palette";
+import { cartesianOption, compactFa } from "@/components/admin/charts/options";
 import { formatCoins, formatToman, toPersianDigits } from "@/lib/format";
 import type { AdminStats, Kpi, KpiFormat } from "@/lib/admin-stats";
 
@@ -43,6 +45,23 @@ function KpiCard({ kpi, index }: { kpi: Kpi; index: number }) {
 export default function StatsDashboardClient({ initial }: { initial: AdminStats }) {
   const [stats, setStats] = useState<AdminStats>(initial);
   const [error, setError] = useState(false);
+  const palette = useChartPalette();
+  const charts = useMemo(() => {
+    const labels = stats.daily.map((d) => dayLabel(d.day));
+    return {
+      users: cartesianOption(palette, {
+        categories: labels,
+        series: [{ name: "ثبت نام", kind: "area", data: stats.daily.map((d) => d.users), color: palette.series[0] }],
+        valueFormatter: (v) => toPersianDigits(Math.round(v)),
+      }),
+      revenue: cartesianOption(palette, {
+        categories: labels,
+        series: [{ name: "درآمد", kind: "area", data: stats.daily.map((d) => d.revenueToman), color: palette.series[1] }],
+        valueFormatter: (v) => formatToman(v),
+        axisFormatter: compactFa,
+      }),
+    };
+  }, [palette, stats]);
 
   const refresh = useCallback(async () => {
     try {
@@ -85,45 +104,13 @@ export default function StatsDashboardClient({ initial }: { initial: AdminStats 
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
         <div className="lux-card p-4">
-          <p className="text-xs font-bold text-[#e8e8e8] mb-3">ثبت نام ۱۴ روز اخیر</p>
-          <div className="h-56">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={stats.daily}>
-                <defs>
-                  <linearGradient id="usersFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#d4af37" stopOpacity={0.4} />
-                    <stop offset="100%" stopColor="#d4af37" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid stroke="rgba(212,175,55,0.08)" vertical={false} />
-                <XAxis dataKey="day" tickFormatter={dayLabel} tick={{ fill: "#888", fontSize: 10 }} />
-                <YAxis allowDecimals={false} tick={{ fill: "#888", fontSize: 10 }} />
-                <Tooltip labelFormatter={(d) => dayLabel(String(d))} contentStyle={{ background: "#12101c", border: "1px solid rgba(212,175,55,0.2)", borderRadius: 12 }} />
-                <Area type="monotone" dataKey="users" name="ثبت نام" stroke="#d4af37" fill="url(#usersFill)" strokeWidth={2} />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
+          <p className="text-xs font-bold text-foreground mb-3">ثبت نام ۱۴ روز اخیر</p>
+          <EChart label="نمودار ثبت نام ۱۴ روز اخیر" option={charts.users} height={224} />
         </div>
 
         <div className="lux-card p-4">
-          <p className="text-xs font-bold text-[#e8e8e8] mb-3">درآمد خرید سکه ۱۴ روز اخیر (تومان)</p>
-          <div className="h-56">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={stats.daily}>
-                <defs>
-                  <linearGradient id="revFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#34d399" stopOpacity={0.4} />
-                    <stop offset="100%" stopColor="#34d399" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid stroke="rgba(212,175,55,0.08)" vertical={false} />
-                <XAxis dataKey="day" tickFormatter={dayLabel} tick={{ fill: "#888", fontSize: 10 }} />
-                <YAxis tick={{ fill: "#888", fontSize: 10 }} />
-                <Tooltip labelFormatter={(d) => dayLabel(String(d))} formatter={(v) => formatToman(Number(v))} contentStyle={{ background: "#12101c", border: "1px solid rgba(212,175,55,0.2)", borderRadius: 12 }} />
-                <Area type="monotone" dataKey="revenueToman" name="درآمد" stroke="#34d399" fill="url(#revFill)" strokeWidth={2} />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
+          <p className="text-xs font-bold text-foreground mb-3">درآمد خرید سکه ۱۴ روز اخیر (تومان)</p>
+          <EChart label="نمودار درآمد خرید سکه ۱۴ روز اخیر" option={charts.revenue} height={224} />
         </div>
       </div>
 
