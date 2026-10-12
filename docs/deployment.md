@@ -102,5 +102,8 @@ crontab -e
 
 - پوشه `public/uploads` فقط برای توسعه است؛ در production فایل ها به S3 می روند.
 - چت real-time روی SSE تک‌پروسسه است؛ اگر چند instance اجرا کنید (`pm2 -i max`) باید Redis pub/sub برای `chatEvents` اضافه شود.
+- IP کاربران (`lastIp`) از هدر `X-Forwarded-For` خوانده می شود. Nginx بالا این هدر را خودش تنظیم می کند؛ اگر پروکسی یا CDN دیگری (مثل Cloudflare) جلوی Nginx است، باید IP واقعی کلاینت را به Nginx بدهید و `real_ip` را تنظیم کنید، وگرنه IP ثبت شده IP پروکسی یا مقدار جعلی است.
+- IP کاربران داده شخصی است؛ در سیاست حریم خصوصی ذکر شود. فعلاً فقط آخرین IP نگه داشته می شود (بدون تاریخچه).
+- migration `20261024000000` ایندکس روی جدول `Message` می سازد؛ روی دیتابیس بزرگ آن را در ساعت کم بار اجرا کنید.
 - APK: `npm run build:apk` (روی سیستم با Android SDK).
 - PWA: `npm run build:pwa`.

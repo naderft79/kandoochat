@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { toPersianDigits } from "@/lib/format";
 import { getAllSettings } from "@/lib/settings";
 import { getCurrentUser } from "@/lib/auth";
+import { getUserStatsMap } from "@/lib/user-stats";
 import AdminUsersClient from "@/components/admin/AdminUsersClient";
 import SpecialRegisterLink from "@/components/admin/SpecialRegisterLink";
 import ExportButton from "@/components/admin/ExportButton";
@@ -25,13 +26,16 @@ export default async function AdminUsersPage() {
     prisma.user.count({ where: { role: "USER" } }),
   ]);
 
+  const statsMap = await getUserStatsMap(users.map((u) => u.id));
   const usersWithSubscription = users.map(({ password: _password, ...u }) => ({
     ...u,
     messageLockUntil: u.messageLockUntil ? u.messageLockUntil.toISOString() : null,
+    lastIpAt: u.lastIpAt ? u.lastIpAt.toISOString() : null,
     hasSubscription: u.subscriptions.length > 0,
     subscription: u.subscriptions[0]
       ? { startsAt: u.subscriptions[0].startsAt.toISOString(), endsAt: u.subscriptions[0].endsAt.toISOString() }
       : null,
+    stats: statsMap[u.id],
   }));
 
   return (

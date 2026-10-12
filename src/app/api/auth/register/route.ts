@@ -7,6 +7,7 @@ import { createSession } from "@/lib/auth";
 import { PROVINCES } from "@/lib/iran";
 import { sanitizeName, sanitizeUsername, sanitizeJob, sanitizeString } from "@/lib/sanitize";
 import { rateLimit, registerRateLimit, getClientIdentifier } from "@/lib/rate-limit";
+import { getRequestIp } from "@/lib/client-ip";
 import { verifyProof } from "@/lib/phoneOtp";
 import { getAllSettings } from "@/lib/settings";
 
@@ -134,6 +135,11 @@ export async function POST(request: Request) {
       },
     });
 
+    // ثبت آخرین IP ثبت نام برای نمایش در پنل ادمین
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { lastIp: getRequestIp(request), lastIpAt: new Date() },
+    });
     await createSession(user.id, user.role as import("@/lib/auth").UserRole);
 
     // ثبت کد دعوت اگر وجود داشته باشد — رکورد در انتظار ساخته می شود و پاداش بعد از فعالیت دعوت شده آزاد می شود

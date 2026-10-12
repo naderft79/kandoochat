@@ -5,6 +5,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { createSession } from "@/lib/auth";
 import { rateLimit, loginRateLimit, getClientIdentifier } from "@/lib/rate-limit";
+import { getRequestIp } from "@/lib/client-ip";
 
 const loginSchema = z.object({
   phone: z.union([
@@ -51,6 +52,11 @@ export async function POST(request: Request) {
       );
     }
 
+    // ثبت آخرین IP ورود برای نمایش در پنل ادمین
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { lastIp: getRequestIp(request), lastIpAt: new Date() },
+    });
     await createSession(user.id, user.role as import("@/lib/auth").UserRole);
     return NextResponse.json({ ok: true, role: user.role });
   } catch (err) {

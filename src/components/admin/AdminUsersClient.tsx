@@ -1,11 +1,13 @@
 "use client";
 
 // مدیریت کاربران — جستجو، فیلتر و لود به هنگام اسکرول
-import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
-import { BadgeCheck, Ban, Search, Filter, X, Loader2, User, MapPin, Briefcase, Calendar, Crown, Phone, Image as ImageIcon, UserCog, Lock } from "lucide-react";
+import { BadgeCheck, Ban, Search, Filter, X, Loader2, User, MapPin, Briefcase, Calendar, Crown, Phone, Image as ImageIcon, UserCog, Lock, Globe } from "lucide-react";
 import VerifiedBadge from "@/components/dashboard/VerifiedBadge";
-import { formatCoins, formatDate, toPersianDigits } from "@/lib/format";
+import { formatCoins, formatDate, formatToman, toPersianDigits } from "@/lib/format";
+import { PROVINCES, PROVINCE_NAMES } from "@/lib/iran";
+import type { UserStats } from "@/lib/user-stats";
 import UserActions from "@/components/admin/UserActions";
 import UserCoinModal from "@/components/admin/UserCoinModal";
 import UserSubscriptionModal from "@/components/admin/UserSubscriptionModal";
@@ -42,6 +44,9 @@ type UserItem = {
   hasSubscription: boolean;
   subscription: { startsAt: string; endsAt: string } | null;
   createdAt: string | Date;
+  lastIp: string | null;
+  lastIpAt: string | null;
+  stats: UserStats;
   wallet: { balance: number;[key: string]: unknown } | null;
   photos: { id: string; url: string; isProfile: boolean }[];
 };
@@ -54,6 +59,24 @@ type Props = {
 };
 
 const TAKE = 50;
+
+// کارت های آمار بخش مشخصات هر کاربر (مبالغ تومانی و سکه ای به صورت فارسی)
+function buildStatCards(s: UserStats) {
+  return [
+    { label: "تعداد پیام های ارسالی", value: toPersianDigits(s.messagesSent) },
+    { label: "تعداد عکس های ارسالی", value: toPersianDigits(s.imagesSent) },
+    { label: "تعداد خرید اشتراک", value: toPersianDigits(s.subscriptionCount) },
+    {
+      label: "جمع خرید اشتراک",
+      value: formatToman(s.subscriptionToman),
+      sub: s.subscriptionCoins > 0 ? `${formatCoins(s.subscriptionCoins)} با سکه` : undefined,
+    },
+    { label: "جمع سکه خریداری شده", value: formatCoins(s.coinsPurchased) },
+    { label: "جمع سکه انتقالی", value: formatCoins(s.coinsTransferred) },
+    { label: "جمع سکه برداشتی", value: formatCoins(s.coinsWithdrawn) },
+    { label: "جمع مبلغ برداشتی", value: formatToman(s.withdrawnToman) },
+  ];
+}
 
 export default function AdminUsersClient({ initialUsers, total, hasMore: initialHasMore, canSetRole = false }: Props) {
   const [users, setUsers] = useState<UserItem[]>(initialUsers);
@@ -192,21 +215,8 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
     return () => observer.disconnect();
   }, [handleObserver]);
 
-  // لیست استان ها و شهر های موجود
-  const provinces = useMemo(() => {
-    const set = new Set(users.map((u) => u.province).filter(Boolean));
-    return Array.from(set).sort();
-  }, [users]);
-
-  const cities = useMemo(() => {
-    const set = new Set(
-      users
-        .filter((u) => !provinceFilter || u.province === provinceFilter)
-        .map((u) => u.city)
-        .filter(Boolean)
-    );
-    return Array.from(set).sort();
-  }, [users, provinceFilter]);
+  // گزینه های شهر از لیست ثابت استان ها (نه فقط کاربران بارگذاری شده)
+  const cities = provinceFilter ? PROVINCES[provinceFilter] ?? [] : [];
 
   const hasActiveFilters = genderFilter || provinceFilter || cityFilter || verifiedFilter || activeFilter;
 
@@ -283,6 +293,42 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
         </button>
       </div>
 
+      {/* فیلتر استان و شهر — همیشه قابل مشاهده؛ گزینه ها از لیست ثابت استان ها و شهرها */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <select
+          aria-label="فیلتر استان"
+          value={provinceFilter}
+          onChange={(e) => {
+            const value = e.target.value;
+            setProvinceFilter(value);
+            setCityFilter("");
+            fetchUsers(0, true, { provinceFilter: value, cityFilter: "" });
+          }}
+          className="px-3 py-2.5 rounded-xl border border-[rgba(212,175,55,0.15)] bg-[#0d0d0d] text-[#e8e8e8] text-sm focus:outline-none focus:border-[rgba(212,175,55,0.4)]"
+        >
+          <option value="">همه استان ها</option>
+          {PROVINCE_NAMES.map((p) => (
+            <option key={p} value={p}>{p}</option>
+          ))}
+        </select>
+        <select
+          aria-label="فیلتر شهر"
+          value={cityFilter}
+          disabled={!provinceFilter}
+          onChange={(e) => {
+            const value = e.target.value;
+            setCityFilter(value);
+            fetchUsers(0, true, { cityFilter: value });
+          }}
+          className="px-3 py-2.5 rounded-xl border border-[rgba(212,175,55,0.15)] bg-[#0d0d0d] text-[#e8e8e8] text-sm focus:outline-none focus:border-[rgba(212,175,55,0.4)] disabled:opacity-50"
+        >
+          <option value="">{provinceFilter ? "همه شهرها" : "ابتدا استان را انتخاب کنید"}</option>
+          {cities.map((c) => (
+            <option key={c} value={c}>{c}</option>
+          ))}
+        </select>
+      </div>
+
       {/* پنل فیلترها */}
       {showFilters && (
         <div className="lux-card p-3 space-y-3 animate-fade-in-up">
@@ -300,39 +346,6 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
               <option value="">همه جنسیت ها</option>
               <option value="MALE">مرد</option>
               <option value="FEMALE">زن</option>
-            </select>
-
-            {/* استان */}
-            <select
-              value={provinceFilter}
-              onChange={(e) => {
-                const value = e.target.value;
-                setProvinceFilter(value);
-                setCityFilter("");
-                fetchUsers(0, true, { provinceFilter: value, cityFilter: "" });
-              }}
-              className="px-3 py-2 rounded-lg border border-[rgba(212,175,55,0.15)] bg-[#0d0d0d] text-[#e8e8e8] text-xs font-medium focus:outline-none focus:border-[rgba(212,175,55,0.4)]"
-            >
-              <option value="">همه استان ها</option>
-              {provinces.map((p) => (
-                <option key={p} value={p}>{p}</option>
-              ))}
-            </select>
-
-            {/* شهر */}
-            <select
-              value={cityFilter}
-              onChange={(e) => {
-                const value = e.target.value;
-                setCityFilter(value);
-                fetchUsers(0, true, { cityFilter: value });
-              }}
-              className="px-3 py-2 rounded-lg border border-[rgba(212,175,55,0.15)] bg-[#0d0d0d] text-[#e8e8e8] text-xs font-medium focus:outline-none focus:border-[rgba(212,175,55,0.4)]"
-            >
-              <option value="">همه شهرها</option>
-              {cities.map((c) => (
-                <option key={c} value={c}>{c}</option>
-              ))}
             </select>
 
             {/* تایید شده */}
@@ -490,6 +503,20 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
                   <Calendar className="w-3 h-3 text-ig-gray" />
                   عضویت {formatDate(u.createdAt)}
                 </span>
+                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-white border border-ig-border text-foreground font-medium" title="آخرین IP ثبت شده">
+                  <Globe className="w-3 h-3 text-ig-gray" />
+                  آخرین IP:
+                  <bdi dir="ltr">{u.lastIp ?? "ثبت نشده"}</bdi>
+                </span>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 pt-2 border-t border-ig-border">
+                {buildStatCards(u.stats).map((c) => (
+                  <div key={c.label} className="rounded-lg bg-white border border-ig-border px-2 py-1.5 min-w-0">
+                    <p className="text-[10px] text-ig-gray truncate">{c.label}</p>
+                    <p className="text-[12px] font-black text-foreground truncate">{c.value}</p>
+                    {c.sub && <p className="text-[10px] text-ig-gray truncate">{c.sub}</p>}
+                  </div>
+                ))}
               </div>
             </div>
 

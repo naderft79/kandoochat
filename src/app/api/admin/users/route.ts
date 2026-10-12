@@ -8,6 +8,7 @@ import { requireAdmin, AuthError } from "@/lib/auth";
 import { ensureWallet } from "@/lib/finance";
 import { getSetting } from "@/lib/settings";
 import { logAction } from "@/lib/audit";
+import { getUserStatsMap } from "@/lib/user-stats";
 
 const actionSchema = z.object({
   userId: z.string().min(1),
@@ -144,6 +145,7 @@ export async function GET(request: Request) {
       prisma.user.count({ where }),
     ]);
 
+    const statsMap = await getUserStatsMap(users.map((u) => u.id));
     const serialized = users.map(({ password: _password, ...u }) => ({
       ...u,
       messageLockUntil: u.messageLockUntil ? u.messageLockUntil.toISOString() : null,
@@ -152,6 +154,8 @@ export async function GET(request: Request) {
         ? { startsAt: u.subscriptions[0].startsAt.toISOString(), endsAt: u.subscriptions[0].endsAt.toISOString() }
         : null,
       createdAt: u.createdAt.toISOString(),
+      lastIpAt: u.lastIpAt ? u.lastIpAt.toISOString() : null,
+      stats: statsMap[u.id],
     }));
 
     return NextResponse.json({ users: serialized, total, hasMore: skip + serialized.length < total });

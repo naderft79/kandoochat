@@ -39,6 +39,8 @@ model User {
   isAICompanion  Boolean @default(false) // همراه هوش مصنوعی (هانی)
   lastSeen     DateTime @default(now())
   isOnline     Boolean  @default(false)
+  lastIp       String? // آخرین IP ثبت شده (ورود، ثبت نام و فعالیت)؛ فقط برای نمایش در پنل ادمین
+  lastIpAt     DateTime? // زمان ثبت آخرین IP
   goldenStoryExpiresAt DateTime? // انقضای استوری طلایی
   dailyLikesUsed Int    @default(0)
   dailyLikesReset DateTime @default(now())
@@ -228,6 +230,7 @@ model Message {
   replies        Message[]    @relation("MessageReply")
 
   @@index([conversationId, createdAt])
+  @@index([senderId, type]) // شمارش پیام ها و تصاویر ارسالی هر کاربر (آمار پنل ادمین)
 }
 
 // تنظیمات سایت (قابل تغییر توسط مدیر)

@@ -50,4 +50,20 @@ test.describe("پنل ادمین — اسموک", () => {
     await expect(page.getByText("ثبت نام ۱۴ روز اخیر")).toBeVisible();
     await expect(page.getByText(/شاخص · به‌روزرسانی هر ۳۰ ثانیه/)).toBeVisible();
   });
+
+  test("صفحه کاربران: فیلتر استان و شهر بدون باز کردن پنل دیده می شود", async ({ page }) => {
+    await page.goto("/admin/users", { waitUntil: "domcontentloaded" });
+    const province = page.getByLabel("فیلتر استان");
+    const city = page.getByLabel("فیلتر شهر");
+    await expect(province).toBeVisible();
+    await expect(city).toBeDisabled();
+    await province.selectOption("تهران");
+    await expect(city).toBeEnabled();
+  });
+
+  test("کارت کاربر IP و بلوک آمار را نشان می دهد", async ({ page }) => {
+    await page.goto("/admin/users", { waitUntil: "domcontentloaded" });
+    await expect(page.getByText("آخرین IP:").first()).toBeVisible();
+    await expect(page.getByText("جمع مبلغ برداشتی").first()).toBeVisible();
+  });
 });

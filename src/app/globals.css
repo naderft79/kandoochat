@@ -674,6 +674,11 @@ html:not(.dark) .lux-admin-bg [class*="text-blue-400"] {
   background-size: 200% 100%;
   animation: luxShimmer 1.5s infinite;
 }
+/* اسکلت بارگذاری در حالت روشن: نوار خاکستری روشن به جای نوار تیره */
+html:not(.dark) .lux-shimmer {
+  background: linear-gradient(90deg, #ece8dc 25%, #f7f4ea 50%, #ece8dc 75%);
+  background-size: 200% 100%;
+}
 
 /* گلو طلایی */
 @keyframes luxGlow {
