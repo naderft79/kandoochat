@@ -4,8 +4,10 @@
 import { useEffect, useState } from "react";
 import { Loader2, Activity } from "lucide-react";
 import { toPersianDigits, formatDateTimeCustom } from "@/lib/format";
+import UserLink from "@/components/admin/user-modal/UserLink";
 
 type FeedItem = {
+  actors?: { id: string | null; name: string }[];
   id: string;
   title: string;
   subtitle: string;
@@ -84,7 +86,7 @@ export default function LiveFeedClient({ channel, emptyLabel }: { channel: strin
           {items?.map((it) => (
             <li key={it.id} className="lux-card px-4 py-3 flex items-center justify-between gap-3">
               <div className="min-w-0">
-                <p className="text-sm font-bold text-[#e8e8e8] truncate">{it.title}</p>
+                <p className="text-sm font-bold text-[#e8e8e8] truncate">{it.actors ? it.actors.map((a, i) => (<span key={i}>{i > 0 && " ← "}<UserLink userId={a.id}>{a.name}</UserLink></span>)) : it.title}</p>
                 <p className="text-[11px] text-[#666] truncate">{it.subtitle}</p>
               </div>
               <div className="text-left shrink-0">

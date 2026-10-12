@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { formatDateTime, toPersianDigits } from "@/lib/format";
 import { Rocket } from "lucide-react";
 import AdminPagination from "@/components/admin/AdminPagination";
+import UserLink from "@/components/admin/user-modal/UserLink";
 
 const PAGE_SIZE = 20;
 
@@ -54,7 +55,7 @@ export default async function AdminBoostsPage({
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-bold text-[#e8e8e8]">
-                      {b.user.firstName} {b.user.lastName}
+                      <UserLink userId={b.user.id}>{b.user.firstName} {b.user.lastName}</UserLink>
                     </p>
                     <p className="text-xs text-[#888]">{b.user.city}</p>
                   </div>
@@ -77,7 +78,7 @@ export default async function AdminBoostsPage({
           <div key={b.id} className="lux-card p-4">
             <div className="flex items-center justify-between">
               <p className="text-sm font-bold text-[#e8e8e8]">
-                {b.user.firstName} {b.user.lastName}
+                <UserLink userId={b.user.id}>{b.user.firstName} {b.user.lastName}</UserLink>
               </p>
               <span className={`text-xs px-2 py-1 rounded-full font-bold ${
                 b.endsAt > now ? "bg-[rgba(16,185,129,0.1)] text-[#34d399]" : "bg-[rgba(212,175,55,0.08)] text-[#888]"

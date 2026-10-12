@@ -6,6 +6,7 @@ import { Check, X, Eye, Heart, MessageCircle, Clock, Loader2, CircleDot, AlertCi
 import { toPersianDigits, formatDateTimeCustom } from "@/lib/format";
 import DefaultAvatar from "@/components/dashboard/DefaultAvatar";
 import RejectReasonModal from "@/components/admin/RejectReasonModal";
+import UserLink from "@/components/admin/user-modal/UserLink";
 
 type StoryItem = {
   id: string;
@@ -235,7 +236,7 @@ export default function AdminStoriesClient() {
                     )}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs font-bold text-white truncate">{story.user.firstName} {story.user.lastName}</p>
+                    <p className="text-xs font-bold text-white truncate"><UserLink userId={story.user.id}>{story.user.firstName} {story.user.lastName}</UserLink></p>
                     <p className="text-[10px] text-white/70 truncate">@{story.user.username}</p>
                   </div>
                 </div>

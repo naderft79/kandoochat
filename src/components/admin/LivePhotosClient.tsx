@@ -5,6 +5,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Loader2, ArrowUp, Radio, LogIn, Image as ImageIcon, X, Trash2, Download, AlertTriangle, UserCircle } from "lucide-react";
 import DefaultAvatar from "@/components/dashboard/DefaultAvatar";
 import { toPersianDigits, formatDateTimeCustom } from "@/lib/format";
+import UserLink from "@/components/admin/user-modal/UserLink";
 
 type LiveMessage = {
   id: string;
@@ -259,7 +260,7 @@ export default function LivePhotosClient() {
                     )}
                     <div className="min-w-0">
                       <p className="text-[11px] font-bold text-[#e8e8e8] truncate leading-tight">
-                        {msg.sender.firstName} {msg.sender.lastName}
+                        <UserLink userId={msg.sender.id}>{msg.sender.firstName} {msg.sender.lastName}</UserLink>
                       </p>
                       <p className="text-[9px] text-[#888] truncate leading-tight" dir="ltr">
                         {msg.sender.username ? `@${msg.sender.username}` : msg.sender.id.slice(0, 8)}
@@ -301,7 +302,7 @@ export default function LivePhotosClient() {
                     </button>
                     <div className="min-w-0 text-right">
                       <p className="text-[11px] font-bold text-[#e8e8e8] truncate leading-tight">
-                        {receiver.firstName} {receiver.lastName}
+                        <UserLink userId={receiver.id}>{receiver.firstName} {receiver.lastName}</UserLink>
                       </p>
                       <p className="text-[9px] text-[#888] truncate leading-tight" dir="ltr">
                         {receiver.username ? `@${receiver.username}` : receiver.id.slice(0, 8)}
@@ -385,7 +386,7 @@ export default function LivePhotosClient() {
                   )}
                   <div className="min-w-0">
                     <p className="text-xs font-bold text-[#e8e8e8] truncate">فرستنده</p>
-                    <p className="text-[10px] text-[#888] truncate">{photoModal.sender.firstName} {photoModal.sender.lastName}</p>
+                    <p className="text-[10px] text-[#888] truncate"><UserLink userId={photoModal.sender.id}>{photoModal.sender.firstName} {photoModal.sender.lastName}</UserLink></p>
                     <p className="text-[9px] text-[#888] truncate" dir="ltr">
                       {photoModal.sender.username ? `@${photoModal.sender.username}` : photoModal.sender.id.slice(0, 8)}
                     </p>
@@ -425,7 +426,7 @@ export default function LivePhotosClient() {
                       </button>
                       <div className="min-w-0 text-right">
                         <p className="text-xs font-bold text-[#e8e8e8] truncate">گیرنده</p>
-                        <p className="text-[10px] text-[#888] truncate">{r.firstName} {r.lastName}</p>
+                        <p className="text-[10px] text-[#888] truncate"><UserLink userId={r.id}>{r.firstName} {r.lastName}</UserLink></p>
                         <p className="text-[9px] text-[#888] truncate" dir="ltr">
                           {r.username ? `@${r.username}` : r.id.slice(0, 8)}
                         </p>

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Ban, Loader2, RefreshCw, Plus, Trash2, CheckCircle, Search } from "lucide-react";
 import { toPersianDigits } from "@/lib/format";
 import { useToast } from "@/components/ToastProvider";
+import UserLink from "@/components/admin/user-modal/UserLink";
 
 type ListItem = {
   id: string;
@@ -201,7 +202,7 @@ export default function BlacklistPage() {
                           {u.photos[0]?.url ? <img src={u.photos[0].url} alt={u.firstName} className="w-full h-full object-cover" /> : null}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-bold text-[#e8e8e8] truncate">{u.firstName}</p>
+                          <p className="text-xs font-bold text-[#e8e8e8] truncate"><UserLink userId={u.id}>{u.firstName}</UserLink></p>
                           <p className="text-[10px] text-[#888] truncate">{u.username} • {u.city} • {u.gender === "MALE" ? "آقا" : "خانم"} • {toPersianDigits(u.age)} سال</p>
                         </div>
                       </button>

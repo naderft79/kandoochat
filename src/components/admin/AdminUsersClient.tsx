@@ -15,6 +15,7 @@ import UserEditModal from "@/components/admin/UserEditModal";
 import MessageLockModal from "@/components/admin/MessageLockModal";
 import AdminUserPhotosModal from "@/components/admin/AdminUserPhotosModal";
 import DefaultAvatar from "@/components/dashboard/DefaultAvatar";
+import UserLink from "@/components/admin/user-modal/UserLink";
 
 type UserItem = {
   id: string;
@@ -457,7 +458,7 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
               </div>
               <div className="xl:text-center min-w-0">
                 <p className="font-black text-foreground text-sm flex items-center gap-1 flex-wrap xl:justify-center">
-                  {u.firstName} {u.lastName}
+                  <UserLink userId={u.id}>{u.firstName} {u.lastName}</UserLink>
                   {u.isVerified && <VerifiedBadge className="w-5 h-5" />}
                 </p>
                 {!u.isActive && (

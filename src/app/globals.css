@@ -984,3 +984,13 @@ html:not(.dark) .lux-shimmer {
 .ig-coin-spin {
   animation: ig-coin-spin 0.9s ease-in-out;
 }
+
+/* مودال پروفایل کاربر در پنل ادمین: موبایل تمام صفحه، دسکتاپ با گوشه گرد */
+.lux-user-modal {
+  border-radius: 0;
+}
+@media (min-width: 768px) {
+  .lux-user-modal {
+    border-radius: 16px;
+  }
+}

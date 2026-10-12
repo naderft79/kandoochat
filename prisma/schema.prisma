@@ -92,6 +92,7 @@ model User {
   interests        UserInterest[]
   userSettings     UserSettings?
   missions         UserMission[]
+  loginEvents      LoginEvent[]
   auditLogs        AuditLog[]        @relation("AuditLogs")
   stories          Story[]
   storyViews       StoryView[]
@@ -772,4 +773,18 @@ model PhoneOtp {
 
   @@index([phone, purpose])
   @@index([expiresAt])
+}
+
+// تاریخچه ورود، ثبت نام و فعالیت (heartbeat ساعتی) — فقط برای نمایش در پنل ادمین؛ پاکسازی ۹۰ روزه
+model LoginEvent {
+  id        String   @id @default(cuid())
+  userId    String
+  kind      String   // LOGIN | REGISTER | HEARTBEAT
+  ip        String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([createdAt])
 }

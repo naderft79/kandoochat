@@ -79,3 +79,75 @@ export async function getUserStatsMap(userIds: string[]): Promise<Record<string,
 
   return result;
 }
+
+// آمار کامل یک کاربر برای مودال پنل ادمین (همه شاخص های قابل اندازه گیری)
+export type UserDetailStats = Record<string, number>;
+
+export async function getUserDetailStats(userId: string): Promise<UserDetailStats> {
+  const pair = [{ userAId: userId }, { userBId: userId }];
+  const [
+    likesSent, superLikesSent, likesReceived, superLikesReceived, matches, conversations,
+    messagesSent, messagesReceived, imagesSent, voiceSent, videoSent,
+    profileViewsGiven, profileViewsReceived, storiesPosted, storyViewsReceived,
+    giftsSent, giftsReceived, giftCoinsSpent,
+    referralsInvited, referralsPaid,
+    reportsSent, reportsReceived, blocksGiven, blocksReceived, ticketsOpened, adminActionsOnUser,
+    coinsPurchasedAgg, coinsOutAgg, coinsInAgg, feesAgg, withdrawnAgg, withdrawalsPending,
+    subscriptionCount, boostsBought, featuredCount, notifications, logins,
+  ] = await Promise.all([
+    prisma.like.count({ where: { senderId: userId, type: "LIKE" } }),
+    prisma.like.count({ where: { senderId: userId, type: "SUPER_LIKE" } }),
+    prisma.like.count({ where: { receiverId: userId, type: "LIKE" } }),
+    prisma.like.count({ where: { receiverId: userId, type: "SUPER_LIKE" } }),
+    prisma.match.count({ where: { OR: pair } }),
+    prisma.conversation.count({ where: { OR: pair } }),
+    prisma.message.count({ where: { senderId: userId } }),
+    prisma.message.count({ where: { senderId: { not: userId }, conversation: { OR: pair } } }),
+    prisma.message.count({ where: { senderId: userId, type: "IMAGE" } }),
+    prisma.message.count({ where: { senderId: userId, type: "VOICE" } }),
+    prisma.message.count({ where: { senderId: userId, type: "VIDEO" } }),
+    prisma.profileView.count({ where: { viewerId: userId } }),
+    prisma.profileView.count({ where: { viewedId: userId } }),
+    prisma.story.count({ where: { userId } }),
+    prisma.storyView.count({ where: { story: { userId } } }),
+    prisma.giftPurchase.count({ where: { senderId: userId } }),
+    prisma.giftPurchase.count({ where: { receiverId: userId } }),
+    prisma.giftPurchase.aggregate({ where: { senderId: userId }, _sum: { coinsPaid: true } }),
+    prisma.referral.count({ where: { referrerId: userId } }),
+    prisma.referral.count({ where: { referrerId: userId, paidAt: { not: null } } }),
+    prisma.report.count({ where: { reporterId: userId } }),
+    prisma.report.count({ where: { reportedId: userId } }),
+    prisma.block.count({ where: { blockerId: userId } }),
+    prisma.block.count({ where: { blockedId: userId } }),
+    prisma.ticket.count({ where: { userId } }),
+    prisma.auditLog.count({ where: { targetType: "USER", targetId: userId } }),
+    prisma.transaction.aggregate({ where: { userId, type: "COIN_PURCHASE", status: "COMPLETED" }, _sum: { coins: true } }),
+    prisma.coinTransfer.aggregate({ where: { senderId: userId, status: "COMPLETED" }, _sum: { coins: true } }),
+    prisma.coinTransfer.aggregate({ where: { receiverId: userId, status: "COMPLETED" }, _sum: { coins: true } }),
+    prisma.coinTransfer.aggregate({ where: { senderId: userId, status: "COMPLETED" }, _sum: { fee: true } }),
+    prisma.withdrawRequest.aggregate({ where: { userId, status: "APPROVED" }, _sum: { coins: true, amountToman: true } }),
+    prisma.withdrawRequest.count({ where: { userId, status: "PENDING" } }),
+    prisma.subscription.count({ where: { userId } }),
+    prisma.boost.count({ where: { userId } }),
+    prisma.featuredListing.count({ where: { userId } }),
+    prisma.notification.count({ where: { userId } }),
+    prisma.loginEvent.count({ where: { userId, kind: "LOGIN" } }),
+  ]);
+
+  return {
+    likesSent, superLikesSent, likesReceived, superLikesReceived, matches, conversations,
+    messagesSent, messagesReceived, imagesSent, voiceSent, videoSent,
+    profileViewsGiven, profileViewsReceived, storiesPosted, storyViewsReceived,
+    giftsSent, giftsReceived, giftCoinsSpent: giftCoinsSpent._sum.coinsPaid ?? 0,
+    referralsInvited, referralsPaid,
+    reportsSent, reportsReceived, blocksGiven, blocksReceived, ticketsOpened, adminActionsOnUser,
+    coinsPurchased: coinsPurchasedAgg._sum.coins ?? 0,
+    coinsTransferredOut: coinsOutAgg._sum.coins ?? 0,
+    coinsTransferredIn: coinsInAgg._sum.coins ?? 0,
+    transferFeesPaid: feesAgg._sum.fee ?? 0,
+    coinsWithdrawn: withdrawnAgg._sum.coins ?? 0,
+    withdrawnToman: withdrawnAgg._sum.amountToman ?? 0,
+    withdrawalsPending,
+    subscriptionCount, boostsBought, featuredCount, notifications, logins,
+  };
+}

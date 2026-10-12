@@ -9,18 +9,19 @@ export default async function AdminFeaturedPage() {
     prisma.featuredListing.findMany({
       where: { status: "PENDING" },
       orderBy: { createdAt: "asc" },
-      include: { user: { select: { firstName: true, lastName: true, username: true, city: true } } },
+      include: { user: { select: { id: true, firstName: true, lastName: true, username: true, city: true } } },
     }),
     prisma.featuredListing.findMany({
       where: { status: "APPROVED" },
       orderBy: { approvedAt: "desc" },
       take: 100,
-      include: { user: { select: { firstName: true, lastName: true, username: true, city: true } } },
+      include: { user: { select: { id: true, firstName: true, lastName: true, username: true, city: true } } },
     }),
   ]);
 
   const toItem = (l: (typeof pending)[number], date: Date | null) => ({
     id: l.id,
+    userId: l.user.id,
     name: `${l.user.firstName} ${l.user.lastName}`,
     username: l.user.username,
     city: l.user.city,

@@ -87,11 +87,12 @@ async function loadChannel(channel: string): Promise<FeedItem[] | null> {
       const rows = await prisma.coinTransfer.findMany({
         orderBy: { createdAt: "desc" },
         take: LIMIT,
-        select: { id: true, coins: true, fee: true, type: true, createdAt: true, sender: { select: { firstName: true, lastName: true } }, receiver: { select: { firstName: true, lastName: true } } },
+        select: { id: true, coins: true, fee: true, type: true, createdAt: true, sender: { select: { id: true, firstName: true, lastName: true } }, receiver: { select: { id: true, firstName: true, lastName: true } } },
       });
       return rows.map((t) => ({
         id: t.id,
         title: `${name(t.sender)} ← ${name(t.receiver)}`,
+        actors: [{ id: t.sender.id, name: name(t.sender) }, { id: t.receiver.id, name: name(t.receiver) }],
         subtitle: t.type === "GIFT" ? "هدیه سکه" : "درخواست سکه",
         value: `${t.coins.toLocaleString("fa-IR")} سکه · کارمزد ${t.fee.toLocaleString("fa-IR")}`,
         tone: "gold",
@@ -135,11 +136,12 @@ async function loadChannel(channel: string): Promise<FeedItem[] | null> {
         where: { type },
         orderBy: { createdAt: "desc" },
         take: LIMIT,
-        select: { id: true, duration: true, createdAt: true, sender: { select: { firstName: true, lastName: true, username: true } } },
+        select: { id: true, duration: true, createdAt: true, sender: { select: { id: true, firstName: true, lastName: true, username: true } } },
       });
       return rows.map((m) => ({
         id: m.id,
         title: name(m.sender),
+        actors: [{ id: m.sender?.id ?? null, name: name(m.sender) }],
         subtitle: `@${m.sender?.username ?? "—"}`,
         value: m.duration ? `${m.duration.toLocaleString("fa-IR")} ثانیه` : "بدون مدت",
         tone: "muted",

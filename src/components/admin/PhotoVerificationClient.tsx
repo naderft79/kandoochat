@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Check, X, ZoomIn, Loader2, BadgeCheck, AlertCircle, ChevronRight, ChevronLeft, Image as ImageIcon } from "lucide-react";
 import RejectReasonModal from "@/components/admin/RejectReasonModal";
 import { toPersianDigits } from "@/lib/format";
+import UserLink from "@/components/admin/user-modal/UserLink";
 
 type UserInfo = {
   id: string;
@@ -264,7 +265,7 @@ export default function PhotoVerificationClient() {
               {galleryGroups.map((group, gi) => (
                 <div key={group.userId} className="lux-card p-3">
                   <p className="text-xs font-bold text-[#e8e8e8] mb-2">
-                    {group.user.firstName} {group.user.lastName}
+                    <UserLink userId={group.user.id}>{group.user.firstName} {group.user.lastName}</UserLink>
                     <span className="text-[#888] font-normal mr-1">@{group.user.username}</span>
                   </p>
                   <div className="grid grid-cols-3 gap-2">
@@ -340,7 +341,7 @@ export default function PhotoVerificationClient() {
                 <div>
                   {zoomUser && (
                     <p className="text-sm font-bold text-[#e8e8e8]">
-                      {zoomUser.firstName} {zoomUser.lastName}
+                      <UserLink userId={zoomUser.id}>{zoomUser.firstName} {zoomUser.lastName}</UserLink>
                     </p>
                   )}
                   <p className="text-[10px] text-[#888]">

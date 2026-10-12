@@ -6,6 +6,7 @@ import { toPersianDigits } from "@/lib/format";
 import { isoToJalaliDisplay } from "@/lib/jalali";
 import VerifyReviewClient from "./VerifyReviewClient";
 import AdminPagination from "@/components/admin/AdminPagination";
+import UserLink from "@/components/admin/user-modal/UserLink";
 
 const PAGE_SIZE = 15;
 
@@ -128,7 +129,7 @@ export default async function AdminVerifyPage({
                 <div className="flex items-center justify-between mb-3">
                   <div>
                     <p className="text-sm font-bold text-[#e8e8e8]">
-                      {r.user.firstName} {r.user.lastName}
+                      <UserLink userId={r.user.id}>{r.user.firstName} {r.user.lastName}</UserLink>
                     </p>
                     <p className="text-xs text-[#888]">
                       @{r.user.username} — {r.user.phone}
@@ -273,7 +274,7 @@ export default async function AdminVerifyPage({
               <div key={r.id} className="flex items-center justify-between p-3">
                 <div>
                   <p className="text-sm font-bold text-[#e8e8e8]">
-                    {r.user.firstName} {r.user.lastName}
+                    <UserLink userId={r.user.id}>{r.user.firstName} {r.user.lastName}</UserLink>
                   </p>
                   <p className="text-xs text-[#888]">
                     @{r.user.username} — {kindLabels[r.kind] ?? r.kind}

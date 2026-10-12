@@ -5,6 +5,7 @@ import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Wallet, ShoppingCart, Banknote, ArrowLeftRight, ReceiptText, Check, X, Loader2, Download } from "lucide-react";
 import { formatCoins, formatToman, formatDateTime } from "@/lib/format";
+import UserLink from "@/components/admin/user-modal/UserLink";
 
 type Transaction = {
   id: string;
@@ -193,7 +194,7 @@ export default function AdminFinanceClient({ transactions, withdrawRequests, coi
                   {showUser && (
                     <td className="p-3">
                       <p className="font-bold text-[#e8e8e8] whitespace-nowrap text-sm">
-                        {t.firstName} {t.lastName}
+                        <UserLink userId={t.userId}>{t.firstName} {t.lastName}</UserLink>
                       </p>
                       <p className="text-xs text-[#888]" dir="ltr">
                         {t.phone}
@@ -248,7 +249,7 @@ export default function AdminFinanceClient({ transactions, withdrawRequests, coi
           >
             <div className="flex-1 min-w-0">
               <p className="font-bold text-[#e8e8e8] text-sm">
-                {r.firstName} {r.lastName}
+                <UserLink userId={r.userId}>{r.firstName} {r.lastName}</UserLink>
                 <span className="text-[#888] font-normal mr-2" dir="ltr">
                   {r.phone}
                 </span>
@@ -319,11 +320,11 @@ export default function AdminFinanceClient({ transactions, withdrawRequests, coi
               {coinTransfers.map((t) => (
                 <tr key={t.id} className="hover:bg-[rgba(212,175,55,0.04)]">
                   <td className="p-3 whitespace-nowrap text-[#e8e8e8] text-xs">
-                    {t.senderFirstName} {t.senderLastName}
+                    <UserLink userId={t.senderId}>{t.senderFirstName} {t.senderLastName}</UserLink>
                     <p className="text-[#888]" dir="ltr">{t.senderPhone}</p>
                   </td>
                   <td className="p-3 whitespace-nowrap text-[#e8e8e8] text-xs">
-                    {t.receiverFirstName} {t.receiverLastName}
+                    <UserLink userId={t.receiverId}>{t.receiverFirstName} {t.receiverLastName}</UserLink>
                     <p className="text-[#888]" dir="ltr">{t.receiverPhone}</p>
                   </td>
                   <td className="p-3 font-bold whitespace-nowrap text-[#34d399]">

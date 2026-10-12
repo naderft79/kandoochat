@@ -5,6 +5,7 @@ import { Flag } from "lucide-react";
 import ReportActions from "@/components/admin/ReportActions";
 import AdminPagination from "@/components/admin/AdminPagination";
 import ExportButton from "@/components/admin/ExportButton";
+import UserLink from "@/components/admin/user-modal/UserLink";
 
 const PAGE_SIZE = 20;
 
@@ -56,9 +57,9 @@ export default async function AdminReportsPage({
               <div className="flex items-start justify-between mb-2">
                 <div>
                   <p className="text-sm font-bold text-[#e8e8e8]">
-                    {r.reporter.firstName} {r.reporter.lastName}
+                    <UserLink userId={r.reporter.id}>{r.reporter.firstName} {r.reporter.lastName}</UserLink>
                     <span className="text-[#888] font-normal"> → گزارش داد </span>
-                    {r.reported.firstName} {r.reported.lastName}
+                    <UserLink userId={r.reported.id}>{r.reported.firstName} {r.reported.lastName}</UserLink>
                   </p>
                   <p className="text-xs text-[#888] mt-1">
                     نوع: {r.reason} · {formatDateTime(r.createdAt)}
@@ -88,7 +89,7 @@ export default async function AdminReportsPage({
             <div key={r.id} className="lux-card p-4 opacity-70">
               <div className="flex items-center justify-between">
                 <p className="text-sm font-bold text-[#e8e8e8]">
-                  {r.reporter.firstName} → {r.reported.firstName}
+                  <UserLink userId={r.reporter.id}>{r.reporter.firstName}</UserLink> → <UserLink userId={r.reported.id}>{r.reported.firstName}</UserLink>
                 </p>
                 <span className={`text-xs px-2 py-1 rounded-full font-bold ${
                   r.status === "RESOLVED" ? "bg-[rgba(16,185,129,0.1)] text-[#34d399]" :

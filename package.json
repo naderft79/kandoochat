@@ -64,6 +64,7 @@
     "react-icons": "^5.7.0",
     "react-image-crop": "^11.1.2",
     "web-push": "3.6.7",
+    "write-excel-file": "4.1.1",
     "zod": "^4.4.3"
   },
   "devDependencies": {

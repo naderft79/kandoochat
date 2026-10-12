@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { toPersianDigits, formatDate } from "@/lib/format";
 import { ScrollText } from "lucide-react";
 import AdminPagination from "@/components/admin/AdminPagination";
+import UserLink from "@/components/admin/user-modal/UserLink";
 
 export const dynamic = "force-dynamic";
 
@@ -101,7 +102,7 @@ export default async function AuditPage({
                       {formatDate(log.createdAt)}
                     </td>
                     <td className="px-4 py-2.5 text-[#e8e8e8] whitespace-nowrap">
-                      {log.admin.firstName} {log.admin.lastName}
+                      <UserLink userId={log.admin.id}>{log.admin.firstName} {log.admin.lastName}</UserLink>
                       <span className="text-[#888] block text-[10px]">@{log.admin.username}</span>
                     </td>
                     <td className="px-4 py-2.5">

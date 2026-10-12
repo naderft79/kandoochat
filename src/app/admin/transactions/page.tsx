@@ -1,6 +1,7 @@
 // تراکنش های مالی: سبک اینستاگرام
 import { ReceiptText } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import UserLink from "@/components/admin/user-modal/UserLink";
 import {
   formatCoins,
   formatToman,
@@ -24,7 +25,7 @@ const statusLabels: Record<string, { text: string; cls: string }> = {
 export default async function AdminTransactionsPage() {
   const transactions = await prisma.transaction.findMany({
     include: {
-      user: { select: { firstName: true, lastName: true, phone: true } },
+      user: { select: { id: true, firstName: true, lastName: true, phone: true } },
     },
     orderBy: { createdAt: "desc" },
     take: 200,
@@ -60,7 +61,7 @@ export default async function AdminTransactionsPage() {
                 <tr key={t.id} className="hover:bg-[rgba(212,175,55,0.03)]">
                   <td className="p-3">
                     <p className="font-bold text-[#e8e8e8] whitespace-nowrap text-sm">
-                      {t.user.firstName} {t.user.lastName}
+                      <UserLink userId={t.user.id}>{t.user.firstName} {t.user.lastName}</UserLink>
                     </p>
                     <p className="text-xs text-[#888]" dir="ltr">
                       {t.user.phone}

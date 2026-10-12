@@ -5,6 +5,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { MessageCircle, Loader2, ArrowUp, Radio, LogIn } from "lucide-react";
 import DefaultAvatar from "@/components/dashboard/DefaultAvatar";
 import { toPersianDigits, formatDateTimeCustom } from "@/lib/format";
+import UserLink from "@/components/admin/user-modal/UserLink";
 
 type LiveMessage = {
   id: string;
@@ -224,7 +225,7 @@ export default function LiveChatClient() {
                       )}
                       <div className="min-w-0">
                         <p className="text-[11px] font-bold text-[#e8e8e8] truncate leading-tight">
-                          {msg.sender.firstName} {msg.sender.lastName}
+                          <UserLink userId={msg.sender.id}>{msg.sender.firstName} {msg.sender.lastName}</UserLink>
                         </p>
                         <p className="text-[9px] text-[#888] truncate leading-tight" dir="ltr">
                           {msg.sender.username ? `@${msg.sender.username}` : msg.sender.id.slice(0, 8)}
@@ -266,7 +267,7 @@ export default function LiveChatClient() {
                       </button>
                       <div className="min-w-0 text-right">
                         <p className="text-[11px] font-bold text-[#e8e8e8] truncate leading-tight">
-                          {receiver.firstName} {receiver.lastName}
+                          <UserLink userId={receiver.id}>{receiver.firstName} {receiver.lastName}</UserLink>
                         </p>
                         <p className="text-[9px] text-[#888] truncate leading-tight" dir="ltr">
                           {receiver.username ? `@${receiver.username}` : receiver.id.slice(0, 8)}

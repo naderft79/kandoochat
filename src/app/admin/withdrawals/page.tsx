@@ -8,6 +8,7 @@ import {
   toPersianDigits,
 } from "@/lib/format";
 import WithdrawActions from "@/components/admin/WithdrawActions";
+import UserLink from "@/components/admin/user-modal/UserLink";
 
 const statusLabels: Record<string, { text: string; cls: string }> = {
   PENDING: { text: "در انتظار", cls: "text-[#888]" },
@@ -18,7 +19,7 @@ const statusLabels: Record<string, { text: string; cls: string }> = {
 export default async function AdminWithdrawalsPage() {
   const requests = await prisma.withdrawRequest.findMany({
     include: {
-      user: { select: { firstName: true, lastName: true, phone: true } },
+      user: { select: { id: true, firstName: true, lastName: true, phone: true } },
     },
     orderBy: [{ status: "asc" }, { createdAt: "desc" }],
     take: 100,
@@ -51,7 +52,7 @@ export default async function AdminWithdrawalsPage() {
             >
               <div className="flex-1 min-w-0">
                 <p className="font-bold text-[#e8e8e8] text-sm">
-                  {r.user.firstName} {r.user.lastName}
+                  <UserLink userId={r.user.id}>{r.user.firstName} {r.user.lastName}</UserLink>
                   <span className="text-[#888] font-normal mr-2" dir="ltr">
                     {r.user.phone}
                   </span>

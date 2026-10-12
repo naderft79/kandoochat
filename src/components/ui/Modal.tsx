@@ -7,10 +7,12 @@ import { X } from "lucide-react";
 import { cn } from "./cn";
 
 let lockCount = 0;
+// back زمان بندی شده پس از بسته شدن مودال (برای لغو در اجرای مجدد effect)
+let pendingBack: ReturnType<typeof setTimeout> | null = null;
 const FOCUSABLE =
   'a[href],button:not([disabled]),textarea:not([disabled]),input:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])';
 
-function useOverlay(open: boolean, onClose: () => void, panel: React.RefObject<HTMLElement | null>) {
+export function useOverlay(open: boolean, onClose: () => void, panel: React.RefObject<HTMLElement | null>) {
   const closeRef = useRef(onClose);
   useEffect(() => {
     closeRef.current = onClose;
@@ -22,9 +24,15 @@ function useOverlay(open: boolean, onClose: () => void, panel: React.RefObject<H
     lockCount++;
     document.body.style.overflow = "hidden";
 
+    // اجرای مجدد effect در StrictMode (dev) نباید history.back ناخواسته بزند؛ back زمان بندی شده را لغو می کنیم
+    if (pendingBack) {
+      clearTimeout(pendingBack);
+      pendingBack = null;
+    }
+
     // دکمه back مرورگر/اندروید مودال را می بندد
     let closedByPop = false;
-    history.pushState({ ...(history.state ?? {}), __modal: true }, "");
+    if (!history.state?.__modal) history.pushState({ ...(history.state ?? {}), __modal: true }, "");
     const onPop = () => {
       closedByPop = true;
       closeRef.current();
@@ -67,7 +75,12 @@ function useOverlay(open: boolean, onClose: () => void, panel: React.RefObject<H
         lockCount = 0;
         document.body.style.overflow = "";
       }
-      if (!closedByPop && history.state?.__modal) history.back();
+      if (!closedByPop && history.state?.__modal) {
+        pendingBack = setTimeout(() => {
+          pendingBack = null;
+          history.back();
+        }, 0);
+      }
       prev?.focus?.({ preventScroll: true });
     };
   }, [open, panel]);

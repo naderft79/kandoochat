@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Eye, Heart, MessageCircle, Clock, Loader2, CircleDot, Check, X } from "lucide-react";
 import { toPersianDigits, formatDateTimeCustom } from "@/lib/format";
 import DefaultAvatar from "@/components/dashboard/DefaultAvatar";
+import UserLink from "@/components/admin/user-modal/UserLink";
 
 type LiveStory = {
   id: string;
@@ -124,7 +125,7 @@ export default function LiveStoriesClient() {
               <span className={`absolute top-1.5 right-1.5 w-2 h-2 rounded-full ${story.isApproved ? "bg-green-500" : "bg-amber-500"}`} />
               <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-black/70 to-transparent" />
               <p className="absolute bottom-1.5 right-1.5 text-[10px] text-white font-bold truncate">
-                {story.user.firstName}
+                <UserLink userId={story.user.id}>{story.user.firstName}</UserLink>
               </p>
             </button>
 
@@ -209,7 +210,7 @@ export default function LiveStoriesClient() {
                 )}
               </div>
               <div>
-                <p className="text-xs font-bold text-white">{preview.user.firstName} {preview.user.lastName}</p>
+                <p className="text-xs font-bold text-white"><UserLink userId={preview.user.id}>{preview.user.firstName} {preview.user.lastName}</UserLink></p>
                 <p className="text-[10px] text-white/70">{formatDateTimeCustom(preview.createdAt)}</p>
               </div>
             </div>

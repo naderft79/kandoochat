@@ -15,6 +15,7 @@ export default function UserActions({
   isFake,
   canSetRole = false,
   offset = 0,
+  onChanged,
 }: {
   userId: string;
   role?: string;
@@ -24,6 +25,7 @@ export default function UserActions({
   isFake?: boolean;
   canSetRole?: boolean;
   offset?: number;
+  onChanged?: () => void;
 }) {
   const router = useRouter();
   const { toast } = useToast();
@@ -100,6 +102,7 @@ export default function UserActions({
         setShowPhoneModal(false);
         setNewPhone("");
         router.refresh();
+        onChanged?.();
       } else {
         toast(data.error ?? "خطایی رخ داد", "error");
       }
@@ -128,6 +131,7 @@ export default function UserActions({
           case "unmakeSpecial": setLocalIsSpecial(false); break;
         }
         router.refresh();
+        onChanged?.();
       } else {
         const data = await res.json();
         toast(data.error ?? "خطایی رخ داد", "error");
@@ -270,6 +274,7 @@ export default function UserActions({
               setLocalIsFake(data.isFake);
               toast(data.isFake ? "کاربر به عنوان فیک علامت خورد" : "علامت فیک برداشته شد", "success");
               router.refresh();
+        onChanged?.();
             } else {
               const data = await res.json();
               toast(data.error ?? "خطایی رخ داد", "error");
@@ -304,6 +309,7 @@ export default function UserActions({
                 setLocalRole(newRole);
                 toast("نقش کاربر تغییر کرد", "success");
                 router.refresh();
+        onChanged?.();
               } else {
                 e.target.value = localRole;
                 toast(data.error ?? "خطایی رخ داد", "error");

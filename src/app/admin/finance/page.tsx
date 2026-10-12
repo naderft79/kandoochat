@@ -13,22 +13,22 @@ export default async function AdminFinancePage() {
   const [transactions, withdrawRequests, coinTransfers] = await Promise.all([
     prisma.transaction.findMany({
       include: {
-        user: { select: { firstName: true, lastName: true, phone: true } },
+        user: { select: { id: true, firstName: true, lastName: true, phone: true } },
       },
       orderBy: { createdAt: "desc" },
       take: 200,
     }),
     prisma.withdrawRequest.findMany({
       include: {
-        user: { select: { firstName: true, lastName: true, phone: true } },
+        user: { select: { id: true, firstName: true, lastName: true, phone: true } },
       },
       orderBy: [{ status: "asc" }, { createdAt: "desc" }],
       take: 100,
     }),
     prisma.coinTransfer.findMany({
       include: {
-        sender: { select: { firstName: true, lastName: true, phone: true } },
-        receiver: { select: { firstName: true, lastName: true, phone: true } },
+        sender: { select: { id: true, firstName: true, lastName: true, phone: true } },
+        receiver: { select: { id: true, firstName: true, lastName: true, phone: true } },
       },
       orderBy: { createdAt: "desc" },
       take: 200,

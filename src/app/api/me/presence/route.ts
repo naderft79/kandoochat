@@ -3,23 +3,26 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireUser, isImpersonating, AuthError } from "@/lib/auth";
 import { getRequestIp } from "@/lib/client-ip";
+import { recordHeartbeatIfDue } from "@/lib/login-events";
 
 export async function POST(request: Request) {
   try {
     const user = await requireUser();
     const body = await request.json().catch(() => ({}));
     const isOnline = body.isOnline !== false;
-    // در جلسه impersonate، IP ادمین نباید روی حساب کاربر ثبت شود
+    // در جلسه impersonate، IP و فعالیت ادمین نباید روی حساب کاربر ثبت شود
     const trackIp = !(await isImpersonating());
+    const ip = getRequestIp(request);
 
     await prisma.user.update({
       where: { id: user.id },
       data: {
         lastSeen: new Date(),
         isOnline,
-        ...(trackIp ? { lastIp: getRequestIp(request), lastIpAt: new Date() } : {}),
+        ...(trackIp ? { lastIp: ip, lastIpAt: new Date() } : {}),
       },
     });
+    if (trackIp) await recordHeartbeatIfDue(user.id, ip, request.headers.get("user-agent"));
     return NextResponse.json({ ok: true });
   } catch (err) {
     if (err instanceof AuthError)

@@ -5,6 +5,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Send, Image as ImageIcon, Headphones, AlertTriangle } from "lucide-react";
 import { formatTime, toPersianDigits, formatDateTime } from "@/lib/format";
 import { useToast } from "@/components/ToastProvider";
+import UserLink from "@/components/admin/user-modal/UserLink";
 
 type TicketMessage = {
   id: string;
@@ -233,7 +234,7 @@ export default function TicketPanel({ ticketId }: { ticketId: string }) {
             <h2 className="text-base font-bold text-[#e8e8e8]">{ticket.subject}</h2>
             <p className="text-xs text-[#888] mt-1">
               {ticket.user
-                ? `${ticket.user.firstName} ${ticket.user.lastName} · @${ticket.user.username || "—"} · ${ticket.user.phone}`
+                ? <><UserLink userId={ticket.user.id}>{`${ticket.user.firstName} ${ticket.user.lastName}`}</UserLink>{` · @${ticket.user.username || "—"} · ${ticket.user.phone}`}</>
                 : `${ticket.guestName ?? "مهمان"} · ${ticket.guestEmail ?? "—"} · فرم تماس`}
             </p>
             <p className="text-xs text-[#888] mt-0.5">

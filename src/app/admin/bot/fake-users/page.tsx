@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Loader2, RefreshCw, Plus, Trash2, Edit2, UserPlus, Sparkles, Search } from "lucide-react";
 import { toPersianDigits } from "@/lib/format";
+import UserLink from "@/components/admin/user-modal/UserLink";
 
 interface FakeUser {
   id: string;
@@ -155,7 +156,7 @@ export default function FakeUsersPage() {
               {/* اطلاعات */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-white truncate">{u.firstName} {u.lastName}</span>
+                  <span className="text-xs font-bold text-white truncate"><UserLink userId={u.id}>{u.firstName} {u.lastName}</UserLink></span>
                   {u.isVerified && <span className="text-[10px] text-green-400">تایید شده</span>}
                   {!u.isActive && <span className="text-[10px] text-red-400">غیرفعال</span>}
                 </div>

@@ -4,6 +4,7 @@ import { formatDateTime, toPersianDigits } from "@/lib/format";
 import { Ticket as TicketIcon, Clock, CheckCircle, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import AdminPagination from "@/components/admin/AdminPagination";
+import UserLink from "@/components/admin/user-modal/UserLink";
 
 const PAGE_SIZE = 20;
 
@@ -202,7 +203,7 @@ export default async function AdminTicketsPage({
                       <div className="w-6 h-6 rounded-full bg-[rgba(212,175,55,0.06)] shrink-0" />
                     )}
                     <span className="text-xs text-[#888] truncate">
-                      {ticket.user ? `${ticket.user.firstName} ${ticket.user.lastName}` : (ticket.guestName ?? "مهمان")}
+                      {ticket.user ? <UserLink userId={ticket.user.id}>{`${ticket.user.firstName} ${ticket.user.lastName}`}</UserLink> : (ticket.guestName ?? "مهمان")}
                     </span>
                     {ticket.category && (
                       <span className="text-[10px] text-[#d4af37] bg-[rgba(212,175,55,0.06)] px-2 py-0.5 rounded-full shrink-0">

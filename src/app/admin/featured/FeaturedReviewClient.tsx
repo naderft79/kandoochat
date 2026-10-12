@@ -4,8 +4,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ToastProvider";
+import UserLink from "@/components/admin/user-modal/UserLink";
 
-type Item = { id: string; name: string; username: string; city: string; date: string };
+type Item = { id: string; userId: string; name: string; username: string; city: string; date: string };
 
 export default function FeaturedReviewClient({ pending, approved }: { pending: Item[]; approved: Item[] }) {
   const router = useRouter();
@@ -33,7 +34,7 @@ export default function FeaturedReviewClient({ pending, approved }: { pending: I
   const row = (it: Item, actions: { label: string; action: "APPROVE" | "REJECT" | "REMOVE"; tone: string }[]) => (
     <div key={it.id} className="lux-card p-4 flex items-center justify-between gap-3">
       <div className="min-w-0">
-        <p className="text-sm font-bold text-[#e8e8e8] truncate">{it.name} <span className="text-[#888] font-normal" dir="ltr">@{it.username}</span></p>
+        <p className="text-sm font-bold text-[#e8e8e8] truncate"><UserLink userId={it.userId}>{it.name}</UserLink> <span className="text-[#888] font-normal" dir="ltr">@{it.username}</span></p>
         <p className="text-xs text-[#888]">{it.city} · {it.date}</p>
       </div>
       <div className="flex gap-2 shrink-0">
