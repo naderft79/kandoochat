@@ -298,11 +298,12 @@ function SpecialRegisterFormInner() {
                     رمز عبور (۵ تا ۷ رقم) *
                   </label>
                   <input
-                    type="password"
+                    type="tel"
                     dir="ltr"
                     inputMode="numeric"
                     pattern="[0-9]*"
                     maxLength={7}
+                    style={{ WebkitTextSecurity: "disc" } as React.CSSProperties}
                     value={form.password}
                     onChange={(e) => set("password", e.target.value.replace(/\D/g, ""))}
                     className={`${inputClass} text-left`}

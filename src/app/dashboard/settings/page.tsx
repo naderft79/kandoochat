@@ -544,11 +544,12 @@ export default function SettingsPage() {
                   </label>
                   <div className="relative">
                     <input
-                      type={showCurrent ? "text" : "password"}
+                      type="tel"
                       dir="ltr"
                       inputMode="numeric"
                       pattern="[0-9]*"
                       maxLength={7}
+                      style={{ WebkitTextSecurity: showCurrent ? "none" : "disc" } as React.CSSProperties}
                       value={currentPassword}
                       onChange={(e) => setCurrentPassword(e.target.value.replace(/\D/g, ""))}
                       className="w-full px-3 py-2.5 rounded-lg border border-ig-border bg-ig-gray-bg focus:bg-surface focus:border-ig-gray outline-none transition-colors text-sm text-left pl-10"
@@ -571,11 +572,12 @@ export default function SettingsPage() {
                   </label>
                   <div className="relative">
                     <input
-                      type={showNew ? "text" : "password"}
+                      type="tel"
                       dir="ltr"
                       inputMode="numeric"
                       pattern="[0-9]*"
                       maxLength={7}
+                      style={{ WebkitTextSecurity: showNew ? "none" : "disc" } as React.CSSProperties}
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value.replace(/\D/g, ""))}
                       className="w-full px-3 py-2.5 rounded-lg border border-ig-border bg-ig-gray-bg focus:bg-surface focus:border-ig-gray outline-none transition-colors text-sm text-left pl-10"
@@ -597,11 +599,12 @@ export default function SettingsPage() {
                     تکرار رمز جدید
                   </label>
                   <input
-                    type={showNew ? "text" : "password"}
+                    type="tel"
                     dir="ltr"
                     inputMode="numeric"
                     pattern="[0-9]*"
                     maxLength={7}
+                    style={{ WebkitTextSecurity: showNew ? "none" : "disc" } as React.CSSProperties}
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value.replace(/\D/g, ""))}
                     className="w-full px-3 py-2.5 rounded-lg border border-ig-border bg-ig-gray-bg focus:bg-surface focus:border-ig-gray outline-none transition-colors text-sm text-left"
@@ -676,11 +679,12 @@ export default function SettingsPage() {
                 برای تایید، رمز عبورت را وارد کن
               </label>
               <input
-                type="password"
+                type="tel"
                 dir="ltr"
                 inputMode="numeric"
                 pattern="[0-9]*"
                 maxLength={7}
+                style={{ WebkitTextSecurity: "disc" } as React.CSSProperties}
                 value={deletePassword}
                 onChange={(e) => setDeletePassword(e.target.value.replace(/\D/g, ""))}
                 className="w-full px-3 py-2.5 rounded-lg border border-ig-border bg-ig-gray-bg focus:bg-surface focus:border-ig-gray outline-none transition-colors text-sm text-left"

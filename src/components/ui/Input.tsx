@@ -55,6 +55,8 @@ export const PasswordInput = forwardRef<HTMLInputElement, Omit<InputProps, "type
   const fid = id ?? auto;
   const [show, setShow] = useState(false);
   // رمز کاربر همیشه فقط عددی است — کیبورد عددی باز می شود و غیررقم فیلتر می شود
+  // نکته: inputMode روی type=password در WebView اندروید (کیبورد سامسونگ) ورودی را خراب می کند؛
+  // به جای آن type=tel با ماسک text-security استفاده می شود
   const handleChange = numeric
     ? (e: React.ChangeEvent<HTMLInputElement>) => {
         e.target.value = e.target.value.replace(/\D/g, "");
@@ -72,10 +74,11 @@ export const PasswordInput = forwardRef<HTMLInputElement, Omit<InputProps, "type
         <input
           ref={ref}
           id={fid}
-          type={show ? "text" : "password"}
+          type={numeric ? "tel" : show ? "text" : "password"}
           dir="ltr"
           inputMode={numeric ? "numeric" : undefined}
           pattern={numeric ? "[0-9]*" : undefined}
+          style={numeric ? ({ WebkitTextSecurity: show ? "none" : "disc" } as React.CSSProperties) : undefined}
           aria-invalid={!!error || undefined}
           aria-describedby={error ? `${fid}-err` : undefined}
           className={cn(field, "h-11 pl-11 text-left", error ? "border-ig-red" : "border-ig-border", className)}
