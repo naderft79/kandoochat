@@ -76,3 +76,6 @@ android/app/src/main/assets/public/
 
 # کش پایتون سرویس چهره
 __pycache__/
+
+# پایگاه داده کشور IP (با npm run geoip:download دریافت شود)
+data/geo/

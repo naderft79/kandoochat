@@ -2,6 +2,8 @@
 import { createHash, timingSafeEqual } from "crypto";
 import { NextResponse } from "next/server";
 import { purgeOldLoginEvents } from "@/lib/login-events";
+import { aggregateAndPurge } from "@/lib/visits";
+import { purgeExpiredDeletedUsers } from "@/lib/user-deletion";
 
 // مقایسه ثابت-زمان توکن (با هش کردن تا طول ورودی نشت نکند)
 function tokenMatches(header: string | null, secret: string): boolean {
@@ -21,5 +23,9 @@ export async function GET(request: Request) {
   }
   const deleted = await purgeOldLoginEvents();
   console.log(`[maintenance] purged ${deleted} login events older than 90 days`);
-  return NextResponse.json({ ok: true, deletedLoginEvents: deleted });
+  const visits = await aggregateAndPurge();
+  console.log(`[maintenance] visits aggregated days=${visits.aggregatedDays} purgedRows=${visits.purgedRows}`);
+  const purgedUsers = await purgeExpiredDeletedUsers();
+  if (purgedUsers > 0) console.log(`[maintenance] purged ${purgedUsers} expired deleted users`);
+  return NextResponse.json({ ok: true, deletedLoginEvents: deleted, visits, purgedUsers });
 }

@@ -53,6 +53,11 @@ model User {
   messageLockReason  String?  // دلیل قفل ارسال پیام
   termsAcceptedAt    DateTime? // زمان تایید قوانین و ۱۸ سال تمام
   passwordChangedAt  DateTime? // زمان آخرین تغییر رمز؛ سشن های قدیمی تر باطل می شوند
+  deletedAt        DateTime? // حذف نرم توسط سوپر ادمین؛ حساب بلافاصله غیرفعال می شود
+  deletedById      String?   // شناسه ادمین حذف کننده
+  deleteReason     String?   // دلیل حذف (اجباری)
+  deletePurgeAfter DateTime? // پس از این تاریخ (۳۰ روز) بازیابی ممکن نیست و اسنپ شات پاک می شود
+  deletedSnapshot  Json?     // داده های هویتی برای بازیابی؛ در پاکسازی نهایی حذف می شود
   referralCode   String?  @unique // کد دعوت یکتای کاربر — ۷ کاراکتر حروف بزرگ و عدد
   legacyReferralCode String? @unique // کد دعوت قدیمی برای زنده ماندن لینک های قبلی
   referralMilestonePaidAt DateTime? // زمان پرداخت جایزه مایلستون دعوت
@@ -105,6 +110,7 @@ model User {
   pushSubscriptions PushSubscription[]
   fcmTokens      FcmToken[]
   verificationRequests VerificationRequest[]
+  @@index([deletePurgeAfter])
 }
 
 // کیف پول سکه هر کاربر
@@ -787,4 +793,39 @@ model LoginEvent {
 
   @@index([userId, createdAt])
   @@index([createdAt])
+}
+
+// بازدید صفحه (خام، ۹۰ روز): IP ذخیره نمی شود؛ فقط هش روزانه با نمک برای شمارش بازدیدکننده یکتا
+model PageView {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  path        String   // الگوی مسیر بدون شناسه کاربر، مثل /profile/[username]
+  pageKey     String   // کلید ثابت صفحه، مثل subscription
+  isEntry     Boolean  @default(false) // اولین صفحه یک نشست مرورگر (ورودی)
+  channel     String   // SEARCH | SOCIAL | PAID | REFERRAL | DIRECT | INTERNAL
+  source      String   // کلید منبع، مثل google، instagram، direct، یا دامنه ارجاع دهنده
+  platform    String   // WEB | APP
+  isLoggedIn  Boolean  @default(false)
+  visitorHash String   // هش روزانه IP+UA با نمک؛ IP خام ذخیره نمی شود
+
+  @@index([createdAt])
+  @@index([pageKey, createdAt])
+  @@index([channel, createdAt])
+}
+
+// خلاصه روزانه بازدید (بی پایان): هر ردیف یک ترکیب روز/صفحه/منبع است
+model VisitDailyStat {
+  id         String @id @default(cuid())
+  day        String // YYYY-MM-DD به وقت تهران
+  pageKey    String
+  channel    String
+  source     String
+  platform   String
+  isEntry    Boolean
+  isLoggedIn Boolean
+  views      Int
+  visitors   Int
+
+  @@unique([day, pageKey, channel, source, platform, isEntry, isLoggedIn])
+  @@index([day])
 }

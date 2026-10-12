@@ -3,6 +3,7 @@
 // خلاصه و مشخصات کاربر در مودال: اطلاعات پروفایل، وضعیت ها، و همه شاخص های آماری
 import { toPersianDigits, formatDateTimeCustom } from "@/lib/format";
 import type { UserSummary } from "@/lib/admin-user-data";
+import { IpCountryBadge } from "@/components/admin/CountryFlag";
 
 const fa = (n: number) => toPersianDigits(Math.round(n).toLocaleString("en-US").replace(/,/g, "،"));
 const coins = (n: number) => `${fa(n)} سکه`;
@@ -140,7 +141,7 @@ export default function SummaryPane({ s }: { s: UserSummary }) {
           <Field label="کد دعوت">{s.referralCode ? <span dir="ltr">{s.referralCode}</span> : "—"}</Field>
           <Field label="تاریخ عضویت">{formatDateTimeCustom(s.createdAt)}</Field>
           <Field label="آخرین بازدید">{formatDateTimeCustom(s.lastSeen)}</Field>
-          <Field label="آخرین IP">{s.permissions.ip ? (s.lastIp ? <span dir="ltr">{s.lastIp}</span> : "ثبت نشده") : "دسترسی ندارید"}</Field>
+          <Field label="آخرین IP و کشور"><IpCountryBadge ip={s.lastIp} country={s.lastCountry} canSeeIp={s.permissions.ip} /></Field>
           <Field label="موجودی کیف پول">{coins(s.balance)}</Field>
           <Field label="اشتراک فعال">
             {s.subscription

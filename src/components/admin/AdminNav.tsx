@@ -29,6 +29,7 @@ import {
   Bot,
   Sparkles,
   X,
+  Globe,
 } from "lucide-react";
 
 type NavItem = { href: string; label: string; icon: typeof LayoutDashboard };
@@ -70,6 +71,7 @@ const groups: NavGroup[] = [
     items: [
       { href: "/admin/analytics", label: "آنالیز لحظه ای", icon: Activity },
       { href: "/admin/stats", label: "آمار", icon: BarChart3 },
+      { href: "/admin/visits", label: "امار بازدید", icon: Globe },
       { href: "/admin/retention", label: "Retention", icon: TrendingUp },
       { href: "/admin/interests", label: "علایق", icon: Heart },
       { href: "/admin/audit", label: "لاگ اقدامات", icon: ScrollText },

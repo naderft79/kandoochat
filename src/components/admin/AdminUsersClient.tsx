@@ -3,7 +3,8 @@
 // مدیریت کاربران — جستجو، فیلتر و لود به هنگام اسکرول
 import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
-import { BadgeCheck, Ban, Search, Filter, X, Loader2, User, MapPin, Briefcase, Calendar, Crown, Phone, Image as ImageIcon, UserCog, Lock, Globe } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { BadgeCheck, Ban, Search, Filter, X, Loader2, User, MapPin, Briefcase, Calendar, Crown, Phone, Image as ImageIcon, UserCog, Lock, Trash2, RotateCcw } from "lucide-react";
 import VerifiedBadge from "@/components/dashboard/VerifiedBadge";
 import { formatCoins, formatDate, formatToman, toPersianDigits } from "@/lib/format";
 import { PROVINCES, PROVINCE_NAMES } from "@/lib/iran";
@@ -15,6 +16,8 @@ import UserEditModal from "@/components/admin/UserEditModal";
 import MessageLockModal from "@/components/admin/MessageLockModal";
 import AdminUserPhotosModal from "@/components/admin/AdminUserPhotosModal";
 import DefaultAvatar from "@/components/dashboard/DefaultAvatar";
+import { IpCountryBadge } from "@/components/admin/CountryFlag";
+import DeleteUserModal from "@/components/admin/DeleteUserModal";
 import UserLink from "@/components/admin/user-modal/UserLink";
 
 type UserItem = {
@@ -47,6 +50,9 @@ type UserItem = {
   createdAt: string | Date;
   lastIp: string | null;
   lastIpAt: string | null;
+  lastCountry: string | null;
+  deletedAt: string | null;
+  deletePurgeAfter: string | null;
   stats: UserStats;
   wallet: { balance: number;[key: string]: unknown } | null;
   photos: { id: string; url: string; isProfile: boolean }[];
@@ -57,6 +63,7 @@ type Props = {
   total: number;
   hasMore: boolean;
   canSetRole?: boolean;
+  canSeeIp?: boolean;
 };
 
 const TAKE = 50;
@@ -79,7 +86,8 @@ function buildStatCards(s: UserStats) {
   ];
 }
 
-export default function AdminUsersClient({ initialUsers, total, hasMore: initialHasMore, canSetRole = false }: Props) {
+export default function AdminUsersClient({ initialUsers, total, hasMore: initialHasMore, canSetRole = false, canSeeIp = false }: Props) {
+  const router = useRouter();
   const [users, setUsers] = useState<UserItem[]>(initialUsers);
   const [skip, setSkip] = useState(initialUsers.length);
   const [hasMore, setHasMore] = useState(initialHasMore);
@@ -98,6 +106,9 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
   const [photosModalUserId, setPhotosModalUserId] = useState<string | null>(null);
   const [editModalUserId, setEditModalUserId] = useState<string | null>(null);
   const [lockModalUserId, setLockModalUserId] = useState<string | null>(null);
+  const [deleteModalUserId, setDeleteModalUserId] = useState<string | null>(null);
+  const [restoreBusyId, setRestoreBusyId] = useState<string | null>(null);
+  const [restoreConfirmId, setRestoreConfirmId] = useState<string | null>(null);
 
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const latestReqRef = useRef(0);
@@ -116,6 +127,7 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
     { key: "leastCoins", label: "کمترین سکه" },
     { key: "fake", label: "فیک (ربات)" },
     { key: "admins", label: "مدیران" },
+    ...(canSetRole ? [{ key: "deleted", label: "حذف شده ها" }] : []),
   ];
 
   function buildParams(
@@ -146,8 +158,35 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
     if (active) p.set("active", active);
     p.set("tab", tab);
     if (tab === "admins") p.set("admins", "true");
+    if (tab === "deleted") p.set("deleted", "true");
     p.set("take", String(TAKE));
     return p;
+  }
+
+  async function restoreUser(userId: string) {
+    if (restoreConfirmId !== userId) {
+      setRestoreConfirmId(userId);
+      setTimeout(() => setRestoreConfirmId(null), 4000);
+      return;
+    }
+    setRestoreConfirmId(null);
+    setRestoreBusyId(userId);
+    try {
+      const res = await fetch("/api/admin/users", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, action: "restoreUser" }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setUsers((prev) => prev.filter((u) => u.id !== userId));
+        router.refresh();
+      } else {
+        alert(data.error ?? "خطا در بازیابی");
+      }
+    } finally {
+      setRestoreBusyId(null);
+    }
   }
 
   async function fetchUsers(
@@ -504,10 +543,8 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
                   <Calendar className="w-3 h-3 text-ig-gray" />
                   عضویت {formatDate(u.createdAt)}
                 </span>
-                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-white border border-ig-border text-foreground font-medium" title="آخرین IP ثبت شده">
-                  <Globe className="w-3 h-3 text-ig-gray" />
-                  آخرین IP:
-                  <bdi dir="ltr">{u.lastIp ?? "ثبت نشده"}</bdi>
+                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-white border border-ig-border text-foreground font-medium" title="آخرین IP و کشور">
+                  <IpCountryBadge ip={u.lastIp} country={u.lastCountry} canSeeIp={canSeeIp} />
                 </span>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 pt-2 border-t border-ig-border">
@@ -583,6 +620,29 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
                   canSetRole={canSetRole}
                   offset={1}
                 />
+                {canSetRole && !u.deletedAt && (
+                  <button
+                    type="button"
+                    onClick={() => setDeleteModalUserId(u.id)}
+                    className="px-2 py-2 rounded-lg text-[10px] font-bold transition-all flex items-center justify-center gap-1 bg-[rgba(239,68,68,0.12)] text-[#f87171] border border-[rgba(239,68,68,0.35)] hover:bg-[rgba(239,68,68,0.2)]"
+                    title="حذف کامل کاربر (با ۳۰ روز مهلت بازیابی)"
+                  >
+                    <Trash2 className="w-3.5 h-3.5 shrink-0" />
+                    <span className="truncate">حذف کامل</span>
+                  </button>
+                )}
+                {canSetRole && u.deletedAt && (
+                  <button
+                    type="button"
+                    onClick={() => restoreUser(u.id)}
+                    disabled={restoreBusyId === u.id}
+                    className="px-2 py-2 rounded-lg text-[10px] font-bold transition-all flex items-center justify-center gap-1 lux-btn-gold disabled:opacity-50"
+                    title={u.deletePurgeAfter ? `مهلت بازیابی تا ${formatDate(u.deletePurgeAfter)}` : "بازیابی کاربر"}
+                  >
+                    <RotateCcw className="w-3.5 h-3.5 shrink-0" />
+                    <span className="truncate">{restoreConfirmId === u.id ? "تایید بازیابی؟" : "بازیابی"}</span>
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -660,6 +720,23 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
               onClose={() => setLockModalUserId(null)}
               onSuccess={() => {
                 setLockModalUserId(null);
+                fetchUsers(0, true);
+              }}
+            />
+          );
+        })()}
+
+        {deleteModalUserId && (() => {
+          const user = users.find((u) => u.id === deleteModalUserId);
+          if (!user) return null;
+          return (
+            <DeleteUserModal
+              userId={user.id}
+              displayName={`${user.firstName} ${user.lastName}`}
+              username={user.username}
+              onClose={() => setDeleteModalUserId(null)}
+              onSuccess={() => {
+                setUsers((prev) => prev.filter((u) => u.id !== user.id));
                 fetchUsers(0, true);
               }}
             />

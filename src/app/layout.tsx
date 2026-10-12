@@ -7,6 +7,7 @@ import AndroidBackHandler from "@/components/AndroidBackHandler";
 import PortraitGuard from "@/components/PortraitGuard";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { ToastProvider } from "@/components/ToastProvider";
+import PageViewTracker from "@/components/analytics/PageViewTracker";
 import LiveDataProvider from "@/components/dashboard/LiveDataProvider";
 import { getSession } from "@/lib/auth";
 import { SITE_URL } from "@/lib/site";
@@ -98,6 +99,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           <ToastProvider>
             <LiveDataProvider enabled={!!session}>
               {children}
+              <PageViewTracker />
             </LiveDataProvider>
           </ToastProvider>
           <InstallBanner />

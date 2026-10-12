@@ -19,6 +19,7 @@ import SummaryPane from "@/components/admin/user-modal/SummaryPane";
 import DataPanel, { type TabQuery } from "@/components/admin/user-modal/DataPanel";
 import ConversationView from "@/components/admin/user-modal/ConversationView";
 import ActionsBar, { type ActiveModal } from "@/components/admin/user-modal/ActionsBar";
+import DeleteUserModal from "@/components/admin/DeleteUserModal";
 import { TAB_LABELS } from "@/components/admin/user-modal/tab-meta";
 
 const TAB_ICONS: Record<UserTab, typeof User> = {
@@ -250,6 +251,15 @@ function ModalBody({ userId, depth, onBack, onClose }: Props) {
           }}
           onClose={() => setActiveModal(null)}
           onSuccess={() => { setActiveModal(null); summary.reload(); }}
+        />
+      )}
+      {s && activeModal === "delete" && (
+        <DeleteUserModal
+          userId={s.id}
+          displayName={`${s.firstName} ${s.lastName}`}
+          username={s.username}
+          onClose={() => setActiveModal(null)}
+          onSuccess={() => { setActiveModal(null); onClose(); }}
         />
       )}
       {photosUser && activeModal === "photos" && (

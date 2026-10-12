@@ -20,6 +20,8 @@ const config: CapacitorConfig = {
   },
   android: {
     allowMixedContent: isHttp,
+    // توکن KandooApp در User-Agent اپ قرار می گیرد تا بازدیدهای اپ از وب جدا شمرده شوند
+    appendUserAgent: "KandooApp/1.0",
   },
   plugins: {
     // کیبورد: تغییر اندازه وب ویو تا اینپوت زیر کیبورد نرود (چت)

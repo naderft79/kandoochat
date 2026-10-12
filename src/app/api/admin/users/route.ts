@@ -8,6 +8,9 @@ import { requireAdmin, AuthError } from "@/lib/auth";
 import { ensureWallet } from "@/lib/finance";
 import { getSetting } from "@/lib/settings";
 import { logAction } from "@/lib/audit";
+import { canViewIp } from "@/lib/permissions";
+import { lookupCountry } from "@/lib/geo";
+import { softDeleteUser, restoreUser, DeleteUserError } from "@/lib/user-deletion";
 import { getUserStatsMap } from "@/lib/user-stats";
 
 const actionSchema = z.object({
@@ -24,8 +27,11 @@ const actionSchema = z.object({
     "messageLock", "messageUnlock",
     "toggleFake",
     "setRole",
+    "deleteUser",
+    "restoreUser",
   ]),
   role: z.enum(["USER", "ADMIN", "SUPER_ADMIN", "CONTENT_ADMIN", "SUPPORT_ADMIN"]).optional(),
+  reason: z.string().min(3).max(300).optional(),
   coins: z.coerce.number().int().min(-100_000).max(100_000).optional(),
   phone: z.string().min(10).max(15).optional(),
   profile: z.object({
@@ -61,6 +67,7 @@ export async function GET(request: Request) {
     const verified = searchParams.get("verified") ?? "";
     const active = searchParams.get("active") ?? "";
     const tab = searchParams.get("tab") ?? "overview";
+    const deletedOnly = searchParams.get("deleted") === "true";
     const skip = parseInt(searchParams.get("skip") ?? "0", 10);
     const take = parseInt(searchParams.get("take") ?? "100", 10);
 
@@ -69,6 +76,8 @@ export async function GET(request: Request) {
     const where: Record<string, unknown> = adminsOnly
       ? { role: { in: ["ADMIN", "SUPER_ADMIN", "CONTENT_ADMIN", "SUPPORT_ADMIN"] } }
       : { role: "USER" };
+    // کاربران حذف شده به صورت پیش فرض پنهان هستند و فقط با فیلتر مخصوص دیده می شوند
+    where.deletedAt = deletedOnly ? { not: null } : null;
 
     if (search) {
       const q = search.toLowerCase();
@@ -155,6 +164,10 @@ export async function GET(request: Request) {
         : null,
       createdAt: u.createdAt.toISOString(),
       lastIpAt: u.lastIpAt ? u.lastIpAt.toISOString() : null,
+      lastIp: canViewIp(admin.role) ? u.lastIp : null,
+      lastCountry: lookupCountry(u.lastIp),
+      deletedAt: u.deletedAt ? u.deletedAt.toISOString() : null,
+      deletePurgeAfter: u.deletePurgeAfter ? u.deletePurgeAfter.toISOString() : null,
       stats: statsMap[u.id],
     }));
 
@@ -175,7 +188,7 @@ export async function PATCH(request: Request) {
     if (!parsed.success) {
       return NextResponse.json({ error: "درخواست نامعتبر" }, { status: 400 });
     }
-    const { userId, action, coins, phone, profile, lockDays, lockReason, role } = parsed.data;
+    const { userId, action, coins, phone, profile, lockDays, lockReason, role, reason } = parsed.data;
 
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) {
@@ -354,6 +367,47 @@ export async function PATCH(request: Request) {
         console.log(`[admin] ${admin.id} changed role of user ${userId}: ${oldRole} -> ${role}`);
         await logAction(admin.id, "SET_ROLE", "USER", userId, `${oldRole} -> ${role}`);
         return NextResponse.json({ ok: true, role });
+      }
+      case "deleteUser": {
+        // فقط سوپر ادمین و با دلیل اجباری؛ حذف نرم با ۳۰ روز مهلت بازیابی
+        if (admin.role !== "SUPER_ADMIN") {
+          return NextResponse.json({ error: "فقط سوپر ادمین مجاز است" }, { status: 403 });
+        }
+        if (!reason) {
+          return NextResponse.json({ error: "ثبت دلیل حذف الزامی است" }, { status: 400 });
+        }
+        if (userId === admin.id) {
+          return NextResponse.json({ error: "نمی توانید حساب خود را حذف کنید" }, { status: 400 });
+        }
+        try {
+          await softDeleteUser(admin.id, userId, reason);
+        } catch (e) {
+          if (e instanceof DeleteUserError) {
+            const msg = ({ NOT_FOUND: "کاربر یافت نشد", ALREADY_DELETED: "کاربر قبلاً حذف شده است", IS_ADMIN: "حساب مدیر را نمی توان حذف کرد" } as Record<string, string>)[e.code] ?? "خطا";
+            return NextResponse.json({ error: msg }, { status: 400 });
+          }
+          throw e;
+        }
+        console.log(`[admin] ${admin.id} soft-deleted user ${userId}`);
+        await logAction(admin.id, "DELETE_USER", "USER", userId, reason.slice(0, 200));
+        return NextResponse.json({ ok: true });
+      }
+      case "restoreUser": {
+        if (admin.role !== "SUPER_ADMIN") {
+          return NextResponse.json({ error: "فقط سوپر ادمین مجاز است" }, { status: 403 });
+        }
+        try {
+          await restoreUser(userId);
+        } catch (e) {
+          if (e instanceof DeleteUserError) {
+            const msg = ({ NOT_DELETED: "کاربر حذف شده نیست", RESTORE_EXPIRED: "مهلت بازیابی تمام شده است", IDENTITY_CONFLICT: "شماره یا نام کاربری توسط حساب دیگری گرفته شده است" } as Record<string, string>)[e.code] ?? "خطا";
+            return NextResponse.json({ error: msg }, { status: 400 });
+          }
+          throw e;
+        }
+        console.log(`[admin] ${admin.id} restored user ${userId}`);
+        await logAction(admin.id, "RESTORE_USER", "USER", userId);
+        return NextResponse.json({ ok: true });
       }
     }
 

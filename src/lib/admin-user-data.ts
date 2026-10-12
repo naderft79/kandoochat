@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { canAccessUserTab, canViewFullPhone, canViewIp, canViewPrivateMessages, USER_TABS, type UserTab } from "@/lib/permissions";
 import { getUserDetailStats, type UserDetailStats } from "@/lib/user-stats";
 import { toPersianDigits } from "@/lib/format";
+import { lookupCountry } from "@/lib/geo";
 
 const DAY = 24 * 60 * 60 * 1000;
 export const PAGE_SIZE_DEFAULT = 25;
@@ -27,6 +28,7 @@ export type UserRow = {
   images: string[];
   video: string | null;
   deleted: boolean;
+  country?: string | null;
 };
 export type TabPage = { rows: UserRow[]; total: number; page: number; pageSize: number; hasMore: boolean };
 
@@ -89,6 +91,9 @@ export type UserSummary = {
   carModel: string | null;
   bio: string | null;
   isActive: boolean;
+  deletedAt: string | null;
+  deleteReason: string | null;
+  deletePurgeAfter: string | null;
   isOnline: boolean;
   isVerified: boolean;
   isIdentityVerified: boolean;
@@ -104,6 +109,7 @@ export type UserSummary = {
   lastSeen: string;
   lastIp: string | null;
   lastIpAt: string | null;
+  lastCountry: string | null;
   balance: number;
   subscription: { startsAt: string; endsAt: string; coinsPaid: number } | null;
   photos: { id: string; url: string; isProfile: boolean }[];
@@ -145,6 +151,9 @@ export async function getUserSummary(userId: string, viewerRole: string): Promis
     carModel: user.carModel,
     bio: user.bio,
     isActive: user.isActive,
+    deletedAt: user.deletedAt ? user.deletedAt.toISOString() : null,
+    deleteReason: showIp ? user.deleteReason : null,
+    deletePurgeAfter: user.deletePurgeAfter ? user.deletePurgeAfter.toISOString() : null,
     isOnline: user.isOnline,
     isVerified: user.isVerified,
     isIdentityVerified: user.isIdentityVerified,
@@ -159,6 +168,7 @@ export async function getUserSummary(userId: string, viewerRole: string): Promis
     createdAt: user.createdAt.toISOString(),
     lastSeen: user.lastSeen.toISOString(),
     lastIp: showIp ? user.lastIp : null,
+    lastCountry: lookupCountry(user.lastIp),
     lastIpAt: showIp && user.lastIpAt ? user.lastIpAt.toISOString() : null,
     balance: user.wallet?.balance ?? 0,
     subscription: subscription
@@ -627,6 +637,7 @@ async function activityTab(userId: string, q: TabQuery, at: { gte: Date } | unde
         id: e.id, at: e.createdAt.toISOString(),
         title: e.kind === "LOGIN" ? "ورود" : e.kind === "REGISTER" ? "ثبت نام" : "فعالیت در برنامه",
         subtitle: showIp ? e.ip : null,
+        country: lookupCountry(e.ip),
         value: e.userAgent ? e.userAgent.slice(0, 120) : null,
         status: null, tone: "muted", other: null, images: [], video: null, deleted: false,
       })), total);

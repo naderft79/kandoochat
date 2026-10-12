@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { toPersianDigits } from "@/lib/format";
 import { getAllSettings } from "@/lib/settings";
 import { getCurrentUser } from "@/lib/auth";
+import { canViewIp } from "@/lib/permissions";
+import { lookupCountry } from "@/lib/geo";
 import { getUserStatsMap } from "@/lib/user-stats";
 import AdminUsersClient from "@/components/admin/AdminUsersClient";
 import SpecialRegisterLink from "@/components/admin/SpecialRegisterLink";
@@ -14,7 +16,7 @@ export default async function AdminUsersPage() {
   const currentAdmin = await getCurrentUser();
   const [users, total] = await Promise.all([
     prisma.user.findMany({
-      where: { role: "USER" },
+      where: { role: "USER", deletedAt: null },
       include: {
         wallet: true,
         photos: { select: { id: true, url: true, isProfile: true }, where: { isDeletedByUser: false }, orderBy: { order: "asc" } },
@@ -23,7 +25,7 @@ export default async function AdminUsersPage() {
       orderBy: [{ createdAt: "desc" }],
       take: 50,
     }),
-    prisma.user.count({ where: { role: "USER" } }),
+    prisma.user.count({ where: { role: "USER", deletedAt: null } }),
   ]);
 
   const statsMap = await getUserStatsMap(users.map((u) => u.id));
@@ -31,6 +33,10 @@ export default async function AdminUsersPage() {
     ...u,
     messageLockUntil: u.messageLockUntil ? u.messageLockUntil.toISOString() : null,
     lastIpAt: u.lastIpAt ? u.lastIpAt.toISOString() : null,
+    lastIp: canViewIp(currentAdmin?.role) ? u.lastIp : null,
+    lastCountry: lookupCountry(u.lastIp),
+    deletedAt: u.deletedAt ? u.deletedAt.toISOString() : null,
+    deletePurgeAfter: u.deletePurgeAfter ? u.deletePurgeAfter.toISOString() : null,
     hasSubscription: u.subscriptions.length > 0,
     subscription: u.subscriptions[0]
       ? { startsAt: u.subscriptions[0].startsAt.toISOString(), endsAt: u.subscriptions[0].endsAt.toISOString() }
@@ -64,6 +70,7 @@ export default async function AdminUsersPage() {
         total={total}
         hasMore={total > users.length}
         canSetRole={currentAdmin?.role === "SUPER_ADMIN"}
+        canSeeIp={canViewIp(currentAdmin?.role)}
       />
     </div>
   );

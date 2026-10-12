@@ -13,6 +13,7 @@ const ADMIN_PAGES = [
   "/admin",
   "/admin/verify",
   "/admin/stats",
+  "/admin/visits",
   "/admin/analytics",
   "/admin/withdrawals",
   "/admin/transactions",
@@ -81,7 +82,7 @@ test.describe("پنل ادمین — اسموک", () => {
 
   test("کارت کاربر IP و بلوک آمار را نشان می دهد", async ({ page }) => {
     await page.goto("/admin/users", { waitUntil: "domcontentloaded" });
-    await expect(page.getByText("آخرین IP:").first()).toBeVisible();
+    await expect(page.getByTitle("آخرین IP و کشور").first()).toBeVisible();
     await expect(page.getByText("جمع مبلغ برداشتی").first()).toBeVisible();
   });
 });

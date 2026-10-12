@@ -7,6 +7,8 @@ import { formatDateTimeCustom, toPersianDigits } from "@/lib/format";
 import type { TabPage, UserRow } from "@/lib/admin-user-data";
 import type { UserTab } from "@/lib/permissions";
 import UserLink from "@/components/admin/user-modal/UserLink";
+import CountryFlag from "@/components/admin/CountryFlag";
+import { countryNameFa } from "@/lib/country";
 import { useJson } from "@/components/admin/user-modal/useJson";
 import { TAB_KINDS, RANGE_OPTIONS, isSearchable, type KindOption } from "@/components/admin/user-modal/tab-meta";
 
@@ -203,6 +205,12 @@ function RowItem({ row, onClick }: { row: UserRow; onClick?: () => void }) {
       <div className="shrink-0 text-right sm:text-left space-y-1">
         {row.value && <p className="text-xs font-bold text-[#e8e8e8]">{row.value}</p>}
         {row.status && <p className={`text-[11px] font-bold ${TONE_CLASS[row.tone]}`}>{row.status}</p>}
+        {row.country !== undefined && (
+          <p className="text-[11px] text-[#888] flex items-center justify-end sm:justify-start gap-1.5">
+            <CountryFlag code={row.country} />
+            {countryNameFa(row.country)}
+          </p>
+        )}
         <p className="text-[10px] text-[#666]">{formatDateTimeCustom(row.at)}</p>
         {row.images.length > 0 && <ImageIcon className="inline w-3 h-3 text-[#666]" aria-hidden />}
       </div>

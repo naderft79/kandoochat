@@ -4,7 +4,7 @@
 import UserActions from "@/components/admin/UserActions";
 import type { UserSummary } from "@/lib/admin-user-data";
 
-export type ActiveModal = "coin" | "sub" | "lock" | "edit" | "photos" | null;
+export type ActiveModal = "coin" | "sub" | "lock" | "edit" | "photos" | "delete" | null;
 
 type Props = {
   s: UserSummary;
@@ -33,6 +33,15 @@ export default function ActionsBar({ s, onOpen, onChanged }: Props) {
       <button type="button" onClick={() => onOpen("photos")} className={btn}>عکس ها</button>
       {s.permissions.phoneFull && (
         <button type="button" onClick={() => onOpen("edit")} className={btn}>ویرایش مشخصات</button>
+      )}
+      {s.permissions.setRole && !s.deletedAt && (
+        <button
+          type="button"
+          onClick={() => onOpen("delete")}
+          className="px-2 py-2 rounded-lg bg-[rgba(239,68,68,0.12)] border border-[rgba(239,68,68,0.35)] text-[#f87171] text-[10px] font-black hover:bg-[rgba(239,68,68,0.2)] flex items-center justify-center text-center"
+        >
+          حذف کامل کاربر
+        </button>
       )}
     </div>
   );
