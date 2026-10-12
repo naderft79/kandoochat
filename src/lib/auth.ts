@@ -16,6 +16,13 @@ export const ADMIN_ROLES = [ADMIN_ROLE, SUPER_ADMIN_ROLE, CONTENT_ADMIN_ROLE, SU
 export type UserRole = typeof USER_ROLE | typeof ADMIN_ROLE | typeof SUPER_ADMIN_ROLE | typeof CONTENT_ADMIN_ROLE | typeof SUPPORT_ADMIN_ROLE;
 export const USER_ROLES: UserRole[] = [USER_ROLE, ADMIN_ROLE, SUPER_ADMIN_ROLE, CONTENT_ADMIN_ROLE, SUPPORT_ADMIN_ROLE];
 
+// حساب ریشه سوپر ادمین — یوزرنیم و رمز آن تا اطلاع ثانوی از هیچ مسیری قابل تغییر نیست
+export const ROOT_USERNAME = "1";
+export function isProtectedRoot(user: { username?: string | null } | null | undefined): boolean {
+  return !!user && user.username === ROOT_USERNAME;
+}
+export const ROOT_LOCKED_MESSAGE = "یوزرنیم و رمز حساب ریشه قابل تغییر نیست";
+
 export type SessionPayload = {
   userId: string;
   role: UserRole;

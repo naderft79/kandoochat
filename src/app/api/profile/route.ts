@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { requireUser, AuthError } from "@/lib/auth";
+import { requireUser, AuthError, isProtectedRoot, ROOT_LOCKED_MESSAGE } from "@/lib/auth";
 import { PROVINCES } from "@/lib/iran";
 import { sanitizeName, sanitizeUsername, sanitizeJob, sanitizeString, sanitizeBio } from "@/lib/sanitize";
 import { checkProfileCompletion } from "@/lib/profileCheck";
@@ -54,6 +54,10 @@ export async function PUT(request: Request) {
     }
 
     if (data.username !== user.username) {
+      // یوزرنیم حساب ریشه به هیچ وجه تغییر نمی کند
+      if (isProtectedRoot(user)) {
+        return NextResponse.json({ error: ROOT_LOCKED_MESSAGE }, { status: 403 });
+      }
       const existing = await prisma.user.findUnique({
         where: { username: data.username },
       });

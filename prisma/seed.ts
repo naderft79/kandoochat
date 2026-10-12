@@ -123,6 +123,33 @@ async function main() {
   }
   console.log("[seed] settings created");
 
+  // حساب ریشه سوپر ادمین — یوزرنیم و رمز ۱/۱ و تا اطلاع ثانوی تغییرناپذیر
+  // upsert با update خالی است تا اگر حساب وجود دارد هیچ فیلدی بازنویسی نشود
+  const rootPassword = await bcrypt.hash("1", 10);
+  await prisma.user.upsert({
+    where: { phone: "1" },
+    update: {},
+    create: {
+      phone: "1",
+      username: "1",
+      password: rootPassword,
+      role: "SUPER_ADMIN",
+      gender: "MALE",
+      firstName: "سوپر",
+      lastName: "مدیر",
+      province: "تهران",
+      city: "تهران",
+      age: 35,
+      height: 180,
+      weight: 80,
+      income: 0,
+      isVerified: true,
+      phoneVerified: true,
+      wallet: { create: { balance: 0 } },
+    },
+  });
+  console.log("[seed] root super admin ensured (login: 1/1)");
+
   // کاربر مدیر
   const adminPassword = await bcrypt.hash("Admin@Kandoo1404", 10);
   await prisma.user.upsert({

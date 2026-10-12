@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { requireUser, createSession, AuthError, type UserRole } from "@/lib/auth";
+import { requireUser, createSession, AuthError, isProtectedRoot, ROOT_LOCKED_MESSAGE, type UserRole } from "@/lib/auth";
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1, "رمز فعلی را وارد کنید"),
@@ -25,10 +25,14 @@ export async function POST(request: Request) {
     // بررسی رمز فعلی
     const dbUser = await prisma.user.findUnique({
       where: { id: user.id },
-      select: { password: true },
+      select: { password: true, username: true },
     });
     if (!dbUser) {
       return NextResponse.json({ error: "کاربر یافت نشد" }, { status: 404 });
+    }
+    // رمز حساب ریشه به هیچ وجه تغییر نمی کند
+    if (isProtectedRoot(dbUser)) {
+      return NextResponse.json({ error: ROOT_LOCKED_MESSAGE }, { status: 403 });
     }
 
     const isValid = await bcrypt.compare(parsed.data.currentPassword, dbUser.password);

@@ -4,7 +4,7 @@ import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
-import { requireAdmin, AuthError } from "@/lib/auth";
+import { requireAdmin, AuthError, isProtectedRoot, ROOT_LOCKED_MESSAGE } from "@/lib/auth";
 import { ensureWallet } from "@/lib/finance";
 import { getSetting } from "@/lib/settings";
 import { logAction } from "@/lib/audit";
@@ -193,6 +193,12 @@ export async function PATCH(request: Request) {
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) {
       return NextResponse.json({ error: "کاربر یافت نشد" }, { status: 404 });
+    }
+
+    // حساب ریشه: یوزرنیم، موبایل و رمز آن به هیچ وجه تغییر نمی کند و حساب غیرفعال/حذف نمی شود
+    const ROOT_ACTIONS_BLOCKED = new Set(["resetPassword", "changePhone", "editProfile", "deactivate", "deleteUser", "setRole"]);
+    if (isProtectedRoot(user) && ROOT_ACTIONS_BLOCKED.has(action)) {
+      return NextResponse.json({ error: ROOT_LOCKED_MESSAGE }, { status: 403 });
     }
 
     switch (action) {

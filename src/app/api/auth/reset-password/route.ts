@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { verifyProof } from "@/lib/phoneOtp";
+import { isProtectedRoot, ROOT_LOCKED_MESSAGE } from "@/lib/auth";
 import { rateLimit, getClientIdentifier } from "@/lib/rate-limit";
 
 const schema = z.object({
@@ -22,8 +23,12 @@ export async function POST(request: Request) {
     }
     const rl = await rateLimit(`preset:${getClientIdentifier(request)}:${phone}`, { windowMs: 15 * 60 * 1000, maxRequests: 10 });
     if (!rl.allowed) return NextResponse.json({ error: "تلاش های زیاد؛ بعدا دوباره امتحان کنید" }, { status: 429 });
-    const user = await prisma.user.findUnique({ where: { phone }, select: { id: true, isActive: true } });
+    const user = await prisma.user.findUnique({ where: { phone }, select: { id: true, isActive: true, username: true } });
     if (!user || !user.isActive) return NextResponse.json({ error: "حساب یافت نشد" }, { status: 404 });
+    // رمز حساب ریشه به هیچ وجه تغییر نمی کند
+    if (isProtectedRoot(user)) {
+      return NextResponse.json({ error: ROOT_LOCKED_MESSAGE }, { status: 403 });
+    }
     // به محض تغییر رمز همه سشن های قبلی کاربر باطل می شوند
     await prisma.user.update({ where: { id: user.id }, data: { password: await bcrypt.hash(password, 10), passwordChangedAt: new Date() } });
     console.log(`[auth/reset-password] password reset for user ${user.id}`);
