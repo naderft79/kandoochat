@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
     <application
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
@@ -53,7 +53,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <!-- اعلان های کندو زمان بندی دقیق ندارند؛ مجوز الارم دقیق حذف شد (حذف از مجوز کتابخانه هم) -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" tools:node="remove" />
     <!-- ضبط ویس در چت و احراز هویت -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <!-- سلفی و عکس کارت ملی برای احراز هویت -->

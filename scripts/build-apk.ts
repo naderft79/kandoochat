@@ -7,6 +7,11 @@ import fs from "fs";
 const isWin = process.platform === "win32";
 const root = process.cwd();
 const release = process.argv.includes("--release");
+// نسخه ریلیز فقط با آدرس https ساخته می شود — جلوگیری از جاسازی آدرس HTTP در APK عمومی
+if (release && !/^https:\/\//.test(process.env.CAPACITOR_SERVER_URL || process.env.NEXT_PUBLIC_SITE_URL || "")) {
+  console.error("[build-apk] --release needs an https CAPACITOR_SERVER_URL (or NEXT_PUBLIC_SITE_URL)");
+  process.exit(1);
+}
 
 function run(cmd: string, args: string[], cwd: string) {
   console.log(`[build-apk] $ ${cmd} ${args.join(" ")}`);
