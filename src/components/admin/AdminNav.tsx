@@ -22,7 +22,6 @@ import {
   Heart,
   Ticket as TicketIcon,
   Bell,
-  Crown,
   TrendingUp,
   Database,
   Bot,
@@ -57,7 +56,6 @@ const groups: NavGroup[] = [
     title: "مالی و اشتراک",
     items: [
       { href: "/admin/finance", label: "مالی", icon: Wallet },
-      { href: "/admin/tiers", label: "سطح اشتراک", icon: Crown },
       { href: "/admin/boosts", label: "بوست ها", icon: Rocket },
       { href: "/admin/featured", label: "بخش ویژه", icon: Sparkles },
       { href: "/admin/missions", label: "ماموریت ها", icon: Target },

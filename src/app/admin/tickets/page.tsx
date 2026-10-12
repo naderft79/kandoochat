@@ -195,14 +195,14 @@ export default async function AdminTicketsPage({
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 min-w-0">
-                    {ticket.user.photos?.[0]?.url ? (
+                    {ticket.user?.photos?.[0]?.url ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={ticket.user.photos[0].url} alt="" className="w-6 h-6 rounded-full object-cover shrink-0" />
                     ) : (
                       <div className="w-6 h-6 rounded-full bg-[rgba(212,175,55,0.06)] shrink-0" />
                     )}
                     <span className="text-xs text-[#888] truncate">
-                      {ticket.user.firstName} {ticket.user.lastName}
+                      {ticket.user ? `${ticket.user.firstName} ${ticket.user.lastName}` : (ticket.guestName ?? "مهمان")}
                     </span>
                     {ticket.category && (
                       <span className="text-[10px] text-[#d4af37] bg-[rgba(212,175,55,0.06)] px-2 py-0.5 rounded-full shrink-0">

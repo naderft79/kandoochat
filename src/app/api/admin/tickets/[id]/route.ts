@@ -103,16 +103,18 @@ export async function POST(
       },
     });
 
-    // ارسال نوتیفیکیشن به کاربر
-    await prisma.notification.create({
-      data: {
-        userId: ticket.userId,
-        type: "ADMIN_BROADCAST",
-        title: "پاسخ تیکت پشتیبانی",
-        body: `پاسخ جدید به تیکت «${ticket.subject}» دریافت کردید`,
-        data: JSON.stringify({ ticketId: id }),
-      },
-    });
+    // ارسال نوتیفیکیشن به کاربر (تیکت مهمان کاربر ندارد)
+    if (ticket.userId) {
+      await prisma.notification.create({
+        data: {
+          userId: ticket.userId,
+          type: "ADMIN_BROADCAST",
+          title: "پاسخ تیکت پشتیبانی",
+          body: `پاسخ جدید به تیکت «${ticket.subject}» دریافت کردید`,
+          data: JSON.stringify({ ticketId: id }),
+        },
+      });
+    }
 
     return NextResponse.json({ message });
   } catch (err) {

@@ -141,24 +141,6 @@ model Subscription {
   @@index([userId, endsAt])
 }
 
-// سطح اشتراک (قابل تنظیم توسط ادمین)
-model SubscriptionTier {
-  id          String  @id @default(cuid())
-  key         String  @unique // BASIC | PREMIUM | VIP
-  name        String
-  coinsPerMonth Int
-  dailyLikes   Int
-  dailySuperLikes Int
-  canSeeLikers Boolean @default(false)
-  canRewindLast Boolean @default(false)
-  canHideOnline Boolean @default(false)
-  canSendGifts  Boolean @default(false)
-  profileBoost  Boolean @default(false)
-  isActive    Boolean @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
 // درخواست احراز هویت کاربر — دو نوع: تیک آبی (BLUE_TICK) و احراز هویت کامل (KYC)
 model VerificationRequest {
   id             String   @id @default(cuid())
@@ -598,14 +580,16 @@ model StoryReply {
 // تیکت پشتیبانی
 model Ticket {
   id        String   @id @default(cuid())
-  userId    String
+  userId    String?  // null برای پیام های فرم تماس (مهمان)
+  guestName  String?
+  guestEmail String?
   subject   String
   status    String   @default("OPEN") // OPEN | ANSWERED | CLOSED
   priority  String   @default("MEDIUM") // LOW | MEDIUM | HIGH
   category  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   messages  TicketMessage[]
 
   @@index([userId, status])
@@ -616,13 +600,13 @@ model Ticket {
 model TicketMessage {
   id          String   @id @default(cuid())
   ticketId    String
-  senderId    String
+  senderId    String?  // null برای پیام مهمان فرم تماس
   content     String
   attachments String?  // JSON array of URLs
   isFromAdmin Boolean  @default(false)
   createdAt   DateTime @default(now())
   ticket      Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
-  sender      User     @relation("TicketMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  sender      User?    @relation("TicketMessages", fields: [senderId], references: [id], onDelete: Cascade)
 
   @@index([ticketId, createdAt])
 }

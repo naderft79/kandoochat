@@ -8,7 +8,7 @@ import { useToast } from "@/components/ToastProvider";
 
 type TicketMessage = {
   id: string;
-  senderId: string;
+  senderId: string | null;
   content: string;
   attachments: string | null;
   isFromAdmin: boolean;
@@ -29,7 +29,9 @@ type Ticket = {
     username: string | null;
     phone: string;
     photos: { url: string }[];
-  };
+  } | null;
+  guestName: string | null;
+  guestEmail: string | null;
   messages: TicketMessage[];
 };
 
@@ -230,7 +232,9 @@ export default function TicketPanel({ ticketId }: { ticketId: string }) {
           <div>
             <h2 className="text-base font-bold text-[#e8e8e8]">{ticket.subject}</h2>
             <p className="text-xs text-[#888] mt-1">
-              {ticket.user.firstName} {ticket.user.lastName} · @{ticket.user.username || "—"} · {ticket.user.phone}
+              {ticket.user
+                ? `${ticket.user.firstName} ${ticket.user.lastName} · @${ticket.user.username || "—"} · ${ticket.user.phone}`
+                : `${ticket.guestName ?? "مهمان"} · ${ticket.guestEmail ?? "—"} · فرم تماس`}
             </p>
             <p className="text-xs text-[#888] mt-0.5">
               ایجاد: {formatDateTime(ticket.createdAt)}

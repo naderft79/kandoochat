@@ -32,10 +32,10 @@ export async function POST(request: Request) {
         status: "OPEN",
         priority: "LOW",
         category: "عمومی",
-        userId: "contact-form",
+        guestName: cleanName,
+        guestEmail: email,
         messages: {
           create: {
-            senderId: "contact-form",
             content: `از: ${cleanName}\nایمیل: ${email}\n\n${cleanMessage}`,
             isFromAdmin: false,
           },

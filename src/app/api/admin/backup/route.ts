@@ -16,7 +16,7 @@ export async function GET() {
       likes, blocks, reports, profileViews, boosts, streaks, referrals,
       profilePhotos, userSettings, interests, userInterests, missions, userMissions,
       auditLogs, stories, storyViews, storyLikes, storyReplies, tickets, ticketMessages,
-      matches, subscriptionTiers, gifts, giftPurchases,
+      matches, gifts, giftPurchases,
     ] = await Promise.all([
       prisma.user.findMany(),
       prisma.setting.findMany(),
@@ -49,7 +49,6 @@ export async function GET() {
       prisma.ticket.findMany(),
       prisma.ticketMessage.findMany(),
       prisma.match.findMany(),
-      prisma.subscriptionTier.findMany(),
       prisma.gift.findMany(),
       prisma.giftPurchase.findMany(),
     ]);
@@ -66,7 +65,7 @@ export async function GET() {
         likes, blocks, reports, profileViews, boosts, streaks, referrals,
         profilePhotos, userSettings, interests, userInterests, missions, userMissions,
         auditLogs, stories, storyViews, storyLikes, storyReplies, tickets, ticketMessages,
-        matches, subscriptionTiers, gifts, giftPurchases,
+        matches, gifts, giftPurchases,
       },
     };
 
@@ -104,7 +103,6 @@ export async function POST(request: Request) {
     await prisma.$transaction([
       prisma.giftPurchase.deleteMany(),
       prisma.gift.deleteMany(),
-      prisma.subscriptionTier.deleteMany(),
       prisma.match.deleteMany(),
       prisma.ticketMessage.deleteMany(),
       prisma.ticket.deleteMany(),
@@ -170,7 +168,6 @@ export async function POST(request: Request) {
     if (d.tickets?.length) await prisma.ticket.createMany({ data: d.tickets });
     if (d.ticketMessages?.length) await prisma.ticketMessage.createMany({ data: d.ticketMessages });
     if (d.matches?.length) await prisma.match.createMany({ data: d.matches });
-    if (d.subscriptionTiers?.length) await prisma.subscriptionTier.createMany({ data: d.subscriptionTiers });
     if (d.gifts?.length) await prisma.gift.createMany({ data: d.gifts });
     if (d.giftPurchases?.length) await prisma.giftPurchase.createMany({ data: d.giftPurchases });
 
