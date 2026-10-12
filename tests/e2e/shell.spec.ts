@@ -57,9 +57,16 @@ test("صفحه آفلاین PWA نمایش داده می شود", async ({ page 
   await expect(page.getByRole("heading", { name: "به اینترنت متصل نیستید" })).toBeVisible();
 });
 
-test("حالت افقی گوشی مسدود نمی شود", async ({ page }) => {
-  await page.setViewportSize({ width: 844, height: 390 });
+test("حالت افقی: گوشی پیام چرخش می گیرد، تبلت و دسکتاپ مسدود نمی شوند", async ({ page, viewport }) => {
   await page.goto("/dashboard");
-  await expect(page.getByText("دستگاه خود را بچرخانید")).toHaveCount(0);
+  const guard = page.locator(".portrait-guard");
+  const touch = await page.evaluate(() => matchMedia("(pointer: coarse)").matches);
+  const phoneLandscape = !!viewport && viewport.width > viewport.height && viewport.height <= 500 && touch;
+  if (phoneLandscape) {
+    await expect(guard).toBeVisible();
+    await expect(guard.getByText("دستگاه خود را بچرخانید")).toBeVisible();
+  } else {
+    await expect(guard).toBeHidden();
+  }
   await expect(page.locator("main")).toBeVisible();
 });

@@ -143,7 +143,7 @@ export default function AdminNav() {
 
       {/* سایدبار دسکتاپ — قابل جمع شدن */}
       <aside
-        className={`hidden lg:flex flex-col shrink-0 lux-sidebar min-h-screen sticky top-0 h-screen transition-all duration-300 ease-in-out ${
+        className={`hidden lg:flex flex-col shrink-0 lux-sidebar min-h-dvh sticky top-0 h-screen transition-all duration-300 ease-in-out ${
           collapsed ? "w-14" : "w-44"
         }`}
       >

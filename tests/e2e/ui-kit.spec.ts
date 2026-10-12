@@ -4,6 +4,8 @@ import AxeBuilder from "@axe-core/playwright";
 
 test.describe("کتابخانه UI", () => {
   test.beforeEach(async ({ page }) => {
+    // بنر نصب PWA روی تبلت ها دکمه های صفحه را می پوشاند؛ در این تست ها کاری با آن نداریم
+    await page.addInitScript(() => localStorage.setItem("kandoo-install-dismissed", String(Date.now())));
     await page.goto("/ui-kit", { waitUntil: "networkidle" });
   });
 

@@ -81,7 +81,7 @@ export default async function ProfilePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-dvh bg-white">
       <ProfileHeader username={user.username} />
 
       <div className="max-w-[600px] mx-auto px-4 md:px-6 pb-20">

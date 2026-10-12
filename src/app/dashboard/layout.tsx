@@ -27,7 +27,7 @@ export default async function DashboardLayout({
         fullName={`${user.firstName} ${user.lastName}`}
         userPhoto={user.photos?.[0]?.url ?? null}
       />
-      <main className="flex-1 h-[100dvh] overflow-y-auto overscroll-none no-scrollbar pb-[calc(3.75rem+env(safe-area-inset-bottom))] lg:pb-0 w-full mx-auto">
+      <main className="flex-1 h-[100dvh] overflow-y-auto overscroll-none no-scrollbar pb-[calc(3.75rem+env(safe-area-inset-bottom))] lg:pb-0 w-full md:max-w-[640px] lg:max-w-none mx-auto">
         {impersonating && <ImpersonateBanner />}
         <PullToRefresh>{children}</PullToRefresh>
       </main>

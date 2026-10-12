@@ -89,7 +89,7 @@ export default function DashboardNav({
   return (
     <>
       {/* سایدبار دسکتاپ — دقیقا مثل اینستاگرام */}
-      <aside className="hidden lg:flex flex-col w-16 lg:w-56 xl:w-64 shrink-0 bg-white border-l border-ig-border min-h-screen sticky top-0 h-screen transition-all duration-300">
+      <aside className="hidden lg:flex flex-col w-16 lg:w-56 xl:w-64 shrink-0 bg-white border-l border-ig-border min-h-dvh sticky top-0 h-screen transition-all duration-300">
         {/* لوگو + سکه */}
         <div className="px-3 lg:px-6 pt-8 pb-4">
           <KandooLogo href="/dashboard" iconClassName="w-8 h-8 xl:w-9 xl:h-9" textClassName="text-xl xl:text-2xl lg:block hidden" />

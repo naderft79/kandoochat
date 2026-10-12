@@ -33,6 +33,9 @@ export default defineConfig({
     { name: "iphone-14", use: { ...devices["iPhone 14"], defaultBrowserType: apple } },
     { name: "pixel-7", use: { ...devices["Pixel 7"] } },
     { name: "ipad", use: { ...devices["iPad (gen 7)"], defaultBrowserType: apple } },
+    // گوشی افقی فقط تست پیام چرخش را اجرا می کند؛ بقیه تست ها عمداً مسدود می شوند
+    { name: "pixel-7-landscape", grep: /حالت افقی/, use: { ...devices["Pixel 7"], viewport: { width: 915, height: 412 } } },
+    { name: "ipad-landscape", use: { ...devices["iPad (gen 7)"], defaultBrowserType: apple, viewport: { width: 1080, height: 810 } } },
     { name: "laptop-1366", use: { ...devices["Desktop Chrome"], viewport: { width: 1366, height: 768 } } },
     { name: "desktop-1920", use: { ...devices["Desktop Chrome"], viewport: { width: 1920, height: 1080 } } },
   ],

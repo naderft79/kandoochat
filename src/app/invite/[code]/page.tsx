@@ -65,7 +65,7 @@ export default async function InvitePage({
   ];
 
   return (
-    <div dir="rtl" className="min-h-screen bg-ig-gray-bg">
+    <div dir="rtl" className="min-h-dvh bg-ig-gray-bg">
       <div className="mx-auto max-w-md px-4 py-8 md:py-12 space-y-5">
 
         {/* کارت اصلی دعوت */}

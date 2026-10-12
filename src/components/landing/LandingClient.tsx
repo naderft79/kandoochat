@@ -58,7 +58,7 @@ export default function LandingClient({
   const ctaHref = isLoggedIn ? "/dashboard" : "/register";
 
   return (
-    <div className="min-h-screen bg-white overflow-x-hidden">
+    <div className="min-h-dvh bg-white overflow-x-hidden">
       {/* نوار بالا — مثل هدر اینستاگرام */}
       <header className="sticky top-0 z-40 backdrop-blur-lg bg-white/80 border-b border-ig-border">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">

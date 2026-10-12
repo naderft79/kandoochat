@@ -112,7 +112,7 @@ export default async function PublicProfilePage({
   ];
 
   return (
-    <div className="min-h-screen bg-ig-gray-bg">
+    <div className="min-h-dvh bg-ig-gray-bg">
       <PageHeader
         center={<span className="text-lg font-bold text-foreground">@{user.username}</span>}
         left={

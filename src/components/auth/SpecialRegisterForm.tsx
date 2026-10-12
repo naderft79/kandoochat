@@ -145,7 +145,7 @@ function SpecialRegisterFormInner() {
   const steps = ["حساب کاربری", "مشخصات فردی", "جزئیات بیشتر"];
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4">
+    <div className="min-h-dvh bg-white flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
