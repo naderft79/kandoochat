@@ -1,6 +1,8 @@
-// بیلد APK + نصب و اجرای خودکار روی گوشی — از طریق وای فای (adb وایرلس)
+// دیپلوی کامل هر دو اپ روی گوشی — اپ کاربر (کندو) و اپ مدیریت (مدیریت کندو)
+// اپ کاربر: مسیر / باز می شود — دیتا پاک می شود تا همیشه onboarding -> ثبت نام دیده شود
+// اپ مدیریت: مستقیم /admin-login — بدون onboarding و با UA جداگانه KandooAdminApp
 // گوشی و سیستم باید روی یک شبکه باشند — dev server روی IP شبکه سرو می شود
-// استفاده: npx tsx scripts/deploy-apk.ts [ip-goshi]
+// استفاده: npx tsx scripts/deploy-apk.ts [ip-goshi] [--admin]
 import { execFileSync } from "child_process";
 import path from "path";
 import os from "os";
@@ -101,13 +103,23 @@ writeAdminFlavorConfig(root, serverUrl);
 const gradlew = path.join(root, "android", isWin ? "gradlew.bat" : "gradlew");
 run(gradlew, ["assembleDebug"], path.join(root, "android"));
 
-// ۴) نصب هر دو APK + اجرا — پیش فرض اپ کاربر، با --admin اپ مدیریت
+// ۴) نصب هر دو APK — اپ کاربر به مسیر / می رود (onboarding -> ثبت نام) و
+// اپ مدیریت مستقیم به /admin-login (بدون onboarding)
 const apkDir = path.join(root, "android", "app", "build", "outputs", "apk");
 for (const flavor of ["user", "admin"]) {
   const apk = path.join(apkDir, flavor, "debug", `app-${flavor}-debug.apk`);
   run(adb, ["-s", target, "install", "-r", apk], root);
 }
+
+// دیتای اپ کاربر پاک می شود تا هر دیپلوی از onboarding شروع کند — اپ مدیریت دست نمی خورد
+try {
+  out(adb, ["-s", target, "shell", "pm", "clear", PACKAGE]);
+  console.log("[deploy] user app data cleared -> onboarding will show on launch");
+} catch {
+  console.warn("[deploy] pm clear failed — app may keep previous state");
+}
+
 const pkg = launchAdmin ? ADMIN_PACKAGE : PACKAGE;
 run(adb, ["-s", target, "shell", "monkey", "-p", pkg, "-c", "android.intent.category.LAUNCHER", "1"], root);
 
-console.log("\n[deploy] done — app installed and launched on the phone");
+console.log("\n[deploy] done — both apps installed; user app starts at onboarding, admin app at /admin-login");
