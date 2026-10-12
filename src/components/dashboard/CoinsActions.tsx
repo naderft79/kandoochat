@@ -21,13 +21,6 @@ import {
   Crown,
   ShieldCheck,
   MessageCircle,
-  CalendarCheck,
-  UserCheck,
-  Heart,
-  Eye,
-  UserPlus,
-  Mic,
-  Image as ImageIcon,
 } from "lucide-react";
 import {
   formatToman,
@@ -36,6 +29,7 @@ import {
   toPersianDigits,
 } from "@/lib/format";
 import { detectBank, formatCardNumber } from "@/lib/iranianBanks";
+import { MISSION_ICONS } from "@/lib/mission-icons";
 import Button from "@/components/ui/Button";
 import { BottomSheet } from "@/components/ui/Modal";
 import { cn } from "@/components/ui/cn";
@@ -91,21 +85,7 @@ const coinPackages = [
 // حداقل موجودی لازم برای برداشت (قانون ۲)
 const MIN_BALANCE_FOR_WITHDRAW = 100;
 
-// آیکون اختصاصی هر ماموریت روزانه بر اساس key — به جای ایموجی
-const MISSION_ICONS: Record<string, typeof Coins> = {
-  daily_new_chats: UserCheck,
-  daily_old_chats: MessageCircle,
-  daily_voice: Mic,
-  daily_photo: ImageIcon,
-  daily_likes: Heart,
-  // ماموریت های قدیمی — در صورت فعال شدن دوباره از ادمین
-  daily_login: CalendarCheck,
-  complete_profile: UserCheck,
-  send_5_likes: Heart,
-  open_10_profiles: Eye,
-  start_chat: MessageCircle,
-  invite_friend: UserPlus,
-};
+// آیکون ماموریت ها از نقشه مشترک با صفحه ماموریت ها می آید
 
 // شمارش معکوس زنده تا زمان باز شدن برداشت (قانون ۱)
 function WithdrawCountdown({ until }: { until: string }) {

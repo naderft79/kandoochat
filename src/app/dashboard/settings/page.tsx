@@ -29,6 +29,9 @@ import {
   Eye as EyeIcon,
   X,
   Ban,
+  Smartphone,
+  Trash2,
+  AlertTriangle,
 } from "lucide-react";
 
 type UserSettingsData = {
@@ -155,6 +158,14 @@ export default function SettingsPage() {
   const [passwordSuccess, setPasswordSuccess] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
 
+  // خروج از همه دستگاه ها و حذف حساب
+  const [loggingOutAll, setLoggingOutAll] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletePassword, setDeletePassword] = useState("");
+  const [deleteReason, setDeleteReason] = useState("");
+  const [deleteError, setDeleteError] = useState("");
+  const [deleting, setDeleting] = useState(false);
+
   async function handleChangePassword() {
     setPasswordError("");
     if (!currentPassword) {
@@ -233,6 +244,52 @@ export default function SettingsPage() {
       router.push("/");
       router.refresh();
     });
+  }
+
+  // خروج از همه دستگاه ها — همه سشن ها از جمله همین دستگاه باطل می شود
+  async function logoutAll() {
+    if (loggingOutAll) return;
+    setLoggingOutAll(true);
+    try {
+      const res = await fetch("/api/account/logout-all", { method: "POST" });
+      if (res.ok) {
+        startTransition(() => {
+          router.push("/login");
+          router.refresh();
+        });
+      } else {
+        setLoggingOutAll(false);
+      }
+    } catch {
+      setLoggingOutAll(false);
+    }
+  }
+
+  // حذف خودکار حساب با تایید رمز
+  async function deleteAccount() {
+    if (deleting || !deletePassword) return;
+    setDeleting(true);
+    setDeleteError("");
+    try {
+      const res = await fetch("/api/account/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: deletePassword, reason: deleteReason || undefined }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        startTransition(() => {
+          router.push("/");
+          router.refresh();
+        });
+      } else {
+        setDeleteError(data.error || "خطایی رخ داد");
+        setDeleting(false);
+      }
+    } catch {
+      setDeleteError("خطایی رخ داد");
+      setDeleting(false);
+    }
   }
 
   return (
@@ -412,13 +469,33 @@ export default function SettingsPage() {
           </section>
 
           {/* === خروج === */}
-          <section>
+          <section className="space-y-2">
             <button
               onClick={logout}
               className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-2xl bg-surface border border-ig-border text-ig-red font-bold text-sm hover:bg-ig-red/5 transition-colors active:scale-[0.98]"
             >
               <LogOut className="w-4 h-4" />
               خروج از حساب
+            </button>
+            <button
+              onClick={logoutAll}
+              disabled={loggingOutAll}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-2xl bg-surface border border-ig-border text-foreground font-bold text-sm hover:bg-ig-gray-bg transition-colors active:scale-[0.98] disabled:opacity-50"
+            >
+              {loggingOutAll ? <Loader2 className="w-4 h-4 animate-spin" /> : <Smartphone className="w-4 h-4" />}
+              خروج از همه دستگاه ها
+            </button>
+          </section>
+
+          {/* === حذف حساب === */}
+          <section>
+            <h2 className="text-xs font-bold text-ig-gray mb-2 px-4">منطقه خطر</h2>
+            <button
+              onClick={() => { setDeletePassword(""); setDeleteReason(""); setDeleteError(""); setShowDeleteModal(true); }}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-2xl bg-surface border border-ig-red/40 text-ig-red font-bold text-sm hover:bg-ig-red/5 transition-colors active:scale-[0.98]"
+            >
+              <Trash2 className="w-4 h-4" />
+              حذف حساب کاربری
             </button>
           </section>
 
@@ -543,6 +620,79 @@ export default function SettingsPage() {
                 </button>
               </>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* مودال حذف حساب */}
+      {showDeleteModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+          onClick={() => !deleting && setShowDeleteModal(false)}
+        >
+          <div
+            className="w-full max-w-sm bg-surface rounded-2xl p-6 space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-2 text-ig-red">
+              <AlertTriangle className="w-5 h-5" />
+              <h3 className="text-base font-bold">حذف حساب کاربری</h3>
+            </div>
+            <div className="text-xs text-ig-gray leading-5 space-y-1.5">
+              <p>با حذف حساب:</p>
+              <ul className="list-disc pr-4 space-y-0.5">
+                <li>پروفایل و عکس ها از دید بقیه پنهان می شود</li>
+                <li>نام تو در گفتگوها «کاربر حذف شده» نمایش داده می شود</li>
+                <li>از همه دستگاه ها خارج می شوی</li>
+              </ul>
+              <p className="pt-1">
+                اگر تا ۳۰ روز پشیمان شدی با پشتیبانی تماس بگیر تا حسابت بازیابی شود.
+              </p>
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-ig-gray mb-1.5">
+                دلیل حذف (اختیاری)
+              </label>
+              <input
+                type="text"
+                value={deleteReason}
+                onChange={(e) => setDeleteReason(e.target.value)}
+                maxLength={300}
+                className="w-full px-3 py-2.5 rounded-lg border border-ig-border bg-ig-gray-bg focus:bg-surface focus:border-ig-gray outline-none transition-colors text-sm"
+                placeholder="چرا می خوای بری؟"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-ig-gray mb-1.5">
+                برای تایید، رمز عبورت را وارد کن
+              </label>
+              <input
+                type="password"
+                dir="ltr"
+                value={deletePassword}
+                onChange={(e) => setDeletePassword(e.target.value)}
+                className="w-full px-3 py-2.5 rounded-lg border border-ig-border bg-ig-gray-bg focus:bg-surface focus:border-ig-gray outline-none transition-colors text-sm text-left"
+                placeholder="••••••••"
+              />
+            </div>
+            {deleteError && <p className="text-xs text-ig-red">{deleteError}</p>}
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                disabled={deleting}
+                className="flex-1 py-2.5 rounded-lg border border-ig-border text-sm font-bold disabled:opacity-50"
+              >
+                انصراف
+              </button>
+              <button
+                onClick={deleteAccount}
+                disabled={deleting || !deletePassword}
+                className="flex-1 py-2.5 rounded-lg bg-ig-red text-white text-sm font-bold hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                حذف حساب
+              </button>
+            </div>
           </div>
         </div>
       )}

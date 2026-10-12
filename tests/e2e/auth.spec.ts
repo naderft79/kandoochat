@@ -76,14 +76,17 @@ test("UI: ثبت نام کامل با OTP، خطای inline و ورود", async 
   await expect(page.getByText("این یوزرنیم آزاد است")).toBeVisible();
   await page.getByLabel("نام", { exact: true }).fill("تست");
   await page.getByLabel("نام خانوادگی").fill("ثبت نام");
-  await page.getByLabel("استان").selectOption("تهران");
-  await page.getByLabel("شهر").selectOption({ index: 1 });
-  await page.getByLabel("سن").fill("30");
-  await page.getByRole("button", { name: "بعدی" }).click();
-
-  await page.getByLabel("قد (سانتی متر)").fill("175");
-  await page.getByLabel("وزن (کیلوگرم)").fill("70");
-  await page.getByLabel("درآمد ماهانه (تومان)").fill("20000000");
+  // SelectMenu سفارشی است — دکمه را باز می کنیم و گزینه را می زنیم
+  const pick = async (label: string, option: string | RegExp) => {
+    await page.getByLabel(label).click();
+    await page.getByRole("option", { name: option }).first().click();
+  };
+  await pick("استان", "تهران");
+  await pick("شهر", "تهران");
+  await pick("سال تولد", /سال\)$/);
+  await pick("قد", /سانتی متر/);
+  await pick("وزن", /کیلوگرم/);
+  await pick("درآمد ماهانه", /تومان/);
   await page.getByRole("button", { name: "تکمیل ثبت نام" }).click();
   await expect(page).toHaveURL(/\/dashboard/);
 

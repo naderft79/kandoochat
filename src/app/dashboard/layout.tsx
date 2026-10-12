@@ -2,8 +2,10 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser, isImpersonating, ADMIN_ROLES } from "@/lib/auth";
 import { getAllSettings } from "@/lib/settings";
+import { prisma } from "@/lib/prisma";
 import DashboardNav from "@/components/dashboard/DashboardNav";
 import ImpersonateBanner from "@/components/dashboard/ImpersonateBanner";
+import AnnouncementBanner from "@/components/dashboard/AnnouncementBanner";
 import PullToRefresh from "@/components/dashboard/PullToRefresh";
 import PushConsentSheet from "@/components/pwa/PushConsentSheet";
 
@@ -20,6 +22,19 @@ export default async function DashboardLayout({
 
   const impersonating = await isImpersonating();
 
+  // اطلاعیه های سراسری فعال در بازه زمانی
+  const now = new Date();
+  const announcements = await prisma.announcement.findMany({
+    where: {
+      isActive: true,
+      startsAt: { lte: now },
+      OR: [{ endsAt: null }, { endsAt: { gt: now } }],
+    },
+    orderBy: { createdAt: "desc" },
+    take: 5,
+    select: { id: true, title: true, body: true, type: true },
+  });
+
   return (
     <div className="flex h-[100dvh] overflow-hidden bg-surface">
       {/* LiveDataProvider در root layout است — اینجا فقط مصرف کننده ایم */}
@@ -29,6 +44,7 @@ export default async function DashboardLayout({
       />
       <main className="flex-1 h-[100dvh] overflow-y-auto overscroll-none no-scrollbar pb-[calc(3.75rem+env(safe-area-inset-bottom))] lg:pb-0 w-full md:max-w-[640px] lg:max-w-none mx-auto">
         {impersonating && <ImpersonateBanner />}
+        {announcements.length > 0 && <AnnouncementBanner items={announcements} />}
         <PullToRefresh>{children}</PullToRefresh>
       </main>
       <PushConsentSheet />

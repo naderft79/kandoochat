@@ -137,7 +137,7 @@ export default function SettingsClient(props: Props) {
       {tab === "finance" && (
         <FinanceSettings
           coinValue={p.coinValue} subscriptionPrice={p.subscriptionPrice}
-          minWithdrawCoins={p.minWithdrawCoins} transferFeePercent={p.transferFeePercent}
+          minWithdrawCoins={p.minWithdrawCoins}
           maxCoinsPerPurchase={p.maxCoinsPerPurchase} minCoinsForGift={p.minCoinsForGift}
           withdrawCommissionPercent={p.withdrawCommissionPercent}
         />

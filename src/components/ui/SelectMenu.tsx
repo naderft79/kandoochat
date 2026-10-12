@@ -2,7 +2,7 @@
 
 // دراپ دان سفارشی — کلیک روی فیلد، لیست گزینه ها زیر آن باز می شود
 // برای لیست های بلند (بیش از ۱۵ گزینه) جستجو هم دارد
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { ChevronDown, Check } from "lucide-react";
 import { cn } from "@/components/ui/cn";
 
@@ -22,6 +22,7 @@ export default function SelectMenu({ label, value, options, onChange, placeholde
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const ref = useRef<HTMLDivElement>(null);
+  const btnId = useId();
 
   // بستن با کلیک بیرون یا Escape
   useEffect(() => {
@@ -45,12 +46,18 @@ export default function SelectMenu({ label, value, options, onChange, placeholde
 
   return (
     <div className="space-y-1.5" ref={ref}>
-      {label && <span className="block text-sm font-semibold">{label}</span>}
+      {label && (
+        <label htmlFor={btnId} className="block text-sm font-semibold">
+          {label}
+        </label>
+      )}
       <div className="relative">
         <button
+          id={btnId}
           type="button"
           disabled={disabled}
           aria-expanded={open}
+          aria-haspopup="listbox"
           onClick={() => {
             setOpen((o) => !o);
             setQ("");
@@ -76,11 +83,12 @@ export default function SelectMenu({ label, value, options, onChange, placeholde
                   onChange={(e) => setQ(e.target.value)}
                   placeholder="جستجو..."
                   autoFocus
+                  aria-label="جستجوی گزینه ها"
                   className="w-full h-9 px-3 rounded-lg bg-ig-gray-bg text-sm outline-none"
                 />
               </div>
             )}
-            <div className="max-h-56 overflow-y-auto overscroll-contain">
+            <div className="max-h-56 overflow-y-auto overscroll-contain" role="listbox" aria-label={label}>
               {filtered.length === 0 && (
                 <p className="text-sm text-ig-gray text-center py-4">موردی یافت نشد</p>
               )}
@@ -88,6 +96,8 @@ export default function SelectMenu({ label, value, options, onChange, placeholde
                 <button
                   key={o.value}
                   type="button"
+                  role="option"
+                  aria-selected={o.value === value}
                   onClick={() => {
                     onChange(o.value);
                     setOpen(false);

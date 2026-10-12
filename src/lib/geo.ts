@@ -15,13 +15,14 @@ let loadFailed = false;
 function getReader(): Reader<CountryResponse> | null {
   if (reader || loadFailed) return reader;
   const dbPath = process.env.GEOIP_DB_PATH || DEFAULT_DB;
-  if (!existsSync(dbPath)) {
+  // دسترسی عمدی به فایل در رانتایم؛ دیتابیس با geoip:download روی سرور قرار می گیرد
+  if (!existsSync(/*turbopackIgnore: true*/ dbPath)) {
     loadFailed = true;
     console.warn(`[geo] country database not found at ${dbPath}; run npm run geoip:download`);
     return null;
   }
   try {
-    reader = new Reader<CountryResponse>(readFileSync(dbPath));
+    reader = new Reader<CountryResponse>(readFileSync(/*turbopackIgnore: true*/ dbPath));
     return reader;
   } catch (err) {
     loadFailed = true;

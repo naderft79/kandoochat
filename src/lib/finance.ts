@@ -1,6 +1,14 @@
 // منطق مالی: کیف پول، اشتراک و تراکنش ها
 import { prisma } from "@/lib/prisma";
 
+// خطای کمبود موجودی — برای کسر اتمیک داخل تراکنش های مالی
+export class InsufficientFundsError extends Error {
+  constructor() {
+    super("INSUFFICIENT_FUNDS");
+    this.name = "InsufficientFundsError";
+  }
+}
+
 // بررسی فعال بودن اشتراک کاربر (کاربران ویژه اشتراک نامحدود دارند)
 export async function hasActiveSubscription(userId: string): Promise<boolean> {
   const user = await prisma.user.findUnique({

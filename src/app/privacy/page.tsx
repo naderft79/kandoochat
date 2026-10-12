@@ -44,6 +44,21 @@ export default function PrivacyPage() {
               <li>- عکس های پروفایل و گالری</li>
               <li>- اطلاعات فعالیت: لایک ها، بازدید ها و پیام ها</li>
               <li>- اطلاعات دستگاه برای امنیت و پشتیبانی</li>
+              <li>- رویدادهای امنیتی: ورودها، IP و لاگ اقدامات مدیریتی</li>
+              <li>- آمار بازدید صفحات: بدون ذخیره IP خام؛ شناسه بازدیدکننده فقط به صورت هش روزانه با نمک نگه داشته می شود</li>
+            </ul>
+          </section>
+
+          <section className="bg-surface border border-ig-border rounded-2xl p-6">
+            <h2 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
+              <Shield className="w-4 h-4 text-ig-blue" />
+              دسترسی مدیران به داده های شما
+            </h2>
+            <ul className="space-y-2 text-sm text-foreground/70 leading-6">
+              <li>- آدرس IP خام فقط برای مدیران با مجوز کامل قابل مشاهده است؛ سایر مدیران فقط کشور را می بینند</li>
+              <li>- متن پیام های خصوصی فقط برای مدیران با مجوز مخصوص و جهت بررسی تخلف قابل مشاهده است</li>
+              <li>- هر مشاهده اطلاعات حساس (پیام ها، IP و خروجی فایل) در لاگ اقدامات مدیریتی ثبت می شود</li>
+              <li>- مدیران پشتیبانی و محتوا به اطلاعات مالی و پیام های خصوصی دسترسی ندارند</li>
             </ul>
           </section>
 
@@ -70,13 +85,26 @@ export default function PrivacyPage() {
               <li>- می توانید از تنظیمات کنترل کنید چه اطلاعاتی نمایش داده شود</li>
               <li>- می توانید نوتیفیکیشن ها را خاموش یا روشن کنید</li>
               <li>- می توانید کاربران را بلاک کنید</li>
-              <li>- می توانید درخواست حذف حساب کاربری بدهید</li>
+              <li>- می توانید از همه دستگاه ها خارج شوید</li>
               <li>- اطلاعات شما هرگز به اشخاص ثالث فروخته نمی شود</li>
             </ul>
           </section>
 
+          <section className="bg-surface border border-ig-border rounded-2xl p-6">
+            <h2 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
+              <UserCheck className="w-4 h-4 text-ig-blue" />
+              حذف حساب کاربری
+            </h2>
+            <ul className="space-y-2 text-sm text-foreground/70 leading-6">
+              <li>- از مسیر تنظیمات → حذف حساب کاربری می توانید حساب خود را حذف کنید</li>
+              <li>- بلافاصله پروفایل شما پنهان، همه نشست ها باطل و هویت شما ناشناس می شود</li>
+              <li>- عکس ها و سوابق مالی حفظ می شوند اما هویت شما در گفتگوها «کاربر حذف شده» نمایش داده می شود</li>
+              <li>- تا ۳۰ روز امکان بازیابی با تماس با پشتیبانی وجود دارد؛ پس از آن اطلاعات هویتی برای همیشه پاک می شود</li>
+            </ul>
+          </section>
+
           <p className="text-xs text-ig-gray text-center pt-4">
-            آخرین بروزرسانی: مرداد ۱۴۰۴
+            آخرین بروزرسانی: آبان ۱۴۰۴
           </p>
         </div>
       </div>

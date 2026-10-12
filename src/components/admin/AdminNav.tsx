@@ -30,6 +30,8 @@ import {
   Sparkles,
   X,
   Globe,
+  Bell,
+  HeartPulse,
 } from "lucide-react";
 
 type NavItem = { href: string; label: string; icon: typeof LayoutDashboard };
@@ -52,6 +54,7 @@ const groups: NavGroup[] = [
       { href: "/admin/tickets", label: "تیکت ها", icon: TicketIcon },
       { href: "/admin/reports", label: "گزارش ها", icon: Flag },
       { href: "/admin/broadcasts", label: "پیام گروهی", icon: Megaphone },
+      { href: "/admin/announcements", label: "اطلاعیه ها", icon: Bell },
       { href: "/admin/bot", label: "ربات تشویقی", icon: Bot },
     ],
   },
@@ -76,6 +79,7 @@ const groups: NavGroup[] = [
       { href: "/admin/interests", label: "علایق", icon: Heart },
       { href: "/admin/audit", label: "لاگ اقدامات", icon: ScrollText },
       { href: "/admin/backup", label: "بکاپ", icon: Database },
+      { href: "/admin/health", label: "سلامت سیستم", icon: HeartPulse },
       { href: "/admin/settings", label: "تنظیمات", icon: Settings },
     ],
   },

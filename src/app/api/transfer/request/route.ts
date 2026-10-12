@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireUser, AuthError } from "@/lib/auth";
-import { ensureWallet } from "@/lib/finance";
+import { ensureWallet, InsufficientFundsError } from "@/lib/finance";
 import { getAllSettings } from "@/lib/settings";
 import { isHaniUser } from "@/lib/aiCompanion";
 
@@ -140,71 +140,75 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ ok: true, status: "REJECTED" });
     }
 
-    // تایید درخواست
+    // تایید درخواست — انتقال سکه بدون کارمزد است
     const settings = await getAllSettings();
-    const fee = Math.ceil((transfer.coins * settings.transferFeePercent) / 100);
-    const totalDeduct = transfer.coins + fee;
+    const fee = 0;
+    const totalDeduct = transfer.coins;
     const coinValue = settings.coinValue;
 
     await ensureWallet(user.id);
     await ensureWallet(transfer.senderId);
 
-    const senderWallet = await prisma.wallet.findUnique({ where: { userId: user.id } });
-    if (!senderWallet || senderWallet.balance < totalDeduct) {
-      return NextResponse.json({ error: "موجودی سکه کافی نیست" }, { status: 400 });
+    try {
+      await prisma.$transaction(async (tx) => {
+        // کسر اتمیک از تایید کننده — کمبود موجودی کل تراکنش را برمی گرداند
+        const deducted = await tx.wallet.updateMany({
+          where: { userId: user.id, balance: { gte: totalDeduct } },
+          data: { balance: { decrement: totalDeduct } },
+        });
+        if (deducted.count === 0) throw new InsufficientFundsError();
+        await tx.wallet.update({
+          where: { userId: transfer.senderId },
+          data: { balance: { increment: transfer.coins } },
+        });
+        await tx.coinTransfer.update({
+          where: { id: transferId },
+          data: { status: "COMPLETED", type: "REQUEST_APPROVED", fee },
+        });
+        await tx.transaction.create({
+          data: {
+            userId: user.id,
+            type: "COIN_TRANSFER_OUT",
+            coins: -totalDeduct,
+            amountToman: totalDeduct * coinValue,
+            status: "COMPLETED",
+            description: `تایید درخواست ${transfer.coins} سکه`,
+          },
+        });
+        await tx.transaction.create({
+          data: {
+            userId: transfer.senderId,
+            type: "COIN_TRANSFER_IN",
+            coins: transfer.coins,
+            amountToman: transfer.coins * coinValue,
+            status: "COMPLETED",
+            description: `دریافت ${transfer.coins} سکه (درخواست تایید شد)`,
+          },
+        });
+        await tx.message.create({
+          data: {
+            conversationId: transfer.conversationId,
+            senderId: user.id,
+            content: JSON.stringify({ coins: transfer.coins, fee, type: "REQUEST_APPROVED", transferId }),
+            type: "SYSTEM",
+          },
+        });
+        await tx.notification.create({
+          data: {
+            userId: transfer.senderId,
+            type: "REQUEST_APPROVED",
+            title: "درخواست سکه تایید شد",
+            body: `درخواست ${transfer.coins} سکه تایید شد`,
+            data: JSON.stringify({ transferId }),
+          },
+        });
+      });
+    } catch (err) {
+      if (err instanceof InsufficientFundsError) {
+        return NextResponse.json({ error: "موجودی سکه کافی نیست" }, { status: 400 });
+      }
+      throw err;
     }
-
-    await prisma.$transaction([
-      prisma.wallet.update({
-        where: { userId: user.id },
-        data: { balance: { decrement: totalDeduct } },
-      }),
-      prisma.wallet.update({
-        where: { userId: transfer.senderId },
-        data: { balance: { increment: transfer.coins } },
-      }),
-      prisma.coinTransfer.update({
-        where: { id: transferId },
-        data: { status: "COMPLETED", type: "REQUEST_APPROVED", fee },
-      }),
-      prisma.transaction.create({
-        data: {
-          userId: user.id,
-          type: "COIN_TRANSFER_OUT",
-          coins: -totalDeduct,
-          amountToman: totalDeduct * coinValue,
-          status: "COMPLETED",
-          description: `تایید درخواست ${transfer.coins} سکه + کارمزد ${fee}`,
-        },
-      }),
-      prisma.transaction.create({
-        data: {
-          userId: transfer.senderId,
-          type: "COIN_TRANSFER_IN",
-          coins: transfer.coins,
-          amountToman: transfer.coins * coinValue,
-          status: "COMPLETED",
-          description: `دریافت ${transfer.coins} سکه (درخواست تایید شد)`,
-        },
-      }),
-      prisma.message.create({
-        data: {
-          conversationId: transfer.conversationId,
-          senderId: user.id,
-          content: JSON.stringify({ coins: transfer.coins, fee, type: "REQUEST_APPROVED", transferId }),
-          type: "SYSTEM",
-        },
-      }),
-      prisma.notification.create({
-        data: {
-          userId: transfer.senderId,
-          type: "REQUEST_APPROVED",
-          title: "درخواست سکه تایید شد",
-          body: `درخواست ${transfer.coins} سکه تایید شد`,
-          data: JSON.stringify({ transferId }),
-        },
-      }),
-    ]);
 
     console.log(`[transfer/request] user ${user.id} approved transfer ${transferId}`);
     return NextResponse.json({ ok: true, status: "COMPLETED", fee });

@@ -12,7 +12,6 @@ type Props = {
   coinValue: number;
   subscriptionPrice: number;
   minWithdrawCoins: number;
-  transferFeePercent: number;
   maxCoinsPerPurchase: number;
   minCoinsForGift: number;
   withdrawCommissionPercent: number;
@@ -24,7 +23,6 @@ export default function FinanceSettings(props: Props) {
     coinValue: String(props.coinValue),
     subscriptionPrice: String(props.subscriptionPrice),
     minWithdrawCoins: String(props.minWithdrawCoins),
-    transferFeePercent: String(props.transferFeePercent),
     maxCoinsPerPurchase: String(props.maxCoinsPerPurchase),
     minCoinsForGift: String(props.minCoinsForGift),
     withdrawCommissionPercent: String(props.withdrawCommissionPercent),
@@ -48,7 +46,6 @@ export default function FinanceSettings(props: Props) {
           coinValue: parseInt(form.coinValue, 10),
           subscriptionPrice: parseInt(form.subscriptionPrice, 10),
           minWithdrawCoins: parseInt(form.minWithdrawCoins, 10),
-          transferFeePercent: parseInt(form.transferFeePercent, 10),
           maxCoinsPerPurchase: parseInt(form.maxCoinsPerPurchase, 10),
           minCoinsForGift: parseInt(form.minCoinsForGift, 10),
           withdrawCommissionPercent: parseInt(form.withdrawCommissionPercent, 10),
@@ -80,10 +77,6 @@ export default function FinanceSettings(props: Props) {
           <div>
             <label className="block text-xs font-bold text-[#888] mb-1.5">حداقل سکه برای برداشت</label>
             <input type="number" dir="ltr" value={form.minWithdrawCoins} onChange={(e) => setForm((f) => ({ ...f, minWithdrawCoins: e.target.value }))} className={inputClass} />
-          </div>
-          <div>
-            <label className="block text-xs font-bold text-[#888] mb-1.5">کارمزد انتقال سکه (درصد)</label>
-            <input type="number" dir="ltr" value={form.transferFeePercent} onChange={(e) => setForm((f) => ({ ...f, transferFeePercent: e.target.value }))} className={inputClass} />
           </div>
           <div>
             <label className="block text-xs font-bold text-[#888] mb-1.5">حداکثر سکه قابل خرید در یک تراکنش</label>

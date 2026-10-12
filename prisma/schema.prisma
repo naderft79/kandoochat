@@ -829,3 +829,18 @@ model VisitDailyStat {
   @@unique([day, pageKey, channel, source, platform, isEntry, isLoggedIn])
   @@index([day])
 }
+
+// اطلاعیه سراسری سایت — بنر قابل بستن در بالای پنل کاربر
+model Announcement {
+  id          String    @id @default(cuid())
+  title       String
+  body        String
+  type        String    @default("INFO") // INFO | WARNING | PROMO
+  isActive    Boolean   @default(true)
+  startsAt    DateTime  @default(now())
+  endsAt      DateTime?
+  createdById String?
+  createdAt   DateTime  @default(now())
+
+  @@index([isActive, startsAt])
+}

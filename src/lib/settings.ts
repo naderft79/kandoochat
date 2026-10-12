@@ -554,7 +554,6 @@ function buildSettings(map: Map<string, string>) {
     coinValue: getNum("COIN_VALUE"),
     subscriptionPrice: getNum("SUBSCRIPTION_PRICE"),
     minWithdrawCoins: getNum("MIN_WITHDRAW_COINS"),
-    transferFeePercent: getNum("TRANSFER_FEE_PERCENT"),
     buyCoinsEnabled: getBool("BUY_COINS_ENABLED"),
     withdrawCoinsEnabled: getBool("WITHDRAW_COINS_ENABLED"),
     coinPackages: get("COIN_PACKAGES"),

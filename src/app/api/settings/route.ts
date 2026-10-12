@@ -9,7 +9,6 @@ export async function GET() {
     boostDurationMinutes: settings.boostDurationMinutes,
     dailyLikeLimit: settings.dailyLikeLimit,
     superLikeDailyLimit: settings.superLikeDailyLimit,
-    transferFeePercent: settings.transferFeePercent,
     referralRewardCoins: settings.referralRewardCoins,
     otpEnabled: settings.otpEnabled,
   });

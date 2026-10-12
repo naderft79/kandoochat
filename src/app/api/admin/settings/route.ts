@@ -9,7 +9,6 @@ const FIELD_MAP: Record<string, SettingKey> = {
   coinValue: "COIN_VALUE",
   subscriptionPrice: "SUBSCRIPTION_PRICE",
   minWithdrawCoins: "MIN_WITHDRAW_COINS",
-  transferFeePercent: "TRANSFER_FEE_PERCENT",
   buyCoinsEnabled: "BUY_COINS_ENABLED",
   withdrawCoinsEnabled: "WITHDRAW_COINS_ENABLED",
   coinPackages: "COIN_PACKAGES",

@@ -20,6 +20,9 @@ import {
   Wallet,
   Headphones,
   Bell,
+  Heart,
+  Activity,
+  ClipboardList,
   Hexagon,
 } from "lucide-react";
 import CoinBadge from "@/components/dashboard/CoinBadge";
@@ -40,6 +43,9 @@ const mainItems = [
 // آیتم های منوی بیشتر (مثل اینستاگرام)
 const moreItems = [
   { href: "/dashboard/notifications", label: "اعلان ها", icon: Bell },
+  { href: "/dashboard/likes", label: "لایک ها", icon: Heart },
+  { href: "/dashboard/activity", label: "فعالیت من", icon: Activity },
+  { href: "/dashboard/missions", label: "ماموریت ها", icon: ClipboardList },
   { href: "/dashboard/subscription", label: "اشتراک", icon: Crown },
   { href: "/dashboard/referral", label: "دعوت دوستان", icon: Gift },
   { href: "/dashboard/support", label: "پشتیبانی", icon: Headphones },

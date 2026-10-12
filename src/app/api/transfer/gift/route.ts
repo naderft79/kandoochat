@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireUser, AuthError } from "@/lib/auth";
-import { ensureWallet } from "@/lib/finance";
+import { ensureWallet, InsufficientFundsError } from "@/lib/finance";
 import { getAllSettings } from "@/lib/settings";
 
 const giftSchema = z.object({
@@ -47,99 +47,103 @@ export async function POST(request: Request) {
     }
 
     const settings = await getAllSettings();
-    const fee = Math.ceil((coins * settings.transferFeePercent) / 100);
-    const totalDeduct = coins + fee;
+    // انتقال سکه بدون کارمزد است
+    const fee = 0;
+    const totalDeduct = coins;
     const bonus = receiver.isSpecial ? Math.ceil((coins * 20) / 100) : 0;
     const receiverCoins = coins + bonus;
 
     await ensureWallet(user.id);
     await ensureWallet(receiverId);
 
-    const senderWallet = await prisma.wallet.findUnique({ where: { userId: user.id } });
-    if (!senderWallet || senderWallet.balance < totalDeduct) {
-      return NextResponse.json({ error: "موجودی سکه کافی نیست" }, { status: 400 });
-    }
-
     const coinValue = settings.coinValue;
     const senderName = user.firstName;
     const receiverName = receiver.firstName;
 
-    await prisma.$transaction([
-      // کسر از فرستنده
-      prisma.wallet.update({
-        where: { userId: user.id },
-        data: { balance: { decrement: totalDeduct } },
-      }),
-      // اضافه به گیرنده
-      prisma.wallet.update({
-        where: { userId: receiverId },
-        data: { balance: { increment: receiverCoins } },
-      }),
-      // ثبت انتقال
-      prisma.coinTransfer.create({
-        data: {
-          conversationId: conversation.id,
-          senderId: user.id,
-          receiverId,
-          coins,
-          fee,
-          type: "GIFT",
-          status: "COMPLETED",
-          message: message ?? null,
-        },
-      }),
-      // تراکنش فرستنده
-      prisma.transaction.create({
-        data: {
-          userId: user.id,
-          type: "COIN_TRANSFER_OUT",
-          coins: -totalDeduct,
-          amountToman: totalDeduct * coinValue,
-          status: "COMPLETED",
-          description: `هدیه ${coins} سکه + کارمزد ${fee}`,
-        },
-      }),
-      // تراکنش گیرنده
-      prisma.transaction.create({
-        data: {
-          userId: receiverId,
-          type: "COIN_TRANSFER_IN",
-          coins: receiverCoins,
-          amountToman: receiverCoins * coinValue,
-          status: "COMPLETED",
-          description: bonus > 0 ? `دریافت ${receiverCoins} سکه هدیه (${coins} + ${bonus} پاداش ویژه)` : `دریافت ${coins} سکه هدیه`,
-        },
-      }),
-      // پیام سیستمی در چت — نمایش هدیه برای هر دو طرف
-      prisma.message.create({
-        data: {
-          conversationId: conversation.id,
-          senderId: user.id,
-          content: JSON.stringify({
-            type: "GIFT",
-            coins: receiverCoins,
+    try {
+      await prisma.$transaction(async (tx) => {
+        // کسر اتمیک از فرستنده — کمبود موجودی کل تراکنش را برمی گرداند
+        const deducted = await tx.wallet.updateMany({
+          where: { userId: user.id, balance: { gte: totalDeduct } },
+          data: { balance: { decrement: totalDeduct } },
+        });
+        if (deducted.count === 0) throw new InsufficientFundsError();
+        // اضافه به گیرنده
+        await tx.wallet.update({
+          where: { userId: receiverId },
+          data: { balance: { increment: receiverCoins } },
+        });
+        // ثبت انتقال
+        await tx.coinTransfer.create({
+          data: {
+            conversationId: conversation.id,
+            senderId: user.id,
+            receiverId,
+            coins,
             fee,
-            bonus,
-            message: message ?? "",
-            senderName,
-            receiverName,
-          }),
-          type: "SYSTEM",
-        },
-      }),
-      // نوتیفیکیشن برای گیرنده
-      prisma.notification.create({
-        data: {
-          userId: receiverId,
-          type: "GIFT_RECEIVED",
-          title: "هدیه سکه دریافتی",
-          body: `${senderName} ${receiverCoins} سکه به شما هدیه داد${bonus > 0 ? " (شامل پاداش ویژه)" : ""}`,
-          data: JSON.stringify({ coins, senderId: user.id, conversationId: conversation.id }),
-        },
-      }),
-    ]);
+            type: "GIFT",
+            status: "COMPLETED",
+            message: message ?? null,
+          },
+        });
+        // تراکنش فرستنده
+        await tx.transaction.create({
+          data: {
+            userId: user.id,
+            type: "COIN_TRANSFER_OUT",
+            coins: -totalDeduct,
+            amountToman: totalDeduct * coinValue,
+            status: "COMPLETED",
+            description: `هدیه ${coins} سکه`,
+          },
+        });
+        // تراکنش گیرنده
+        await tx.transaction.create({
+          data: {
+            userId: receiverId,
+            type: "COIN_TRANSFER_IN",
+            coins: receiverCoins,
+            amountToman: receiverCoins * coinValue,
+            status: "COMPLETED",
+            description: bonus > 0 ? `دریافت ${receiverCoins} سکه هدیه (${coins} + ${bonus} پاداش ویژه)` : `دریافت ${coins} سکه هدیه`,
+          },
+        });
+        // پیام سیستمی در چت — نمایش هدیه برای هر دو طرف
+        await tx.message.create({
+          data: {
+            conversationId: conversation.id,
+            senderId: user.id,
+            content: JSON.stringify({
+              type: "GIFT",
+              coins: receiverCoins,
+              fee,
+              bonus,
+              message: message ?? "",
+              senderName,
+              receiverName,
+            }),
+            type: "SYSTEM",
+          },
+        });
+        // نوتیفیکیشن برای گیرنده
+        await tx.notification.create({
+          data: {
+            userId: receiverId,
+            type: "GIFT_RECEIVED",
+            title: "هدیه سکه دریافتی",
+            body: `${senderName} ${receiverCoins} سکه به شما هدیه داد${bonus > 0 ? " (شامل پاداش ویژه)" : ""}`,
+            data: JSON.stringify({ coins, senderId: user.id, conversationId: conversation.id }),
+          },
+        });
+      });
+    } catch (err) {
+      if (err instanceof InsufficientFundsError) {
+        return NextResponse.json({ error: "موجودی سکه کافی نیست" }, { status: 400 });
+      }
+      throw err;
+    }
 
-    console.log(`[transfer/gift] user ${user.id} sent ${coins} coins (+${fee} fee) to ${receiverId}, receiver got ${receiverCoins}`);
+    console.log(`[transfer/gift] user ${user.id} sent ${coins} coins to ${receiverId}, receiver got ${receiverCoins}`);
     return NextResponse.json({ ok: true, coins: receiverCoins, fee, bonus, conversationId: conversation.id });
   } catch (err) {
     if (err instanceof AuthError)
