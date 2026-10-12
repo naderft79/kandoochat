@@ -17,7 +17,7 @@ test("تب های پایین برچسب دسترس پذیر دارند و تب �
   await expect(nav.getByRole("link", { name: "جستجو" })).toHaveAttribute("aria-current", "page");
 });
 
-test("منوی پروفایل همه صفحه های فرعی را دارد و ناوبری می کند", async ({ page }) => {
+test("منوی پروفایل صفحه های فرعی را دارد و ناوبری می کند", async ({ page }) => {
   await page.goto("/dashboard/profile");
   const dialog = page.getByRole("dialog", { name: "منو" });
   // کلیک قبل از تکمیل هیدرات بی اثر است — تا باز شدن منو تکرار می شود
@@ -25,11 +25,11 @@ test("منوی پروفایل همه صفحه های فرعی را دارد و �
     await page.getByRole("button", { name: "منو" }).click();
     await expect(dialog).toBeVisible({ timeout: 1500 });
   }).toPass({ timeout: 15_000 });
-  for (const name of ["کیف پول", "اشتراک", "فعالیت ها", "دعوت دوستان", "پشتیبانی", "تنظیمات", "خروج از حساب"]) {
+  for (const name of ["پشتیبانی", "تنظیمات", "راهنما و سوالات متداول", "قوانین و مقررات", "خروج از حساب"]) {
     await expect(dialog.getByText(name, { exact: true })).toBeVisible();
   }
-  await dialog.getByText("اشتراک", { exact: true }).click();
-  await expect(page).toHaveURL(/\/dashboard\/subscription/);
+  await dialog.getByText("تنظیمات", { exact: true }).click();
+  await expect(page).toHaveURL(/\/dashboard\/settings/);
 });
 
 test("چت: دسکتاپ دو ستونی، موبایل تک ستونی", async ({ page, viewport }) => {
@@ -52,12 +52,9 @@ test("صفحه ۴۰۴ برندشده", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "صفحه پیدا نشد" })).toBeVisible();
 });
 
-test("نوار آفلاین", async ({ page, context }) => {
-  await page.goto("/dashboard/search");
-  await context.setOffline(true);
-  await expect(page.getByText("اتصال اینترنت قطع است")).toBeVisible();
-  await context.setOffline(false);
-  await expect(page.getByText("اتصال اینترنت قطع است")).toBeHidden();
+test("صفحه آفلاین PWA نمایش داده می شود", async ({ page }) => {
+  await page.goto("/offline");
+  await expect(page.getByRole("heading", { name: "به اینترنت متصل نیستید" })).toBeVisible();
 });
 
 test("حالت افقی گوشی مسدود نمی شود", async ({ page }) => {
