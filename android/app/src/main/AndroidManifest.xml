@@ -25,19 +25,19 @@
         </activity>
 
         <!-- FCM — پوش نوتیفیکیشن وقتی اپ بسته است -->
-        <service
-            android:name="com.capacitorjs.plugins.pushnotifications.MessagingService"
-            android:exported="false">
+        <service android:name="com.capacitorjs.plugins.pushnotifications.MessagingService" android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@drawable/ic_stat_kandoo" />
+            android:resource="@drawable/ic_stat_kandoo"
+        />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="kandoo_alerts" />
+            android:value="kandoo_alerts"
+        />
 
         <provider
             android:name="androidx.core.content.FileProvider"

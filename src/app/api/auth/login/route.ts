@@ -7,6 +7,8 @@ import { createSession } from "@/lib/auth";
 import { rateLimit, loginRateLimit, getClientIdentifier } from "@/lib/rate-limit";
 import { getRequestIp } from "@/lib/client-ip";
 import { recordLoginEvent } from "@/lib/login-events";
+import { ADMIN_ROLES } from "@/lib/auth";
+import { isUserApp, isAdminApp } from "@/lib/app-ua";
 
 const loginSchema = z.object({
   phone: z.union([
@@ -50,6 +52,20 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: "حساب شما مسدود شده است" },
         { status: 403 }
+      );
+    }
+
+    // جداسازی اپ ها: ورود مدیر در اپ کاربر و ورود کاربر عادی در اپ مدیریت
+    // با همان پاسخ رمز اشتباه رد می شود تا هیچ اشاره ای به علت نشود
+    const ua = request.headers.get("user-agent");
+    const isAdminRole = (ADMIN_ROLES as readonly string[]).includes(user.role);
+    if ((isAdminRole && isUserApp(ua)) || (!isAdminRole && isAdminApp(ua))) {
+      console.warn(
+        `[login] blocked ${isAdminRole ? "admin-in-user-app" : "user-in-admin-app"}: ${user.phone}`
+      );
+      return NextResponse.json(
+        { error: "شماره موبایل یا رمز عبور اشتباه است" },
+        { status: 401 }
       );
     }
 

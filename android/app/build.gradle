@@ -10,8 +10,19 @@ if (keystorePropertiesFile.exists()) {
 android {
     namespace = "com.kandoo.app"
     compileSdk = rootProject.ext.compileSdkVersion
+
+    // دو خروجی APK در هر بیلد: اپ کاربر + اپ «مدیریت کندو»
+    flavorDimensions "app"
+    productFlavors {
+        user {
+            applicationId "com.kandoo.app"
+        }
+        admin {
+            applicationId "com.kandoo.admin"
+        }
+    }
+
     defaultConfig {
-        applicationId "com.kandoo.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode Integer.parseInt(project.findProperty("kandooVersionCode") ?: "1")
@@ -62,10 +73,13 @@ dependencies {
 apply from: 'capacitor.build.gradle'
 
 try {
-    def servicesJSON = file('google-services.json')
+    // google-services.json باید داخل src/user باشد تا فقط برای فلیور کاربر اعمال شود
+    // (فایل در ریشه ماژول برای فلیور admin هم دیده می شود و چون com.kandoo.admin
+    // در پروژه Firebase نیست، بیلد فلیور admin خطا می خورد)
+    def servicesJSON = file('src/user/google-services.json')
     if (servicesJSON.text) {
         apply plugin: 'com.google.gms.google-services'
     }
 } catch(Exception e) {
-    logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
+    logger.info("google-services.json not found in src/user, google-services plugin not applied. Push Notifications won't work")
 }

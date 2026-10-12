@@ -3,25 +3,11 @@
 import path from "path";
 import fs from "fs";
 import sharp from "sharp";
-import * as opentype from "opentype.js";
+import { renderK, FONT_PATH } from "./lib/k-glyph";
 
-const FONT_PATH = path.join(process.cwd(), "assets", "grand-hotel.ttf");
 const SRC = path.join(process.cwd(), "public", "bee-colori-logo.png");
 const GRAY_SRC = path.join(process.cwd(), "public", "bee-gray-logo.png");
 const ICONS_DIR = path.join(process.cwd(), "public", "icons");
-
-// رندر حرف K با فونت Grand Hotel به PNG — بکگراند شفاف تا روی هر زمینه بنشیند
-async function renderK(size: number, color: string, fill = 0.62): Promise<Buffer> {
-  const font = opentype.parse(fs.readFileSync(FONT_PATH).buffer as ArrayBuffer);
-  const fontSize = size * fill;
-  const probe = font.getPath("K", 0, 0, fontSize);
-  const bb = probe.getBoundingBox();
-  const dx = (size - (bb.x2 - bb.x1)) / 2 - bb.x1;
-  const dy = (size - (bb.y2 - bb.y1)) / 2 - bb.y1;
-  const p = font.getPath("K", dx, dy, fontSize);
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><path d="${p.toPathData(2)}" fill="${color}"/></svg>`;
-  return sharp(Buffer.from(svg)).png().toBuffer();
-}
 
 async function main() {
   if (!fs.existsSync(FONT_PATH)) {

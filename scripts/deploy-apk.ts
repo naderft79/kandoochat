@@ -8,6 +8,8 @@ import os from "os";
 const isWin = process.platform === "win32";
 const root = process.cwd();
 const PACKAGE = "com.kandoo.app";
+const ADMIN_PACKAGE = "com.kandoo.admin";
+const launchAdmin = process.argv.includes("--admin");
 const ADB_PORT = 5555;
 
 function adbPath(): string {
@@ -97,9 +99,13 @@ run("npx", ["cap", "sync", "android"], root);
 const gradlew = path.join(root, "android", isWin ? "gradlew.bat" : "gradlew");
 run(gradlew, ["assembleDebug"], path.join(root, "android"));
 
-// ۴) نصب + اجرا روی همان دستگاه
-const apk = path.join(root, "android", "app", "build", "outputs", "apk", "debug", "app-debug.apk");
-run(adb, ["-s", target, "install", "-r", apk], root);
-run(adb, ["-s", target, "shell", "monkey", "-p", PACKAGE, "-c", "android.intent.category.LAUNCHER", "1"], root);
+// ۴) نصب هر دو APK + اجرا — پیش فرض اپ کاربر، با --admin اپ مدیریت
+const apkDir = path.join(root, "android", "app", "build", "outputs", "apk");
+for (const flavor of ["user", "admin"]) {
+  const apk = path.join(apkDir, flavor, "debug", `app-${flavor}-debug.apk`);
+  run(adb, ["-s", target, "install", "-r", apk], root);
+}
+const pkg = launchAdmin ? ADMIN_PACKAGE : PACKAGE;
+run(adb, ["-s", target, "shell", "monkey", "-p", pkg, "-c", "android.intent.category.LAUNCHER", "1"], root);
 
 console.log("\n[deploy] done — app installed and launched on the phone");

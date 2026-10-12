@@ -79,3 +79,6 @@ __pycache__/
 
 # پایگاه داده کشور IP (با npm run geoip:download دریافت شود)
 data/geo/
+---
+# کانفیگ تولیدشده فلیور admin در زمان بیلد
+android/app/src/admin/assets/capacitor.config.json

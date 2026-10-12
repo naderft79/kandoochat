@@ -64,8 +64,8 @@ function hostOf(referrer: string): string | null {
 }
 
 export function detectPlatform(ua: string): Platform {
-  // کپسول اندروید با توکن KandooApp در User-Agent شناخته می شود؛ وب ویوی بدون توکن هم با نشانه wv
-  if (/KandooApp/i.test(ua)) return "APP";
+  // کپسول های اندروید با توکن KandooApp یا KandooAdminApp در User-Agent شناخته می شوند؛ وب ویوی بدون توکن هم با نشانه wv
+  if (/Kandoo(Admin)?App/i.test(ua)) return "APP";
   if (/Android/i.test(ua) && /;\s?wv\)/.test(ua)) return "APP";
   return "WEB";
 }

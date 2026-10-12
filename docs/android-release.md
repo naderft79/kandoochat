@@ -1,9 +1,23 @@
 # انتشار اپ اندروید کندو
 
+## دو خروجی APK
+
+هر بیلد دو APK می سازد (Gradle flavors):
+
+| فلیور | پکیج | نام | توکن UA | مسیر شروع |
+|---|---|---|---|---|
+| `user` | `com.kandoo.app` | کندو | `KandooApp/1.0` | `/` |
+| `admin` | `com.kandoo.admin` | مدیریت کندو | `KandooAdminApp/1.0` | `/admin-login` |
+
+- خروجی: `android/app/build/outputs/apk/{user,admin}/{debug,release}/app-{flavor}-{variant}.apk`
+- **اپ مدیریت:** آیکون مشکی + K طلایی، اسپلش مشکی، چرخش آزاد، بدون مجوز دوربین/میکروفون و بدون FCM. کانفیگ آن (`src/admin/assets/capacitor.config.json`) در هر بیلد توسط `scripts/build-apk.ts` تولید می شود و در git نیست.
+- **جداسازی ورود در سرور:** ورود مدیر با توکن `KandooApp` و ورود کاربر عادی با `KandooAdminApp` در `/api/auth/login` با همان پاسخ «رمز اشتباه» رد می شود. ورود مدیر از مرورگر آزاد است.
+- `npm run deploy:apk` هر دو APK را روی گوشی نصب می کند و پیش فرض اپ کاربر را اجرا می کند؛ با `--admin` اپ مدیریت اجرا می شود.
+
 ## پیش نیازها
 - آدرس production در `CAPACITOR_SERVER_URL` یا `NEXT_PUBLIC_SITE_URL` باید **https** باشد (بیلد release بدون آن متوقف می شود).
 - keystore امضا در `android/keystore.properties` (فقط محلی؛ هرگز commit نشود). بکاپ امن keystore الزامی است؛ گم شدنش یعنی امکان به روزرسانی اپ از بین می رود.
-- `google-services.json` فقط وقتی در `android/app` باشد که پوش FCM فعال شود (`NEXT_PUBLIC_FCM_ENABLED=true`).
+- `google-services.json` باید در `android/app/src/user/` باشد تا فقط فلیور کاربر پوش بگیرد (در ریشه ماژول بیلد فلیور admin خطا می خورد چون `com.kandoo.admin` در Firebase نیست).
 
 ## شماره نسخه
 هر انتشار باید `versionCode` بزرگ تر از قبلی داشته باشد:
@@ -16,7 +30,7 @@
 ```bash
 CAPACITOR_SERVER_URL=https://kandoochat.com npm run build:apk -- --release
 ```
-خروجی: `android/app/build/outputs/apk/release/app-release.apk` (با R8 و shrink فعال).
+خروجی: `android/app/build/outputs/apk/user/release/app-user-release.apk` و `.../admin/release/app-admin-release.apk` (با R8 و shrink فعال).
 
 ## بررسی های قبل از آپلود
 - در مانیفست merge شده ریلیز نباید `usesCleartextTraffic` باشد:

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">مدیریت کندو</string>
+    <string name="title_activity_main">مدیریت کندو</string>
+    <string name="package_name">com.kandoo.admin</string>
+    <string name="custom_url_scheme">com.kandoo.admin</string>
+</resources>

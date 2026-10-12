@@ -25,6 +25,9 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const method = request.method.toUpperCase();
 
+  // صفحه ورود مدیریت پیشوند /admin دارد ولی صفحه عمومی است — از همه محافظت ها معاف
+  if (pathname === "/admin-login") return NextResponse.next();
+
   const isProtected = pathname.startsWith("/dashboard") || pathname.startsWith("/admin");
   const isAuthPage = pathname === "/login" || pathname === "/register";
   const isApi = pathname.startsWith("/api/");
