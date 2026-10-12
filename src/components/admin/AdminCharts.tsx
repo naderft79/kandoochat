@@ -1,9 +1,9 @@
 "use client";
 
-// کامپوننت نمودارهای آماری پیشرفته پنل ادمین (ECharts با پالت تم روشن/تاریک)
+// کامپوننت ۱۲ نمودار کاربردی داشبورد ادمین (ECharts با فونت سایت، پالت تم روشن/تاریک و طرح یکسان طلایی)
 import { useEffect, useMemo, useState } from "react";
 import {
-  MessageCircle, MapPin, Users, Heart, Rocket, Crown, Coins, Activity, DollarSign, BarChart3,
+  MessageCircle, MapPin, Users, Heart, Crown, Activity, DollarSign, Clock, Filter, Globe, PieChart, Rocket, Coins,
 } from "lucide-react";
 import { toPersianDigits, formatToman } from "@/lib/format";
 import EChart from "@/components/admin/charts/EChart";
@@ -15,9 +15,10 @@ type ChartData = {
   dailyRevenue: { date: string; amount: number; coins: number }[];
   dailyMessages: { date: string; count: number }[];
   dailyLikes: { date: string; likes: number; superLikes: number }[];
-  dailyBoosts: { date: string; count: number }[];
   dailySubs: { date: string; count: number }[];
-  dailyTransfers: { date: string; volume: number; count: number }[];
+  hourlyMessages: number[];
+  funnel: { name: string; value: number }[];
+  provinceDistribution: { name: string; value: number }[];
   cityDistribution: { name: string; value: number }[];
   genderDistribution: { name: string; value: number }[];
   ageDistribution: { name: string; value: number }[];
@@ -34,17 +35,17 @@ type ChartData = {
 };
 
 const countFa = (v: number) => toPersianDigits(Math.round(v).toLocaleString("en-US").replace(/,/g, "،"));
+const hourLabel = (h: number) => toPersianDigits(`${String(h).padStart(2, "0")}:00`);
 
-function ChartCard({ icon: Icon, title, subtitle, children, className = "", stagger = "" }: {
+function ChartCard({ icon: Icon, title, subtitle, children, stagger = "" }: {
   icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
   title: string;
   subtitle?: string;
   children: React.ReactNode;
-  className?: string;
   stagger?: string;
 }) {
   return (
-    <div className={`lux-card p-5 hover:-translate-y-0.5 animate-fade-in-up ${stagger} ${className}`}>
+    <div className={`lux-card p-5 hover:-translate-y-0.5 animate-fade-in-up ${stagger}`}>
       <div className="flex items-center gap-2 mb-4">
         <div className="w-8 h-8 rounded-lg bg-[rgba(212,175,55,0.08)] border border-[rgba(212,175,55,0.15)] flex items-center justify-center transition-transform hover:scale-110">
           <Icon className="w-4 h-4 text-[#d4af37]" strokeWidth={2} />
@@ -80,72 +81,82 @@ function StatCard({ icon: Icon, label, value, color, trend }: {
   );
 }
 
-// ساخت همه گزینه های نمودارها از یک داده و پالت (فقط وقتی داده یا تم عوض شود)
+// ساخت همه گزینه های ۱۲ نمودار از یک داده و پالت (فقط وقتی داده، تم یا فونت عوض شود)
 function buildOptions(p: ChartPalette, data: ChartData) {
+  const dates = (rows: { date: string }[]) => rows.map((d) => d.date);
   return {
     userGrowth: cartesianOption(p, {
-      categories: data.userGrowth.map((d) => d.date),
+      categories: dates(data.userGrowth),
       series: [
-        { name: "کل کاربران", kind: "line", data: data.userGrowth.map((d) => d.total), color: p.series[2] },
-        { name: "کاربران جدید", kind: "area", data: data.userGrowth.map((d) => d.count), color: p.series[0] },
+        { name: "کل کاربران", kind: "line", data: data.userGrowth.map((d) => d.total) },
+        { name: "کاربران جدید", kind: "area", data: data.userGrowth.map((d) => d.count) },
       ],
       valueFormatter: countFa,
       axisFormatter: compactFa,
     }),
     dailyRevenue: cartesianOption(p, {
-      categories: data.dailyRevenue.map((d) => d.date),
-      series: [{ name: "درآمد", kind: "bar", data: data.dailyRevenue.map((d) => d.amount), color: p.series[1] }],
+      categories: dates(data.dailyRevenue),
+      series: [{ name: "درآمد", kind: "bar", data: data.dailyRevenue.map((d) => d.amount) }],
       valueFormatter: (v) => formatToman(v),
       axisFormatter: compactFa,
     }),
+    funnel: cartesianOption(p, {
+      categories: data.funnel.map((d) => d.name),
+      series: [{ name: "کاربر", kind: "bar", data: data.funnel.map((d) => d.value) }],
+      horizontal: true,
+      valueFormatter: countFa,
+      showValues: true,
+    }),
     dailyMessages: cartesianOption(p, {
-      categories: data.dailyMessages.map((d) => d.date),
-      series: [{ name: "پیام ها", kind: "area", data: data.dailyMessages.map((d) => d.count), color: p.series[4] }],
+      categories: dates(data.dailyMessages),
+      series: [{ name: "پیام ها", kind: "area", data: data.dailyMessages.map((d) => d.count) }],
+      valueFormatter: countFa,
+      axisFormatter: compactFa,
+    }),
+    hourlyMessages: cartesianOption(p, {
+      categories: data.hourlyMessages.map((_, h) => hourLabel(h)),
+      series: [{ name: "پیام ها", kind: "bar", data: data.hourlyMessages }],
       valueFormatter: countFa,
       axisFormatter: compactFa,
     }),
     dailyLikes: cartesianOption(p, {
-      categories: data.dailyLikes.map((d) => d.date),
+      categories: dates(data.dailyLikes),
       series: [
-        { name: "لایک", kind: "bar", data: data.dailyLikes.map((d) => d.likes), color: p.series[3] },
-        { name: "سوپرلایک", kind: "bar", data: data.dailyLikes.map((d) => d.superLikes), color: p.series[0] },
+        { name: "لایک", kind: "bar", data: data.dailyLikes.map((d) => d.likes) },
+        { name: "سوپرلایک", kind: "bar", data: data.dailyLikes.map((d) => d.superLikes) },
       ],
       valueFormatter: countFa,
       axisFormatter: compactFa,
     }),
-    dailyBoosts: cartesianOption(p, {
-      categories: data.dailyBoosts.map((d) => d.date),
-      series: [{ name: "بوست", kind: "bar", data: data.dailyBoosts.map((d) => d.count), color: p.series[5] }],
-      valueFormatter: countFa,
-      axisFormatter: compactFa,
-    }),
     dailySubs: cartesianOption(p, {
-      categories: data.dailySubs.map((d) => d.date),
-      series: [{ name: "اشتراک جدید", kind: "area", data: data.dailySubs.map((d) => d.count), color: p.series[2] }],
-      valueFormatter: countFa,
-      axisFormatter: compactFa,
-    }),
-    dailyTransfers: cartesianOption(p, {
-      categories: data.dailyTransfers.map((d) => d.date),
-      series: [{ name: "حجم سکه", kind: "area", data: data.dailyTransfers.map((d) => d.volume), color: p.series[6] }],
-      valueFormatter: countFa,
-      axisFormatter: compactFa,
-    }),
-    cityDistribution: donutOption(p, data.cityDistribution, countFa),
-    genderDistribution: donutOption(p, data.genderDistribution, countFa),
-    ageDistribution: cartesianOption(p, {
-      categories: data.ageDistribution.map((d) => d.name),
-      series: [{ name: "کاربران", kind: "bar", data: data.ageDistribution.map((d) => d.value), color: p.series[7] }],
-      horizontal: true,
+      categories: dates(data.dailySubs),
+      series: [{ name: "اشتراک جدید", kind: "area", data: data.dailySubs.map((d) => d.count) }],
       valueFormatter: countFa,
       axisFormatter: compactFa,
     }),
     revenueByType: cartesianOption(p, {
       categories: data.revenueByType.map((d) => d.name),
-      series: [{ name: "درآمد", kind: "bar", data: data.revenueByType.map((d) => d.value), color: p.series[0] }],
+      series: [{ name: "درآمد", kind: "bar", data: data.revenueByType.map((d) => d.value) }],
+      horizontal: true,
       valueFormatter: (v) => formatToman(v),
       axisFormatter: compactFa,
     }),
+    ageDistribution: cartesianOption(p, {
+      categories: data.ageDistribution.map((d) => d.name),
+      series: [{ name: "کاربران", kind: "bar", data: data.ageDistribution.map((d) => d.value) }],
+      horizontal: true,
+      valueFormatter: countFa,
+      showValues: true,
+    }),
+    provinceDistribution: cartesianOption(p, {
+      categories: data.provinceDistribution.map((d) => d.name),
+      series: [{ name: "کاربران", kind: "bar", data: data.provinceDistribution.map((d) => d.value) }],
+      horizontal: true,
+      valueFormatter: countFa,
+      showValues: true,
+    }),
+    cityDistribution: donutOption(p, data.cityDistribution, countFa),
+    genderDistribution: donutOption(p, data.genderDistribution, countFa),
   };
 }
 
@@ -164,54 +175,48 @@ function Dashboard({ data }: { data: ChartData }) {
         <StatCard icon={Crown} label="اشتراک فعال" value={countFa(s.activeSubs)} color="#34d399" trend={`${countFa(s.totalSubs)} کل خرید`} />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      {/* ۱۲ نمودار در سه ستون (دسکتاپ)؛ در تبلت دو ستون و در موبایل یک ستون */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <ChartCard icon={Users} title="رشد کاربران" subtitle="۳۰ روز اخیر — جدید و تجمعی" stagger="stagger-1">
-          <EChart label="نمودار رشد کاربران" option={opts.userGrowth} height={240} />
+          <EChart label="نمودار رشد کاربران" option={opts.userGrowth} height={260} />
         </ChartCard>
         <ChartCard icon={DollarSign} title="درآمد روزانه" subtitle="۳۰ روز اخیر — تومان" stagger="stagger-2">
-          <EChart label="نمودار درآمد روزانه" option={opts.dailyRevenue} height={240} />
+          <EChart label="نمودار درآمد روزانه" option={opts.dailyRevenue} height={260} />
         </ChartCard>
-      </div>
+        <ChartCard icon={Filter} title="قیف تبدیل کاربران" subtitle="از ثبت نام تا اشتراک" stagger="stagger-1">
+          <EChart label="نمودار قیف تبدیل کاربران" option={opts.funnel} height={260} />
+        </ChartCard>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <ChartCard icon={MessageCircle} title="پیام های روزانه" subtitle="۳۰ روز اخیر" stagger="stagger-1">
-          <EChart label="نمودار پیام های روزانه" option={opts.dailyMessages} height={240} />
+        <ChartCard icon={MessageCircle} title="پیام های روزانه" subtitle="۳۰ روز اخیر" stagger="stagger-2">
+          <EChart label="نمودار پیام های روزانه" option={opts.dailyMessages} height={260} />
+        </ChartCard>
+        <ChartCard icon={Clock} title="ساعات فعال" subtitle="توزیع پیام ها در ساعات شبانه روز" stagger="stagger-1">
+          <EChart label="نمودار ساعات فعال" option={opts.hourlyMessages} height={260} />
         </ChartCard>
         <ChartCard icon={Heart} title="لایک و سوپرلایک" subtitle="۳۰ روز اخیر" stagger="stagger-2">
-          <EChart label="نمودار لایک و سوپرلایک" option={opts.dailyLikes} height={240} />
+          <EChart label="نمودار لایک و سوپرلایک" option={opts.dailyLikes} height={260} />
         </ChartCard>
-      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <ChartCard icon={Rocket} title="بوست های خریداری شده" subtitle="۳۰ روز اخیر" stagger="stagger-1">
-          <EChart label="نمودار بوست های خریداری شده" option={opts.dailyBoosts} height={240} />
+        <ChartCard icon={Crown} title="اشتراک های جدید" subtitle="۳۰ روز اخیر" stagger="stagger-1">
+          <EChart label="نمودار اشتراک های جدید" option={opts.dailySubs} height={260} />
         </ChartCard>
-        <ChartCard icon={Crown} title="اشتراک های جدید" subtitle="۳۰ روز اخیر" stagger="stagger-2">
-          <EChart label="نمودار اشتراک های جدید" option={opts.dailySubs} height={240} />
+        <ChartCard icon={PieChart} title="درآمد بر اساس نوع تراکنش" subtitle="کل درآمد — تفکیک شده" stagger="stagger-2">
+          <EChart label="نمودار درآمد بر اساس نوع تراکنش" option={opts.revenueByType} height={260} />
         </ChartCard>
-      </div>
+        <ChartCard icon={Activity} title="توزیع سنی کاربران" subtitle="بازه های سنی" stagger="stagger-1">
+          <EChart label="نمودار توزیع سنی" option={opts.ageDistribution} height={260} />
+        </ChartCard>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <ChartCard icon={Coins} title="حجم انتقال سکه" subtitle="۳۰ روز اخیر" stagger="stagger-1">
-          <EChart label="نمودار حجم انتقال سکه" option={opts.dailyTransfers} height={240} />
+        <ChartCard icon={Globe} title="توزیع کاربران بر اساس استان" subtitle="۱۰ استان برتر" stagger="stagger-2">
+          <EChart label="نمودار توزیع کاربران بر اساس استان" option={opts.provinceDistribution} height={260} />
         </ChartCard>
-        <ChartCard icon={MapPin} title="توزیع کاربران (شهر)" subtitle="۱۰ شهر برتر" stagger="stagger-2">
+        <ChartCard icon={MapPin} title="توزیع کاربران بر اساس شهر" subtitle="۱۰ شهر برتر" stagger="stagger-1">
           <EChart label="نمودار توزیع کاربران بر اساس شهر" option={opts.cityDistribution} height={260} />
         </ChartCard>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <ChartCard icon={Users} title="توزیع جنسیت" subtitle="کاربران فعال" stagger="stagger-1">
-          <EChart label="نمودار توزیع جنسیت" option={opts.genderDistribution} height={220} />
-        </ChartCard>
-        <ChartCard icon={Activity} title="توزیع سنی کاربران" subtitle="بازه های سنی" stagger="stagger-2">
-          <EChart label="نمودار توزیع سنی" option={opts.ageDistribution} height={220} />
+        <ChartCard icon={Users} title="توزیع جنسیت" subtitle="کاربران ثبت شده" stagger="stagger-2">
+          <EChart label="نمودار توزیع جنسیت" option={opts.genderDistribution} height={260} />
         </ChartCard>
       </div>
-
-      <ChartCard icon={BarChart3} title="درآمد بر اساس نوع تراکنش" subtitle="کل درآمد — تفکیک شده" className="w-full" stagger="stagger-1">
-        <EChart label="نمودار درآمد بر اساس نوع تراکنش" option={opts.revenueByType} height={240} />
-      </ChartCard>
     </div>
   );
 }
@@ -236,9 +241,9 @@ export default function AdminCharts() {
             <div key={i} className="lux-card p-4 h-20 lux-shimmer" />
           ))}
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="lux-card p-5 h-64 lux-shimmer" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Array.from({ length: 12 }).map((_, i) => (
+            <div key={i} className="lux-card p-5 h-80 lux-shimmer" />
           ))}
         </div>
       </div>

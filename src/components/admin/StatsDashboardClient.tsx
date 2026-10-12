@@ -51,12 +51,12 @@ export default function StatsDashboardClient({ initial }: { initial: AdminStats 
     return {
       users: cartesianOption(palette, {
         categories: labels,
-        series: [{ name: "ثبت نام", kind: "area", data: stats.daily.map((d) => d.users), color: palette.series[0] }],
+        series: [{ name: "ثبت نام", kind: "area", data: stats.daily.map((d) => d.users) }],
         valueFormatter: (v) => toPersianDigits(Math.round(v)),
       }),
       revenue: cartesianOption(palette, {
         categories: labels,
-        series: [{ name: "درآمد", kind: "area", data: stats.daily.map((d) => d.revenueToman), color: palette.series[1] }],
+        series: [{ name: "درآمد", kind: "area", data: stats.daily.map((d) => d.revenueToman) }],
         valueFormatter: (v) => formatToman(v),
         axisFormatter: compactFa,
       }),

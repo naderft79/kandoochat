@@ -3,6 +3,16 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin, AuthError } from "@/lib/auth";
 
+// برچسب فارسی انواع تراکنش برای نمودار درآمد (انواع بدون درآمد تومانی حذف می شوند)
+const TX_TYPE_LABELS: Record<string, string> = {
+  COIN_PURCHASE: "خرید سکه",
+  SUBSCRIPTION: "اشتراک",
+  BOOST_PURCHASE: "بوست",
+  REFERRAL_REWARD: "پاداش دعوت",
+  STREAK_REWARD: "پاداش استریک",
+  ADMIN_ADJUST: "تنظیم دستی ادمین",
+};
+
 export async function GET() {
   try {
     await requireAdmin();
@@ -82,22 +92,9 @@ export async function GET() {
       });
     }
 
-    // بوست های خریداری شده (۳۰ روز اخیر)
-    const boosts = await prisma.boost.findMany({
-      where: { startsAt: { gte: thirtyDaysAgo } },
-      select: { startsAt: true },
-    });
-    const dailyBoosts: { date: string; count: number }[] = [];
-    for (let i = 29; i >= 0; i--) {
-      const day = new Date(now.getTime() - i * 86400000);
-      const dayStart = new Date(day.getFullYear(), day.getMonth(), day.getDate());
-      const dayEnd = new Date(dayStart.getTime() + 86400000);
-      const count = boosts.filter((b) => b.startsAt >= dayStart && b.startsAt < dayEnd).length;
-      dailyBoosts.push({
-        date: dayStart.toLocaleDateString("fa-IR", { month: "short", day: "numeric" }),
-        count,
-      });
-    }
+    // فعالیت ساعتی: تعداد پیام ها در هر ساعت روز (۳۰ روز اخیر)
+    const hourlyMessages: number[] = Array.from({ length: 24 }, () => 0);
+    for (const m of messages) hourlyMessages[m.createdAt.getHours()] += 1;
 
     // اشتراک های جدید (۳۰ روز اخیر)
     const subscriptions = await prisma.subscription.findMany({
@@ -116,23 +113,35 @@ export async function GET() {
       });
     }
 
-    // انتقال سکه روزانه (۳۰ روز اخیر)
-    const transfers = await prisma.coinTransfer.findMany({
-      where: { createdAt: { gte: thirtyDaysAgo } },
-      select: { coins: true, createdAt: true },
+    // قیف تبدیل: از ثبت نام تا خرید سکه و اشتراک (تعداد کاربران یکتا در هر مرحله)
+    const [registered, phoneVerified, identityVerified, coinBuyers, subscribers] = await Promise.all([
+      prisma.user.count({ where: { role: "USER" } }),
+      prisma.user.count({ where: { role: "USER", phoneVerified: true } }),
+      prisma.user.count({ where: { role: "USER", isIdentityVerified: true } }),
+      prisma.transaction.findMany({
+        where: { type: "COIN_PURCHASE", status: "COMPLETED" },
+        distinct: ["userId"],
+        select: { userId: true },
+      }),
+      prisma.subscription.findMany({ distinct: ["userId"], select: { userId: true } }),
+    ]);
+    const funnel = [
+      { name: "ثبت نام", value: registered },
+      { name: "موبایل تایید شده", value: phoneVerified },
+      { name: "احراز هویت کامل", value: identityVerified },
+      { name: "خرید سکه", value: coinBuyers.length },
+      { name: "اشتراک", value: subscribers.length },
+    ];
+
+    // توزیع کاربران بر اساس استان (۱۰ استان برتر)
+    const provinceGroups = await prisma.user.groupBy({
+      by: ["province"],
+      where: { role: "USER" },
+      _count: { province: true },
+      orderBy: { _count: { province: "desc" } },
+      take: 10,
     });
-    const dailyTransfers: { date: string; volume: number; count: number }[] = [];
-    for (let i = 29; i >= 0; i--) {
-      const day = new Date(now.getTime() - i * 86400000);
-      const dayStart = new Date(day.getFullYear(), day.getMonth(), day.getDate());
-      const dayEnd = new Date(dayStart.getTime() + 86400000);
-      const dayTr = transfers.filter((t) => t.createdAt >= dayStart && t.createdAt < dayEnd);
-      dailyTransfers.push({
-        date: dayStart.toLocaleDateString("fa-IR", { month: "short", day: "numeric" }),
-        volume: dayTr.reduce((sum, t) => sum + t.coins, 0),
-        count: dayTr.length,
-      });
-    }
+    const provinceDistribution = provinceGroups.map((g) => ({ name: g.province, value: g._count.province }));
 
     // توزیع کاربران بر اساس شهر
     const allUsers = await prisma.user.findMany({
@@ -179,7 +188,7 @@ export async function GET() {
     const revenueByType = txTypes
       .filter((t) => (t._sum.amountToman ?? 0) > 0)
       .map((t) => ({
-        name: t.type === "COIN_PURCHASE" ? "خرید سکه" : t.type === "SUBSCRIPTION" ? "اشتراک" : t.type === "BOOST_PURCHASE" ? "بوست" : t.type,
+        name: TX_TYPE_LABELS[t.type] ?? "سایر",
         value: t._sum.amountToman ?? 0,
         count: t._count,
       }));
@@ -201,9 +210,10 @@ export async function GET() {
       dailyRevenue,
       dailyMessages,
       dailyLikes,
-      dailyBoosts,
       dailySubs,
-      dailyTransfers,
+      hourlyMessages,
+      funnel,
+      provinceDistribution,
       cityDistribution,
       genderDistribution,
       ageDistribution,
