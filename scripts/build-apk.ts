@@ -4,6 +4,7 @@
 import { execFileSync, execSync } from "child_process";
 import path from "path";
 import fs from "fs";
+import { writeAdminFlavorConfig } from "./lib/admin-flavor-config";
 
 const isWin = process.platform === "win32";
 const root = process.cwd();
@@ -36,30 +37,7 @@ run("npx", ["cap", "sync", "android"], root);
 run("npx", ["capacitor-assets", "generate", "--android"], root);
 
 // ۴) کانفیگ اورراید فلیور admin — از روی JSON سینک شده ساخته می شود
-// اپ مدیریت مستقیم صفحه ورود پنل را باز می کند و توکن UA جدا دارد
-const mainConfigPath = path.join(root, "android", "app", "src", "main", "assets", "capacitor.config.json");
-const adminConfigDir = path.join(root, "android", "app", "src", "admin", "assets");
-fs.mkdirSync(adminConfigDir, { recursive: true });
-const adminConfig = JSON.parse(fs.readFileSync(mainConfigPath, "utf8"));
-adminConfig.appId = "com.kandoo.admin";
-adminConfig.appName = "مدیریت کندو";
-adminConfig.server = {
-  ...(adminConfig.server ?? {}),
-  url: serverUrl.replace(/\/$/, "") + "/admin-login",
-};
-adminConfig.android = {
-  ...(adminConfig.android ?? {}),
-  appendUserAgent: "KandooAdminApp/1.0",
-};
-adminConfig.plugins = {
-  ...(adminConfig.plugins ?? {}),
-  SplashScreen: {
-    ...(adminConfig.plugins?.SplashScreen ?? {}),
-    backgroundColor: "#000000",
-  },
-};
-fs.writeFileSync(path.join(adminConfigDir, "capacitor.config.json"), JSON.stringify(adminConfig, null, 2));
-console.log("[build-apk] admin flavor config written");
+writeAdminFlavorConfig(root, serverUrl);
 
 // ۵) بیلد با gradle — هر دو فلیور با یک دستور
 const androidDir = path.join(root, "android");

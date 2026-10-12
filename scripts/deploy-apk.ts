@@ -4,6 +4,7 @@
 import { execFileSync } from "child_process";
 import path from "path";
 import os from "os";
+import { writeAdminFlavorConfig } from "./lib/admin-flavor-config";
 
 const isWin = process.platform === "win32";
 const root = process.cwd();
@@ -72,28 +73,34 @@ if (targets.length === 0) {
   process.exit(1);
 }
 // انتخاب دستگاه — ترجیح با وایرلس؛ USB فقط وقتی که اتصال وایرلس نیست
-// نکته: روی IP شبکه کانتکست ناامن است — میکروفون فقط با USB(localhost) یا https کار می کند
 const wifiTarget = targets.find((t) => t.includes(":"));
 const target = wifiTarget || targets[0];
-const overUsb = !target.includes(":");
 
-let serverUrl: string;
-if (overUsb) {
-  // تونل USB — localhost گوشی به dev server سیستم می رسد و کانتکست امن است
-  for (const p of [3000, 3001]) {
-    try { out(adb, ["-s", target, "reverse", `tcp:${p}`, `tcp:${p}`]); } catch { /* ignore */ }
+// تونل معکوس adb — روی USB و وایرلس هر دو کار می کند؛ localhost گوشی به dev server
+// سیستم می رسد، کانتکست امن است (میکروفون کار می کند) و آدرس ثابت می ماند
+let serverUrl = "http://localhost:3000";
+let reversed = false;
+try {
+  for (const p of [3000, 3001]) out(adb, ["-s", target, "reverse", `tcp:${p}`, `tcp:${p}`]);
+  reversed = true;
+} catch { /* پایین fallback */ }
+if (!reversed) {
+  if (!target.includes(":")) {
+    console.error("[deploy] adb reverse failed over USB — cannot reach dev server from the phone");
+    process.exit(1);
   }
-  serverUrl = "http://localhost:3000";
-} else {
   const lanIp = hostLanIp(target.split(":")[0]);
   serverUrl = `http://${lanIp}:3000`;
-  console.log("[deploy] NOTE: wireless uses http://LAN-IP — insecure context: mic/voice won't work (USB or production https required)");
+  console.log("[deploy] adb reverse failed — falling back to http://LAN-IP (insecure context: mic/voice won't work)");
 }
 console.log(`[deploy] device: ${target} | server: ${serverUrl}`);
 
-// ۲) سینک با IP شبکه — گوشی از طریق وای فای به dev server می رسد
+// ۲) سینک — گوشی از طریق تونل adb به dev server می رسد
 process.env.CAPACITOR_SERVER_URL = serverUrl;
 run("npx", ["cap", "sync", "android"], root);
+
+// کانفیگ اورراید فلیور admin هم بازتولید می شود — وگرنه آدرس build-apk قبلی (production) باقی می ماند
+writeAdminFlavorConfig(root, serverUrl);
 
 // ۳) بیلد
 const gradlew = path.join(root, "android", isWin ? "gradlew.bat" : "gradlew");
