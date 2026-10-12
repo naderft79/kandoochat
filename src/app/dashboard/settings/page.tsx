@@ -172,8 +172,8 @@ export default function SettingsPage() {
       setPasswordError("رمز فعلی را وارد کنید");
       return;
     }
-    if (newPassword.length < 8) {
-      setPasswordError("رمز جدید باید حداقل ۸ کاراکتر باشد");
+    if (!/^\d{5,7}$/.test(newPassword)) {
+      setPasswordError("رمز جدید باید ۵ تا ۷ رقم باشد");
       return;
     }
     if (newPassword !== confirmPassword) {
@@ -546,8 +546,11 @@ export default function SettingsPage() {
                     <input
                       type={showCurrent ? "text" : "password"}
                       dir="ltr"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      maxLength={7}
                       value={currentPassword}
-                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      onChange={(e) => setCurrentPassword(e.target.value.replace(/\D/g, ""))}
                       className="w-full px-3 py-2.5 rounded-lg border border-ig-border bg-ig-gray-bg focus:bg-surface focus:border-ig-gray outline-none transition-colors text-sm text-left pl-10"
                       placeholder="••••••••"
                     />
@@ -564,14 +567,17 @@ export default function SettingsPage() {
                 {/* رمز جدید */}
                 <div>
                   <label className="block text-xs font-bold text-ig-gray mb-1.5">
-                    رمز جدید (حداقل ۸ کاراکتر)
+                    رمز جدید (۵ تا ۷ رقم)
                   </label>
                   <div className="relative">
                     <input
                       type={showNew ? "text" : "password"}
                       dir="ltr"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      maxLength={7}
                       value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
+                      onChange={(e) => setNewPassword(e.target.value.replace(/\D/g, ""))}
                       className="w-full px-3 py-2.5 rounded-lg border border-ig-border bg-ig-gray-bg focus:bg-surface focus:border-ig-gray outline-none transition-colors text-sm text-left pl-10"
                       placeholder="••••••••"
                     />
@@ -593,8 +599,11 @@ export default function SettingsPage() {
                   <input
                     type={showNew ? "text" : "password"}
                     dir="ltr"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    maxLength={7}
                     value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    onChange={(e) => setConfirmPassword(e.target.value.replace(/\D/g, ""))}
                     className="w-full px-3 py-2.5 rounded-lg border border-ig-border bg-ig-gray-bg focus:bg-surface focus:border-ig-gray outline-none transition-colors text-sm text-left"
                     placeholder="••••••••"
                   />
@@ -669,8 +678,11 @@ export default function SettingsPage() {
               <input
                 type="password"
                 dir="ltr"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                maxLength={7}
                 value={deletePassword}
-                onChange={(e) => setDeletePassword(e.target.value)}
+                onChange={(e) => setDeletePassword(e.target.value.replace(/\D/g, ""))}
                 className="w-full px-3 py-2.5 rounded-lg border border-ig-border bg-ig-gray-bg focus:bg-surface focus:border-ig-gray outline-none transition-colors text-sm text-left"
                 placeholder="••••••••"
               />

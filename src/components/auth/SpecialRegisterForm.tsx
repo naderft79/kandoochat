@@ -73,7 +73,7 @@ function SpecialRegisterFormInner() {
   function validateStep(): string {
     if (step === 0) {
       if (!/^09\d{9}$/.test(form.phone)) return "شماره موبایل معتبر نیست";
-      if (form.password.length < 8) return "رمز عبور باید حداقل ۸ کاراکتر باشد";
+      if (!/^\d{5,7}$/.test(form.password)) return "رمز عبور باید ۵ تا ۷ رقم باشد";
       if (!form.gender) return "جنسیت را انتخاب کنید";
     }
     if (step === 1) {
@@ -295,13 +295,16 @@ function SpecialRegisterFormInner() {
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-ig-gray mb-1.5">
-                    رمز عبور (حداقل ۸ کاراکتر) *
+                    رمز عبور (۵ تا ۷ رقم) *
                   </label>
                   <input
                     type="password"
                     dir="ltr"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    maxLength={7}
                     value={form.password}
-                    onChange={(e) => set("password", e.target.value)}
+                    onChange={(e) => set("password", e.target.value.replace(/\D/g, ""))}
                     className={`${inputClass} text-left`}
                   />
                 </div>

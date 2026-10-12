@@ -9,7 +9,7 @@ import { rateLimit, getClientIdentifier } from "@/lib/rate-limit";
 const schema = z.object({
   phone: z.string().regex(/^09\d{9}$/),
   proof: z.string().min(10),
-  password: z.string().min(8, "رمز عبور باید حداقل ۸ کاراکتر باشد").max(100),
+  password: z.string().regex(/^\d{5,7}$/, "رمز عبور باید ۵ تا ۷ رقم باشد"),
 });
 
 export async function POST(request: Request) {

@@ -54,13 +54,8 @@ export default function RegisterPage() {
   );
 }
 
-function strength(p: string) {
-  let s = 0;
-  if (p.length >= 8) s++;
-  if (/[A-Za-z]/.test(p) && /\d/.test(p)) s++;
-  if (p.length >= 12 || /[^A-Za-z0-9]/.test(p)) s++;
-  return s; // 0..3
-}
+// رمز عبور کاربر فقط عددی است — بین ۵ تا ۷ رقم
+const PASSWORD_RE = /^\d{5,7}$/;
 
 function RegisterForm() {
   const router = useRouter();
@@ -216,7 +211,7 @@ function RegisterForm() {
     const e: Errors = {};
     if (s === 0) {
       if (!/^09\d{9}$/.test(form.phone)) e.phone = "شماره موبایل معتبر نیست (مثال: ۰۹۱۲۳۴۵۶۷۸۹)";
-      if (form.password.length < 8) e.password = "رمز عبور باید حداقل ۸ کاراکتر باشد";
+      if (!PASSWORD_RE.test(form.password)) e.password = "رمز عبور باید ۵ تا ۷ رقم باشد";
       if (!form.gender) e.gender = "جنسیت را انتخاب کنید";
       // اگر کد دعوت تایپ شده ولی بررسی نشده، باید دکمه بررسی زده شود
       if (referralCode.trim() && refState === "idle") e.referral = "برای کد دعوت روی «بررسی» بزنید";
@@ -301,8 +296,6 @@ function RegisterForm() {
     }
   }
 
-  const st = strength(form.password);
-
   return (
     <div className="min-h-dvh bg-surface flex items-center justify-center p-4">
       <div className="w-full max-w-[400px] bg-surface border border-ig-border rounded-xl p-6 sm:p-8">
@@ -345,20 +338,13 @@ function RegisterForm() {
                 <PasswordInput
                   label="رمز عبور"
                   autoComplete="new-password"
+                  numeric
+                  maxLength={7}
                   value={form.password}
                   onChange={(e) => set("password", e.target.value)}
                   error={errors.password}
+                  hint="۵ تا ۷ رقم"
                 />
-                {form.password && (
-                  <div className="mt-2 flex items-center gap-2" aria-live="polite">
-                    <div className="flex-1 flex gap-1" aria-hidden>
-                      {[1, 2, 3].map((n) => (
-                        <span key={n} className={cn("h-1 flex-1 rounded-full", st >= n ? "bg-foreground" : "bg-ig-btn2")} />
-                      ))}
-                    </div>
-                    <span className="text-xs text-ig-gray">{["ضعیف", "ضعیف", "متوسط", "قوی"][st]}</span>
-                  </div>
-                )}
               </div>
               <fieldset>
                 <legend className="text-sm font-semibold mb-1.5">جنسیت</legend>

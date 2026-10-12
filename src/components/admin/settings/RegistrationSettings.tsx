@@ -9,9 +9,6 @@ type Props = {
   requirePhoneVerification: boolean;
   minRegisterAge: number;
   captchaEnabled: boolean;
-  minPasswordLength: number;
-  requireSpecialCharPassword: boolean;
-  requireNumberPassword: boolean;
   registerHourlyLimit: number;
   registerSuccessMessage: string;
   registerErrorMessage: string;
@@ -26,9 +23,6 @@ export default function RegistrationSettings(props: Props) {
     requirePhoneVerification: props.requirePhoneVerification,
     minRegisterAge: String(props.minRegisterAge),
     captchaEnabled: props.captchaEnabled,
-    minPasswordLength: String(props.minPasswordLength),
-    requireSpecialCharPassword: props.requireSpecialCharPassword,
-    requireNumberPassword: props.requireNumberPassword,
     registerHourlyLimit: String(props.registerHourlyLimit),
     registerSuccessMessage: props.registerSuccessMessage,
     registerErrorMessage: props.registerErrorMessage,
@@ -43,9 +37,6 @@ export default function RegistrationSettings(props: Props) {
       requirePhoneVerification: f.requirePhoneVerification,
       minRegisterAge: parseInt(f.minRegisterAge),
       captchaEnabled: f.captchaEnabled,
-      minPasswordLength: parseInt(f.minPasswordLength),
-      requireSpecialCharPassword: f.requireSpecialCharPassword,
-      requireNumberPassword: f.requireNumberPassword,
       registerHourlyLimit: parseInt(f.registerHourlyLimit),
       registerSuccessMessage: f.registerSuccessMessage,
       registerErrorMessage: f.registerErrorMessage,
@@ -58,7 +49,6 @@ export default function RegistrationSettings(props: Props) {
       <SettingsCard>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <NumberField label="حداقل سن ثبت نام" value={f.minRegisterAge} onChange={(v) => setF({ ...f, minRegisterAge: v })} />
-          <NumberField label="حداقل طول رمز عبور" value={f.minPasswordLength} onChange={(v) => setF({ ...f, minPasswordLength: v })} />
           <NumberField label="محدودیت ثبت نام در ساعت" value={f.registerHourlyLimit} onChange={(v) => setF({ ...f, registerHourlyLimit: v })} hint="0 یعنی بدون محدودیت" />
         </div>
         <div className="space-y-4 mt-4">
@@ -70,8 +60,6 @@ export default function RegistrationSettings(props: Props) {
           <ToggleRow label="تایید ایمیل اجباری" checked={f.requireEmailVerification} onChange={(v) => setF({ ...f, requireEmailVerification: v })} />
           <ToggleRow label="تایید موبایل اجباری" checked={f.requirePhoneVerification} onChange={(v) => setF({ ...f, requirePhoneVerification: v })} />
           <ToggleRow label="فعال بودن کپچا" checked={f.captchaEnabled} onChange={(v) => setF({ ...f, captchaEnabled: v })} />
-          <ToggleRow label="الزام کاراکتر خاص در رمز" checked={f.requireSpecialCharPassword} onChange={(v) => setF({ ...f, requireSpecialCharPassword: v })} />
-          <ToggleRow label="الزام عدد در رمز" checked={f.requireNumberPassword} onChange={(v) => setF({ ...f, requireNumberPassword: v })} />
           <ToggleRow label="فعال بودن ثبت نام با گوگل" checked={f.registerGoogleEnabled} onChange={(v) => setF({ ...f, registerGoogleEnabled: v })} />
         </div>
       </SettingsCard>

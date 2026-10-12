@@ -66,6 +66,8 @@ function LoginForm() {
           <PasswordInput
             autoComplete="current-password"
             aria-label="رمز عبور"
+            numeric
+            maxLength={7}
             value={password}
             onChange={(e) => setPassword(normalizeDigits(e.target.value))}
             placeholder="رمز عبور"

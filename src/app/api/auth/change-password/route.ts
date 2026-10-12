@@ -7,7 +7,7 @@ import { requireUser, createSession, AuthError, type UserRole } from "@/lib/auth
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1, "رمز فعلی را وارد کنید"),
-  newPassword: z.string().min(8, "رمز جدید باید حداقل ۸ کاراکتر باشد").max(100),
+  newPassword: z.string().regex(/^\d{5,7}$/, "رمز جدید باید ۵ تا ۷ رقم باشد"),
 });
 
 export async function POST(request: Request) {

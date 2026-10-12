@@ -249,8 +249,8 @@ export async function PATCH(request: Request) {
         break;
       }
       case "resetPassword": {
-        // تولید رمز موقت ۸ رقمی
-        const tempPassword = Math.random().toString(36).slice(2, 10);
+        // تولید رمز موقت ۶ رقمی — رمز کاربر همیشه عددی و ۵ تا ۷ رقم است
+        const tempPassword = String(Math.floor(100000 + Math.random() * 900000));
         const hashedPassword = await bcrypt.hash(tempPassword, 10);
         await prisma.user.update({
           where: { id: userId },

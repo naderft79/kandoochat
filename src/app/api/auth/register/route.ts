@@ -14,7 +14,7 @@ import { getAllSettings } from "@/lib/settings";
 
 const registerSchema = z.object({
   phone: z.string().regex(/^09\d{9}$/, "شماره موبایل معتبر نیست"),
-  password: z.string().min(8, "رمز عبور باید حداقل ۸ کاراکتر باشد").max(100),
+  password: z.string().regex(/^\d{5,7}$/, "رمز عبور باید ۵ تا ۷ رقم باشد"),
   username: z.string().min(3, "یوزرنیم باید حداقل ۳ کاراکتر باشد").max(30).regex(/^[a-zA-Z0-9_]+$/, "یوزرنیم فقط میتواند حروف انگلیسی، عدد و زیرخط باشد"),
   firstName: z.string().min(2, "نام کوتاه است").max(50),
   lastName: z.string().min(2, "نام خانوادگی کوتاه است").max(50),

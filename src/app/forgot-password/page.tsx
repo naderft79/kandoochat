@@ -65,7 +65,7 @@ export default function ForgotPasswordPage() {
   }
 
   async function reset() {
-    if (password.length < 8) return setError("رمز عبور باید حداقل ۸ کاراکتر باشد");
+    if (!/^\d{5,7}$/.test(password)) return setError("رمز عبور باید ۵ تا ۷ رقم باشد");
     if (await post("/api/auth/reset-password", { phone, proof, password })) {
       setStep("done");
       setTimeout(() => router.push("/login"), 1800);
@@ -130,7 +130,7 @@ export default function ForgotPasswordPage() {
         {step === "password" && (
           <div className="space-y-4">
             <p className="text-sm text-ig-gray text-center">رمز عبور جدید را وارد کنید.</p>
-            <PasswordInput label="رمز عبور جدید" autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} hint="حداقل ۸ کاراکتر" data-autofocus />
+            <PasswordInput label="رمز عبور جدید" autoComplete="new-password" numeric maxLength={7} value={password} onChange={(e) => setPassword(e.target.value)} hint="۵ تا ۷ رقم" data-autofocus />
             <Button fullWidth loading={loading} onClick={reset}>
               ذخیره رمز جدید
             </Button>

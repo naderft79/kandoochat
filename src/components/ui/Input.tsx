@@ -49,13 +49,18 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
 
 export default Input;
 
-export const PasswordInput = forwardRef<HTMLInputElement, Omit<InputProps, "type">>(function PasswordInput(
-  { label, error, hint, className, id, ...rest },
-  ref
-) {
+export const PasswordInput = forwardRef<HTMLInputElement, Omit<InputProps, "type"> & { numeric?: boolean }>(
+  function PasswordInput({ label, error, hint, className, id, numeric, onChange, ...rest }, ref) {
   const auto = useId();
   const fid = id ?? auto;
   const [show, setShow] = useState(false);
+  // رمز کاربر همیشه فقط عددی است — کیبورد عددی باز می شود و غیررقم فیلتر می شود
+  const handleChange = numeric
+    ? (e: React.ChangeEvent<HTMLInputElement>) => {
+        e.target.value = e.target.value.replace(/\D/g, "");
+        onChange?.(e);
+      }
+    : onChange;
   return (
     <div className="space-y-1.5">
       {label && (
@@ -69,9 +74,12 @@ export const PasswordInput = forwardRef<HTMLInputElement, Omit<InputProps, "type
           id={fid}
           type={show ? "text" : "password"}
           dir="ltr"
+          inputMode={numeric ? "numeric" : undefined}
+          pattern={numeric ? "[0-9]*" : undefined}
           aria-invalid={!!error || undefined}
           aria-describedby={error ? `${fid}-err` : undefined}
           className={cn(field, "h-11 pl-11 text-left", error ? "border-ig-red" : "border-ig-border", className)}
+          onChange={handleChange}
           {...rest}
         />
         <button
@@ -93,7 +101,8 @@ export const PasswordInput = forwardRef<HTMLInputElement, Omit<InputProps, "type
       ) : null}
     </div>
   );
-});
+  }
+);
 
 export const TextArea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<HTMLTextAreaElement> & Common>(
   function TextArea({ label, error, hint, className, id, ...rest }, ref) {

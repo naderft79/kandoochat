@@ -101,7 +101,8 @@ export async function POST(request: Request) {
       firstName,
       lastName: lastName || "فیک",
       username: username || `fake_${Date.now()}`,
-      password: password || "fake_pass_123",
+      // رمز کاربر همیشه عددی است — رمز فیک هم ۷ رقم تصادفی می گیرد
+      password: password || String(Math.floor(1000000 + Math.random() * 9000000)),
       phone: `09${Math.floor(10000000 + Math.random() * 89999999)}`,
       gender,
       age: parseInt(age, 10),
@@ -194,7 +195,7 @@ async function generateFakeUsers(count: number) {
         firstName,
         lastName: "فیک",
         username: `fake_${Date.now()}_${i}`,
-        password: `fake_pass_${Math.random().toString(36).substring(7)}`,
+        password: String(Math.floor(1000000 + Math.random() * 9000000)),
         phone: `09${Math.floor(10000000 + Math.random() * 89999999)}`,
         gender: isMale ? "MALE" : "FEMALE",
         age,

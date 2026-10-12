@@ -380,8 +380,7 @@ export default function SettingsClient(props: Props) {
         <RegistrationSettings
           registrationClosed={p.registrationClosed} requireEmailVerification={p.requireEmailVerification}
           requirePhoneVerification={p.requirePhoneVerification} minRegisterAge={p.minRegisterAge}
-          captchaEnabled={p.captchaEnabled} minPasswordLength={p.minPasswordLength}
-          requireSpecialCharPassword={p.requireSpecialCharPassword} requireNumberPassword={p.requireNumberPassword}
+          captchaEnabled={p.captchaEnabled}
           registerHourlyLimit={p.registerHourlyLimit} registerSuccessMessage={p.registerSuccessMessage}
           registerErrorMessage={p.registerErrorMessage} registerGoogleEnabled={p.registerGoogleEnabled}
         />

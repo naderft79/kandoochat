@@ -19,7 +19,7 @@ async function otpApi(request: import("@playwright/test").APIRequestContext, pho
 test("API: بدون proof ثبت نام رد می شود و OTP اشتباه خطا می دهد", async ({ request }) => {
   const phone = phoneFor(1);
   const base = {
-    phone, password: "Test-pass-123", gender: "MALE", username: `e2e_reg_${Date.now() % 100000}`, firstName: "تست", lastName: "ثبت",
+    phone, password: "1357913", gender: "MALE", username: `e2e_reg_${Date.now() % 100000}`, firstName: "تست", lastName: "ثبت",
     province: "تهران", city: "تهران", age: 30, height: 175, weight: 70, income: 1000000,
   };
   // بدون تیک قوانین
@@ -53,7 +53,7 @@ test("UI: ثبت نام کامل با OTP، خطای inline و ورود", async 
   // ارقام فارسی نرمال می شوند
   await page.getByLabel("شماره موبایل").fill("۰۹۱۹" + phone.slice(4));
   await expect(page.getByLabel("شماره موبایل")).toHaveValue(phone);
-  await page.getByLabel("رمز عبور").fill("Test-pass-123");
+  await page.getByLabel("رمز عبور").fill("1357913");
   await page.getByRole("radio", { name: "مرد" }).click();
   await page.getByRole("checkbox").check();
 
@@ -104,7 +104,7 @@ test("ورود: نمایش رمز، لینک فراموشی و خطای نادر
   await page.goto("/login");
   await expect(page.getByRole("link", { name: "رمز عبور را فراموش کرده ام" })).toBeVisible();
   await page.getByLabel("شماره موبایل").fill("۰۹۱۱۱۱۱۱۱۱۱");
-  await page.getByLabel("رمز عبور", { exact: true }).fill("wrong-pass-1");
+  await page.getByLabel("رمز عبور", { exact: true }).fill("99999");
   await page.getByRole("button", { name: "نمایش رمز" }).click();
   await expect(page.getByLabel("رمز عبور", { exact: true })).toHaveAttribute("type", "text");
   await page.getByRole("button", { name: "ورود" }).click();
@@ -117,7 +117,7 @@ test("بازیابی رمز: کد → رمز جدید → ورود با رمز �
     `insert into "User" (id, phone, username, password, gender, "firstName", "lastName", province, city, age, height, weight, income, "phoneVerified", "isActive", role, "updatedAt")
      values (('e2e' || replace(gen_random_uuid()::text, '-', ''))::varchar(25), $1, $2, $3, 'FEMALE', 'بازیابی', 'تست', 'تهران', 'تهران', 28, 165, 55, 0, true, true, 'USER', now())
      returning id`,
-    [phone, `e2e_rst_${Date.now() % 100000}`, await bcrypt.hash("Old-pass-1234", 10)]
+    [phone, `e2e_rst_${Date.now() % 100000}`, await bcrypt.hash("135791", 10)]
   );
   const userId = created[0].id;
   try {
@@ -128,13 +128,13 @@ test("بازیابی رمز: کد → رمز جدید → ورود با رمز �
     const code = (await (await sent).json()).devCode as string;
     await page.getByLabel("کد تایید").fill(code);
     await page.getByRole("button", { name: "تایید کد" }).click();
-    await page.getByLabel("رمز عبور جدید", { exact: true }).fill("New-pass-5678");
+    await page.getByLabel("رمز عبور جدید", { exact: true }).fill("246810");
     await page.getByRole("button", { name: "ذخیره رمز جدید" }).click();
     await expect(page.getByText("رمز عبور تغییر کرد")).toBeVisible();
 
-    const login = await request.post("/api/auth/login", { data: { phone, password: "New-pass-5678" } });
+    const login = await request.post("/api/auth/login", { data: { phone, password: "246810" } });
     expect(login.status()).toBe(200);
-    const oldLogin = await request.post("/api/auth/login", { data: { phone, password: "Old-pass-1234" } });
+    const oldLogin = await request.post("/api/auth/login", { data: { phone, password: "135791" } });
     expect(oldLogin.status()).toBe(401);
 
     // شماره ناشناس: پاسخ یکسان و بدون افشای وجود حساب
