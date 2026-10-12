@@ -233,7 +233,7 @@ export default function ReferralPage() {
           <Trophy className="w-4 h-4 text-amber-500 shrink-0" />
           <p className="text-xs text-ig-gray leading-5">
             بعد از <span className="font-bold text-foreground">{toPersianDigits(data.milestone.target)} دعوت فعال</span>{" "}
-            <span className="font-bold text-amber-600">{toPersianDigits(data.milestone.reward)} سکه جایزه ویژه</span> هم می گیری
+            <span className="font-bold text-reward">{toPersianDigits(data.milestone.reward)} سکه جایزه ویژه</span> هم می گیری
           </p>
         </div>
       </div>

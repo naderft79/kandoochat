@@ -225,7 +225,7 @@ export default function NotificationsList({ items }: { items: Item[] }) {
                             {n.title}
                           </p>
                           <p className="text-xs text-ig-gray mt-0.5 leading-5">{n.body}</p>
-                          <p className="text-[11px] text-ig-gray/80 mt-1">{formatLastSeen(new Date(n.createdAt))}</p>
+                          <p className="text-[11px] text-ig-gray mt-1">{formatLastSeen(new Date(n.createdAt))}</p>
                         </div>
 
                         {/* دکمه اکشن — سمت چپ، روبروی متن */}

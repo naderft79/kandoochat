@@ -8,7 +8,7 @@
   --surface: #ffffff;
   --ig-border: #dbdbdb;
   --ig-gray-bg: #fafafa;
-  --ig-gray-text: #737373;
+  --ig-gray-text: #6b6b6b;
   --ig-divider: #efefef;
   --ig-btn2: #efefef;
   --ig-btn2-hover: #dbdbdb;
@@ -387,8 +387,17 @@ html:not(.dark) .lux-admin-bg .text-ig-gray,
 html:not(.dark) .lux-admin-bg .text-\[\#888\] {
   color: #6b6b6b !important;
 }
-html:not(.dark) .lux-admin-bg .text-\[\#d4af37\] {
-  color: #8a6d12 !important;
+html:not(.dark) .lux-admin-bg [class*="text-[#d4af37]"] {
+  color: #7a5f0f !important;
+}
+html:not(.dark) .lux-admin-bg [class*="text-[#e8e8e8]"] {
+  color: #1f1f1f !important;
+}
+html:not(.dark) .lux-admin-bg [class*="text-[#888]"] {
+  color: #6b6b6b !important;
+}
+html:not(.dark) .lux-admin-bg [class*="text-[#d32f3f]"] {
+  color: #b91c1c !important;
 }
 html:not(.dark) .lux-admin-bg .bg-ig-gray-bg,
 html:not(.dark) .lux-admin-bg .bg-neutral-100,
@@ -402,6 +411,72 @@ html:not(.dark) .lux-admin-bg select {
   background: #ffffff !important;
   color: #1f1f1f !important;
   border-color: rgba(176, 140, 30, 0.3) !important;
+}
+
+/* پس زمینه های ثابت تیره پنل ادمین (لوکس) در حالت روشن سفید می شوند؛ حالت تاریک بدون تغییر است */
+html:not(.dark) .lux-admin-bg [class*="bg-[#0d0d0d]"],
+html:not(.dark) .lux-admin-bg [class*="bg-[#0d0b14]"],
+html:not(.dark) .lux-admin-bg [class*="bg-[#12101c]"],
+html:not(.dark) .lux-admin-bg [class*="bg-[#141414]"],
+html:not(.dark) .lux-admin-bg [class*="bg-[#2a2a2a]"],
+html:not(.dark) .lux-admin-bg [class*="bg-[#181426]"] {
+  background-color: #ffffff !important;
+  border-color: rgba(176, 140, 30, 0.25) !important;
+}
+/* ترک سوئیچ خاموش در حالت روشن خاکستری روشن تر دیده شود */
+html:not(.dark) .lux-admin-bg [class*="bg-[#333]"] {
+  background-color: #d6d3cc !important;
+}
+/* متن های روشن رنگی پنل ادمین در حالت روشن به نسخه تیره خوانا */
+html:not(.dark) .lux-admin-bg [class*="text-[#f87171]"],
+html:not(.dark) .lux-admin-bg [class*="text-[#ef4444]"] {
+  color: #b91c1c !important;
+}
+html:not(.dark) .lux-admin-bg [class*="text-[#34d399]"] {
+  color: #047857 !important;
+}
+html:not(.dark) .lux-admin-bg [class*="text-[#4ade80]"] {
+  color: #15803d !important;
+}
+html:not(.dark) .lux-admin-bg [class*="text-[#f59e0b]"] {
+  color: #b45309 !important;
+}
+html:not(.dark) .lux-admin-bg [class*="text-[#60a5fa]"] {
+  color: #1d4ed8 !important;
+}
+html:not(.dark) .lux-admin-bg [class*="text-[#a78bfa]"] {
+  color: #6d28d9 !important;
+}
+html:not(.dark) .lux-admin-bg [class*="text-[#bbb]"] {
+  color: #4a4a4a !important;
+}
+/* رنگ متن پیش فرض کل پنل ادمین در حالت روشن: فرزندهای بدون رنگ صریح هم خوانا شوند */
+html:not(.dark) .lux-admin-bg {
+  color: #1f1f1f !important;
+}
+/* دکمه طلایی خطی در حالت روشن: طلایی تیره روی سفید */
+html:not(.dark) .lux-admin-bg .lux-btn-outline {
+  color: #7a5f0f !important;
+  border-color: rgba(122, 95, 15, 0.35) !important;
+}
+/* رنگ های قرمز/صورتی/آبی و قرمز برند در حالت روشن (red/pink/blue-400 در پالت پروژه نیستند) */
+html:not(.dark) .lux-admin-bg [class*="text-red-400"],
+html:not(.dark) .lux-admin-bg [class*="text-ig-red"] {
+  color: #b91c1c !important;
+}
+html:not(.dark) .lux-admin-bg [class*="text-pink-400"] {
+  color: #be185d !important;
+}
+html:not(.dark) .lux-admin-bg [class*="text-blue-400"] {
+  color: #1d4ed8 !important;
+}
+
+/* متن پاداش و جایزه: در حالت روشن نارنجی تیره خوانا، در حالت تاریک روشن */
+.text-reward {
+  color: #b45309;
+}
+.dark .text-reward {
+  color: #fbbf24;
 }
 
 /* قفل حالت عمودی: روی گوشی افقی (لمسی و کوتاه) پیام چرخش نمایش داده می شود */

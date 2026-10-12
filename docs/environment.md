@@ -19,7 +19,8 @@
 
 | نام | توضیح |
 |---|---|
-| `KAVENEGAR_API_KEY` | کلید API پنل کاوه نگار |
+| `SABANOVIN_API_KEY` | کلید API وب سرویس صبانوین (از بخش وب سرویس پنل صبانوین) |
+| `SABANOVIN_GATEWAY` | شماره خط ارسال (درگاه) صبانوین؛ کد تایید با متد OTP همین خط ارسال می شود |
 
 ## AI همراه
 
@@ -33,15 +34,16 @@
 | نام | توضیح |
 |---|---|
 | `FACE_DETECTOR_URL` | آدرس سرویس محلی تشخیص چهره (مثلاً `http://127.0.0.1:8100`) — endpoint `POST /detect` با multipart `image` و پاسخ `{ faces, score }` |
+| `FACE_SERVICE_TOKEN` | توکن مشترک Bearer بین کندو و سرویس چهره (حداقل ۳۲ کاراکتر)؛ بدون آن سرویس اجرا نمی شود |
 
 سرویس آماده در `scripts/face-detector/` قرار دارد (FastAPI + MediaPipe BlazeFace):
 
 ```bash
 pip install -r scripts/face-detector/requirements.txt
-python -m uvicorn main:app --host 127.0.0.1 --port 8100  # از داخل پوشه scripts/face-detector
+FACE_SERVICE_TOKEN=<همان مقدار .env> python -m uvicorn main:app --host 127.0.0.1 --port 8100  # از داخل پوشه scripts/face-detector
 ```
 
-اگر این متغیر تنظیم نشود یا سرویس در دسترس نباشد، درخواست ها به بررسی دستی ادمین می افتند (AUTO_RESULT = MANUAL).
+اگر این متغیر تنظیم نشود یا سرویس در دسترس نباشد، درخواست ها به بررسی دستی ادمین می افتند (AUTO_RESULT = NEEDS_MANUAL_REVIEW).
 
 ## Push Notification
 
@@ -67,4 +69,4 @@ python -m uvicorn main:app --host 127.0.0.1 --port 8100  # از داخل پوش�
 - برای توسعه محلی می توانید از `DATABASE_URL="postgresql://postgres:postgres@localhost:5432/kandoo?schema=public"` استفاده کنید.
 - از یک generator برای `JWT_SECRET` و `KANDOOPAY_SHARED_SECRET` استفاده کنید (مثلاً `openssl rand -hex 64`).
 - برای تولید کلیدهای VAPID از `npx web-push generate-vapid-keys` استفاده کنید و کلیدها را در `.env` قرار دهید.
-- در محیط توسعه بدون `KAVENEGAR_API_KEY`، کد OTP فقط در لاگ سرور چاپ می‌شود.
+- در محیط توسعه بدون `SABANOVIN_API_KEY`، کد OTP فقط در لاگ سرور چاپ می شود و پیامکی ارسال نمی شود.
