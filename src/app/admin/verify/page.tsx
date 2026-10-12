@@ -168,9 +168,9 @@ export default async function AdminVerifyPage({
                         چهره نامشخص ({toPersianDigits(r.faceCount ?? 0)} چهره)
                       </span>
                     )}
-                    {r.autoResult === "MANUAL" && (
+                    {(r.autoResult === "MANUAL" || r.autoResult === "NEEDS_MANUAL_REVIEW") && (
                       <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[rgba(212,175,55,0.1)] text-[#d4af37]">
-                        بررسی دستی
+                        {r.autoResult === "NEEDS_MANUAL_REVIEW" ? "سرویس چهره در دسترس نبود — بررسی دستی" : "بررسی دستی"}
                       </span>
                     )}
                   </div>

@@ -158,12 +158,14 @@ model VerificationRequest {
   faceCount      Int?     // بیشترین تعداد چهره در یک سلفی
   autoResult     String?  // FACE_OK | FACE_NOT_FOUND | MANUAL
   adminNote      String?
+  reviewedById   String?  // شناسه ادمین بررسی کننده (بدون رابطه FK تا حذف ادمین، تاریخچه را پاک نکند)
   createdAt      DateTime @default(now())
   reviewedAt     DateTime?
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, kind])
   @@index([status])
+  @@index([status, kind, createdAt])
 }
 
 // درخواست برداشت سکه (تبدیل به تومان)

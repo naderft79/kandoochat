@@ -548,7 +548,6 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
                 <UserActions
                   userId={u.id}
                   role={u.role}
-                  isVerified={u.isVerified}
                   isActive={u.isActive}
                   phoneVerified={u.phoneVerified}
                   isSpecial={u.isSpecial}

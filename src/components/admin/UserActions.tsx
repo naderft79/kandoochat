@@ -3,13 +3,12 @@
 // اکشن های مدیریت کاربر: تایید موبایل، تیک آبی، مسدودسازی و ورود به پنل
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { BadgeCheck, Ban, CircleCheck, Phone, ShieldCheck, LogIn, Loader2, Star, KeyRound, Smartphone, Bot } from "lucide-react";
+import { Ban, CircleCheck, Phone, LogIn, Loader2, Star, KeyRound, Smartphone, Bot } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 
 export default function UserActions({
   userId,
   role = "USER",
-  isVerified,
   isActive,
   phoneVerified,
   isSpecial,
@@ -19,7 +18,6 @@ export default function UserActions({
 }: {
   userId: string;
   role?: string;
-  isVerified: boolean;
   isActive: boolean;
   phoneVerified: boolean;
   isSpecial: boolean;
@@ -37,7 +35,6 @@ export default function UserActions({
   const [newPhone, setNewPhone] = useState("");
   const [changingPhone, setChangingPhone] = useState(false);
   const [localPhoneVerified, setLocalPhoneVerified] = useState(phoneVerified);
-  const [localIsVerified, setLocalIsVerified] = useState(isVerified);
   const [localIsActive, setLocalIsActive] = useState(isActive);
   const [localIsSpecial, setLocalIsSpecial] = useState(isSpecial);
   const [localIsFake, setLocalIsFake] = useState(isFake ?? false);
@@ -125,8 +122,6 @@ export default function UserActions({
         switch (action) {
           case "verifyPhone": setLocalPhoneVerified(true); break;
           case "unverifyPhone": setLocalPhoneVerified(false); break;
-          case "verifyBadge": setLocalIsVerified(true); break;
-          case "unverifyBadge": setLocalIsVerified(false); break;
           case "activate": setLocalIsActive(true); break;
           case "deactivate": setLocalIsActive(false); break;
           case "makeSpecial": setLocalIsSpecial(true); break;
@@ -188,33 +183,12 @@ export default function UserActions({
         </button>
       )}
 
-      {/* تیک آبی */}
-      {localIsVerified ? (
-        <button
-          onClick={() => act("unverifyBadge")}
-          disabled={loading}
-          className={`${buttonBase} ${spanClass(1)}`}
-        >
-          <BadgeCheck className="w-3.5 h-3.5 shrink-0" />
-          <span className="truncate">لغو تیک</span>
-        </button>
-      ) : (
-        <button
-          onClick={() => act("verifyBadge")}
-          disabled={loading}
-          className={`${inactiveBtn} ${spanClass(1)}`}
-        >
-          <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
-          <span className="truncate">تیک آبی</span>
-        </button>
-      )}
-
       {/* مسدودسازی */}
       {localIsActive ? (
         <button
           onClick={() => act("deactivate")}
           disabled={loading}
-          className={`${buttonBase} ${spanClass(2)}`}
+          className={`${buttonBase} ${spanClass(1)}`}
         >
           <Ban className="w-3.5 h-3.5 shrink-0" />
           <span className="truncate">مسدود</span>
@@ -223,7 +197,7 @@ export default function UserActions({
         <button
           onClick={() => act("activate")}
           disabled={loading}
-          className={`${inactiveBtn} ${spanClass(2)}`}
+          className={`${inactiveBtn} ${spanClass(1)}`}
         >
           <CircleCheck className="w-3.5 h-3.5 shrink-0" />
           <span className="truncate">رفع مسدود</span>
@@ -235,7 +209,7 @@ export default function UserActions({
         <button
           onClick={() => act("unmakeSpecial")}
           disabled={loading}
-          className={`${buttonBase} ${spanClass(3)}`}
+          className={`${buttonBase} ${spanClass(2)}`}
         >
           <Star className="w-3.5 h-3.5 shrink-0 fill-yellow-400 text-yellow-400" />
           <span className="truncate">لغو ویژه</span>
@@ -244,7 +218,7 @@ export default function UserActions({
         <button
           onClick={() => act("makeSpecial")}
           disabled={loading}
-          className={`${inactiveBtn} ${spanClass(3)}`}
+          className={`${inactiveBtn} ${spanClass(2)}`}
         >
           <Star className="w-3.5 h-3.5 shrink-0" />
           <span className="truncate">ویژه</span>
@@ -255,7 +229,7 @@ export default function UserActions({
       <button
         onClick={impersonate}
         disabled={impersonating || loading}
-        className={`${buttonBase} ${spanClass(4)}`}
+        className={`${buttonBase} ${spanClass(3)}`}
       >
         {impersonating ? <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" /> : <LogIn className="w-3.5 h-3.5 shrink-0" />}
         <span className="truncate">ورود به پنل</span>
@@ -265,7 +239,7 @@ export default function UserActions({
       <button
         onClick={resetPassword}
         disabled={resettingPassword || loading}
-        className={`${buttonBase} ${spanClass(5)}`}
+        className={`${buttonBase} ${spanClass(4)}`}
       >
         {resettingPassword ? <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" /> : <KeyRound className="w-3.5 h-3.5 shrink-0" />}
         <span className="truncate">ریست رمز</span>
@@ -275,7 +249,7 @@ export default function UserActions({
       <button
         onClick={() => setShowPhoneModal(true)}
         disabled={loading}
-        className={`${buttonBase} ${spanClass(6)}`}
+        className={`${buttonBase} ${spanClass(5)}`}
       >
         <Smartphone className="w-3.5 h-3.5 shrink-0" />
         <span className="truncate">تغییر شماره</span>
@@ -305,7 +279,7 @@ export default function UserActions({
           }
         }}
         disabled={loading}
-        className={`${localIsFake ? buttonBase : inactiveBtn} ${spanClass(7)}`}
+        className={`${localIsFake ? buttonBase : inactiveBtn} ${spanClass(6)}`}
       >
         <Bot className="w-3.5 h-3.5 shrink-0" />
         <span className="truncate">{localIsFake ? "لغو فیک" : "فیک"}</span>
@@ -338,7 +312,7 @@ export default function UserActions({
               setLoading(false);
             }
           }}
-          className={`${inactiveBtn} ${spanClass(8)} appearance-none cursor-pointer`}
+          className={`${inactiveBtn} ${spanClass(7)} appearance-none cursor-pointer`}
         >
           <option value="USER">کاربر</option>
           <option value="ADMIN">ادمین</option>

@@ -102,7 +102,7 @@ export default function MatchesFilters({
   const pill = (active: boolean) =>
     cn(
       "w-full min-h-9 py-1 px-2.5 rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 active:scale-[0.98]",
-      active ? "bg-foreground text-white" : "bg-ig-btn2 text-foreground hover:bg-ig-btn2-hover"
+      active ? "bg-foreground text-background" : "bg-ig-btn2 text-foreground hover:bg-ig-btn2-hover"
     );
 
   const draftCities = draft.province === "ALL" ? [] : (PROVINCES[draft.province] ?? []);

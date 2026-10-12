@@ -73,3 +73,6 @@ android/app/src/main/assets/public/
 /_face.log
 /eslint-errors.txt
 /prisma/migrations_sqlite_bak/
+
+# کش پایتون سرویس چهره
+__pycache__/

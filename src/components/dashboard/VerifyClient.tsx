@@ -29,8 +29,10 @@ type Props = {
   initialTab: Tab;
   isVerified: boolean;
   blueTickStatus: string | null;
+  blueTickReason: string | null;
   isIdentityVerified: boolean;
   kycStatus: string | null;
+  kycReason: string | null;
 };
 
 const inputClass =
@@ -143,8 +145,10 @@ export default function VerifyClient({
   initialTab,
   isVerified,
   blueTickStatus,
+  blueTickReason,
   isIdentityVerified,
   kycStatus,
+  kycReason,
 }: Props) {
   const [tab, setTab] = useState<Tab>(initialTab);
 
@@ -335,9 +339,10 @@ export default function VerifyClient({
               </p>
 
               {blueTickStatus === "REJECTED" && (
-                <p className="text-xs bg-ig-gray-bg text-ig-red rounded-lg px-4 py-3">
-                  درخواست قبلی شما رد شد. لطفا مدارک دقیق تر ارسال کنید.
-                </p>
+                <div className="text-xs bg-ig-gray-bg text-ig-red rounded-lg px-4 py-3 space-y-1">
+                  <p>درخواست قبلی شما رد شد. لطفا مدارک دقیق تر ارسال کنید.</p>
+                  {blueTickReason && <p className="text-foreground">دلیل: {blueTickReason}</p>}
+                </div>
               )}
 
               {/* ۵ اسلات سلفی */}
@@ -444,9 +449,10 @@ export default function VerifyClient({
               </p>
 
               {kycStatus === "REJECTED" && (
-                <p className="text-xs bg-ig-gray-bg text-ig-red rounded-lg px-4 py-3">
-                  درخواست قبلی شما رد شد. لطفا مدارک دقیق تر ارسال کنید.
-                </p>
+                <div className="text-xs bg-ig-gray-bg text-ig-red rounded-lg px-4 py-3 space-y-1">
+                  <p>درخواست قبلی شما رد شد. لطفا مدارک دقیق تر ارسال کنید.</p>
+                  {kycReason && <p className="text-foreground">دلیل: {kycReason}</p>}
+                </div>
               )}
 
               {/* مشخصات متنی */}

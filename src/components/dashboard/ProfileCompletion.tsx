@@ -35,7 +35,7 @@ export default function ProfileCompletion() {
         </div>
         <div className="h-2 bg-neutral-200 rounded-full overflow-hidden">
           <div
-            className="h-full bg-neutral-800 rounded-full transition-all duration-500"
+            className="h-full bg-foreground rounded-full transition-all duration-500"
             style={{ width: `${completion}%` }}
           />
         </div>

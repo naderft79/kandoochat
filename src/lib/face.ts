@@ -1,16 +1,19 @@
-// تشخیص چهره با سرویس محلی متن‌باز — اگر سرویس پیکربندی نشده باشد، null برمی‌گرداند
-// سرویس پیشنهادی: یک سرویس Python با insightface / scrfd روی همان VPS
-// endpoint: POST {FACE_DETECTOR_URL}/detect — body: image binary یا multipart "image"
+// تشخیص چهره با سرویس خودمیزبان (FastAPI + MediaPipe) — endpoint: POST {FACE_DETECTOR_URL}/detect
 // پاسخ مورد انتظار: { faces: number, score: number }
+// قرارداد: null یعنی «سرویس در دسترس نیست» (fail-closed) — فراخواننده باید عکس را بدون بررسی منتشر نکند
+// احراز: هدر Authorization با FACE_SERVICE_TOKEN (در سرویس با مقایسه ثابت-زمان بررسی می شود)
 
 export type FaceResult = {
   faces: number;
   score: number;
 };
 
+const TIMEOUT_MS = 15000;
+
 export async function detectFaces(imageBuffer: Buffer, contentType: string): Promise<FaceResult | null> {
   const url = process.env.FACE_DETECTOR_URL;
-  if (!url) return null;
+  const token = process.env.FACE_SERVICE_TOKEN;
+  if (!url || !token) return null;
 
   try {
     const form = new FormData();
@@ -18,8 +21,9 @@ export async function detectFaces(imageBuffer: Buffer, contentType: string): Pro
 
     const res = await fetch(`${url.replace(/\/$/, "")}/detect`, {
       method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
       body: form,
-      signal: AbortSignal.timeout(15000),
+      signal: AbortSignal.timeout(TIMEOUT_MS),
     });
 
     if (!res.ok) {
@@ -33,7 +37,7 @@ export async function detectFaces(imageBuffer: Buffer, contentType: string): Pro
       score: typeof data.score === "number" ? data.score : 0,
     };
   } catch (err) {
-    console.error("[face] detector error:", err);
+    console.error("[face] detector unavailable:", err);
     return null;
   }
 }

@@ -17,8 +17,8 @@ export async function sessionToken(userId: string, role = "USER") {
     .sign(new TextEncoder().encode(secret));
 }
 
-export async function loginAs(context: BrowserContext, userId: string, baseURL = "http://localhost:3000") {
-  const token = await sessionToken(userId);
+export async function loginAs(context: BrowserContext, userId: string, baseURL = "http://localhost:3000", role = "USER") {
+  const token = await sessionToken(userId, role);
   const url = new URL(baseURL);
   await context.addCookies([
     { name: "kandoo_session", value: token, domain: url.hostname, path: "/", httpOnly: true, sameSite: "Lax" },

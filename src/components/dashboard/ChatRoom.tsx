@@ -1045,7 +1045,7 @@ export default function ChatRoom({
       {showJump && (
         <button
           onClick={() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); setShowJump(false); }}
-          className="absolute bottom-24 left-1/2 -translate-x-1/2 z-40 px-4 py-2 rounded-full bg-foreground text-white text-xs font-bold ig-shadow-lg ig-fade-in active:scale-95 transition-transform"
+          className="absolute bottom-24 left-1/2 -translate-x-1/2 z-40 px-4 py-2 rounded-full bg-foreground text-background text-xs font-bold ig-shadow-lg ig-fade-in active:scale-95 transition-transform"
         >
           پیام جدید ↓
         </button>

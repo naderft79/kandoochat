@@ -124,7 +124,7 @@ export default function UserActionsSheet({
                   onClick={() => setReason(r.id)}
                   className={cn(
                     "w-full h-11 px-3 rounded-lg text-sm text-start flex items-center justify-between transition-colors",
-                    reason === r.id ? "bg-foreground text-white font-bold" : "bg-ig-gray-bg text-foreground"
+                    reason === r.id ? "bg-foreground text-background font-bold" : "bg-ig-gray-bg text-foreground"
                   )}
                 >
                   {r.label}

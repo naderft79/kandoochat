@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin, AuthError } from "@/lib/auth";
 import { logAction } from "@/lib/audit";
+import { buildRejectNote } from "@/lib/verification-reasons";
 
 // لیست درخواست ها — فیلتر وضعیت و نوع
 export async function GET(request: Request) {
@@ -62,10 +63,16 @@ export async function POST(request: Request) {
   try {
     const admin = await requireAdmin();
 
-    const { requestId, action } = await request.json();
+    const { requestId, action, reasonId, note } = await request.json();
 
     if (!requestId || !action) {
       return NextResponse.json({ error: "پارامترهای ناقص" }, { status: 400 });
+    }
+
+    // رد بدون دلیل ممنوع است؛ دلیل از قالب های مشترک ساخته می شود
+    const rejectNote = action === "REJECT" ? buildRejectNote(String(reasonId ?? ""), typeof note === "string" ? note : "") : null;
+    if (action === "REJECT" && !rejectNote) {
+      return NextResponse.json({ error: "برای رد درخواست دلیل معتبر انتخاب کنید" }, { status: 400 });
     }
 
     const req = await prisma.verificationRequest.findUnique({
@@ -82,7 +89,7 @@ export async function POST(request: Request) {
       await prisma.$transaction([
         prisma.verificationRequest.update({
           where: { id: req.id },
-          data: { status: "APPROVED", reviewedAt: new Date() },
+          data: { status: "APPROVED", reviewedAt: new Date(), reviewedById: admin.id },
         }),
         prisma.user.update({
           where: { id: req.userId },
@@ -115,7 +122,7 @@ export async function POST(request: Request) {
       await prisma.$transaction([
         prisma.verificationRequest.update({
           where: { id: req.id },
-          data: { status: "REJECTED", reviewedAt: new Date() },
+          data: { status: "REJECTED", reviewedAt: new Date(), adminNote: rejectNote, reviewedById: admin.id },
         }),
         prisma.notification.create({
           data: {
@@ -124,7 +131,7 @@ export async function POST(request: Request) {
             title: isBlueTick
               ? "درخواست تیک آبی رد شد"
               : "درخواست احراز هویت رد شد",
-            body: "متاسفانه درخواست شما تایید نشد. لطفا مدارک باکیفیت تر و دقیق تر ارسال کنید.",
+            body: `دلیل: ${rejectNote}. می توانید با رفع این ایراد دوباره درخواست دهید.`,
             data: JSON.stringify({ status: "REJECTED" }),
           },
         }),

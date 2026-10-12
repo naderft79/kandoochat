@@ -1,14 +1,23 @@
 # سرویس تشخیص چهره کندو — FastAPI + MediaPipe Tasks (BlazeFace)
-# اجرا: uvicorn main:app --host 127.0.0.1 --port 8100
-# سپس در .env کندو: FACE_DETECTOR_URL=http://127.0.0.1:8100
+# اجرا (توسعه): FACE_SERVICE_TOKEN=... uvicorn main:app --host 127.0.0.1 --port 8100
+# سپس در .env کندو: FACE_DETECTOR_URL=http://127.0.0.1:8100 و همان FACE_SERVICE_TOKEN
+# امنیت: بدون FACE_SERVICE_TOKEN سرویس بالا نمی آید؛ هر درخواست باید Bearer صحیح داشته باشد
+import hmac
+import os
 from pathlib import Path
-from fastapi import FastAPI, File, UploadFile
-import mediapipe as mp
-from mediapipe.tasks.python import vision
-import numpy as np
+
 import cv2
+import mediapipe as mp
+import numpy as np
+from fastapi import Depends, FastAPI, File, HTTPException, Request, UploadFile
+from mediapipe.tasks.python import vision
 
 MODEL_PATH = str(Path(__file__).parent / "blaze_face_short_range.tflite")
+MAX_IMAGE_BYTES = 10 * 1024 * 1024
+SERVICE_TOKEN = os.environ.get("FACE_SERVICE_TOKEN", "")
+
+if len(SERVICE_TOKEN) < 32:
+    raise RuntimeError("FACE_SERVICE_TOKEN must be set (at least 32 chars)")
 
 app = FastAPI()
 detector = vision.FaceDetector.create_from_options(
@@ -19,9 +28,24 @@ detector = vision.FaceDetector.create_from_options(
 )
 
 
-@app.post("/detect")
+async def require_token(request: Request) -> None:
+    header = request.headers.get("authorization", "")
+    expected = f"Bearer {SERVICE_TOKEN}"
+    # مقایسه ثابت-زمان برای جلوگیری از حمله زمان بندی
+    if not hmac.compare_digest(header.encode(), expected.encode()):
+        raise HTTPException(status_code=401, detail="unauthorized")
+
+
+@app.get("/health")
+async def health():
+    return {"ok": True}
+
+
+@app.post("/detect", dependencies=[Depends(require_token)])
 async def detect(image: UploadFile = File(...)):
-    data = await image.read()
+    data = await image.read(MAX_IMAGE_BYTES + 1)
+    if len(data) > MAX_IMAGE_BYTES:
+        raise HTTPException(status_code=413, detail="image too large")
     arr = np.frombuffer(data, np.uint8)
     img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
     if img is None:

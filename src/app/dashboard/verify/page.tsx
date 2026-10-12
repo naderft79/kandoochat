@@ -22,12 +22,12 @@ export default async function VerifyPage({
     prisma.verificationRequest.findFirst({
       where: { userId: user.id, kind: "BLUE_TICK" },
       orderBy: { createdAt: "desc" },
-      select: { status: true },
+      select: { status: true, adminNote: true },
     }),
     prisma.verificationRequest.findFirst({
       where: { userId: user.id, kind: "KYC" },
       orderBy: { createdAt: "desc" },
-      select: { status: true },
+      select: { status: true, adminNote: true },
     }),
   ]);
 
@@ -45,8 +45,10 @@ export default async function VerifyPage({
           initialTab={tab === "kyc" ? "kyc" : "bluetick"}
           isVerified={user.isVerified}
           blueTickStatus={blueTick?.status ?? null}
+          blueTickReason={blueTick?.status === "REJECTED" ? blueTick.adminNote : null}
           isIdentityVerified={user.isIdentityVerified}
           kycStatus={kyc?.status ?? null}
+          kycReason={kyc?.status === "REJECTED" ? kyc.adminNote : null}
         />
       </div>
     </div>

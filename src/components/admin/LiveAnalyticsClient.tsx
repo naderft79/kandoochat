@@ -13,13 +13,13 @@ import {
   ArrowLeftRight,
   Banknote,
   CreditCard,
-  Loader2,
   Activity,
   CircleDot,
 } from "lucide-react";
 import LiveChatClient from "@/components/admin/LiveChatClient";
 import LivePhotosClient from "@/components/admin/LivePhotosClient";
 import LiveStoriesClient from "@/components/admin/LiveStoriesClient";
+import LiveFeedClient from "@/components/admin/LiveFeedClient";
 
 type TabId =
   | "chat"
@@ -48,15 +48,6 @@ const tabs: { id: TabId; label: string; icon: typeof MessageCircle }[] = [
   { id: "newSubscriptions", label: "خرید اشتراک جدید", icon: CreditCard },
 ];
 
-function ComingSoon({ label }: { label: string }) {
-  return (
-    <div className="flex flex-col items-center justify-center py-20 text-center">
-      <Loader2 className="w-8 h-8 text-[rgba(212,175,55,0.3)] mb-3 animate-spin" />
-      <p className="text-sm font-bold text-[#888]">{label}</p>
-      <p className="text-xs text-[#666] mt-1">بزودی راه اندازی می شود</p>
-    </div>
-  );
-}
 
 export default function LiveAnalyticsClient() {
   const [activeTab, setActiveTab] = useState<TabId>("chat");
@@ -96,13 +87,14 @@ export default function LiveAnalyticsClient() {
         {activeTab === "chat" && <LiveChatClient />}
         {activeTab === "liveStories" && <LiveStoriesClient />}
         {activeTab === "livePhotos" && <LivePhotosClient />}
-        {activeTab === "newUsers" && <ComingSoon label="اعضای جدید" />}
-        {activeTab === "liveVideos" && <ComingSoon label="فیلم زنده" />}
-        {activeTab === "liveVoice" && <ComingSoon label="ویس زنده" />}
-        {activeTab === "coinPurchases" && <ComingSoon label="خرید سکه" />}
-        {activeTab === "coinTransfers" && <ComingSoon label="انتقال سکه" />}
-        {activeTab === "coinWithdrawals" && <ComingSoon label="برداشت سکه" />}
-        {activeTab === "newSubscriptions" && <ComingSoon label="خرید اشتراک جدید" />}
+        {activeTab === "onlineUsers" && <LiveFeedClient channel="onlineUsers" emptyLabel="در حال حاضر کاربری آنلاین نیست" />}
+        {activeTab === "newUsers" && <LiveFeedClient channel="newUsers" emptyLabel="هنوز عضو جدیدی ثبت نشده" />}
+        {activeTab === "liveVideos" && <LiveFeedClient channel="liveVideos" emptyLabel="پیام ویدیویی ثبت نشده" />}
+        {activeTab === "liveVoice" && <LiveFeedClient channel="liveVoice" emptyLabel="پیام صوتی ثبت نشده" />}
+        {activeTab === "coinPurchases" && <LiveFeedClient channel="coinPurchases" emptyLabel="خریدی ثبت نشده" />}
+        {activeTab === "coinTransfers" && <LiveFeedClient channel="coinTransfers" emptyLabel="انتقال سکه ای ثبت نشده" />}
+        {activeTab === "coinWithdrawals" && <LiveFeedClient channel="coinWithdrawals" emptyLabel="درخواست برداشتی ثبت نشده" />}
+        {activeTab === "newSubscriptions" && <LiveFeedClient channel="newSubscriptions" emptyLabel="اشتراک جدیدی ثبت نشده" />}
       </div>
     </div>
   );

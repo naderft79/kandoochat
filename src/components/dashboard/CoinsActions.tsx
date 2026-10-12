@@ -835,7 +835,7 @@ export default function CoinsActions({
                   }}
                   className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all active:scale-95 ${
                     historyFilter === key
-                      ? "bg-foreground text-white"
+                      ? "bg-foreground text-background"
                       : "bg-ig-btn2 text-foreground hover:bg-ig-btn2-hover"
                   }`}
                 >

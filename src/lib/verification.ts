@@ -92,7 +92,8 @@ export async function checkSelfieFaces(
     error: null,
     faceScore: sawService ? minScore : null,
     faceCount: sawService ? maxFaces : null,
-    autoResult: sawService ? "FACE_OK" : "MANUAL",
+    // سرویس چهره خاموش باشد، درخواست بدون بررسی خودکار به صف بررسی دستی می رود (ادمین هشدار می بیند)
+    autoResult: sawService ? "FACE_OK" : "NEEDS_MANUAL_REVIEW",
   };
 }
 

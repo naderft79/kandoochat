@@ -830,7 +830,7 @@ export default function StoryViewer({
                         <button
                           key={amt}
                           onClick={() => setCoinAmount(String(amt))}
-                          className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${coinAmount === String(amt) ? "bg-neutral-800 text-white" : "bg-ig-btn2 text-ig-gray hover:bg-neutral-200"}`}
+                          className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${coinAmount === String(amt) ? "bg-foreground text-background" : "bg-ig-btn2 text-ig-gray hover:bg-neutral-200"}`}
                         >
                           {toPersianDigits(amt)}
                         </button>
@@ -844,7 +844,7 @@ export default function StoryViewer({
                   <button
                     onClick={sendCoinGift}
                     disabled={!coinAmount || coinSending}
-                    className="w-full py-2.5 rounded-lg bg-neutral-800 text-white text-sm font-bold disabled:opacity-40 hover:bg-neutral-700 transition-colors flex items-center justify-center gap-2"
+                    className="w-full py-2.5 rounded-lg bg-foreground text-background text-sm font-bold disabled:opacity-40 hover:opacity-90 transition-colors flex items-center justify-center gap-2"
                   >
                     {coinSending ? (
                       <>

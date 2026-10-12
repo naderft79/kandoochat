@@ -13,7 +13,7 @@ const actionSchema = z.object({
   userId: z.string().min(1),
   action: z.enum([
     "verifyPhone", "unverifyPhone",
-    "verifyBadge", "unverifyBadge",
+
     "activate", "deactivate",
     "makeSpecial", "unmakeSpecial",
     "adjustCoins",
@@ -186,20 +186,6 @@ export async function PATCH(request: Request) {
       case "unverifyPhone":
         await prisma.user.update({ where: { id: userId }, data: { phoneVerified: false } });
         await logAction(admin.id, "UNVERIFY_PHONE", "USER", userId);
-        break;
-      case "verifyBadge":
-        await prisma.user.update({
-          where: { id: userId },
-          data: { isVerified: true },
-        });
-        await logAction(admin.id, "VERIFY_BADGE", "USER", userId);
-        break;
-      case "unverifyBadge":
-        await prisma.user.update({
-          where: { id: userId },
-          data: { isVerified: false },
-        });
-        await logAction(admin.id, "UNVERIFY_BADGE", "USER", userId);
         break;
       case "activate":
         await prisma.user.update({ where: { id: userId }, data: { isActive: true } });

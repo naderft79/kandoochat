@@ -44,19 +44,19 @@ export default function FacePhotoWarningModal({ open, onConfirm, onCancel, title
             className="relative bg-surface rounded-3xl max-w-sm w-full overflow-hidden ig-shadow-lg"
           >
             {/* هدر سیاه سفید */}
-            <div className="relative px-5 pt-5 pb-4 bg-neutral-900">
+            <div className="relative px-5 pt-5 pb-4 bg-foreground">
               <button
                 onClick={onCancel}
-                className="absolute top-3 left-3 w-8 h-8 rounded-full bg-surface/10 hover:bg-surface/20 flex items-center justify-center transition-colors"
+                className="absolute top-3 left-3 w-8 h-8 rounded-full bg-background/10 hover:bg-background/20 flex items-center justify-center transition-colors"
               >
-                <X className="w-4 h-4 text-white" />
+                <X className="w-4 h-4 text-background" />
               </button>
               <div className="flex flex-col items-center text-center">
-                <div className="w-14 h-14 rounded-2xl bg-surface/10 flex items-center justify-center mb-2">
-                  <Camera className="w-7 h-7 text-white" />
+                <div className="w-14 h-14 rounded-2xl bg-background/10 flex items-center justify-center mb-2">
+                  <Camera className="w-7 h-7 text-background" />
                 </div>
-                <h2 className="text-white font-black text-base">{title}</h2>
-                <p className="text-white/50 text-xs mt-0.5">لطفا قبل از انتخاب عکس بخوانید</p>
+                <h2 className="text-background font-black text-base">{title}</h2>
+                <p className="text-background/60 text-xs mt-0.5">لطفا قبل از انتخاب عکس بخوانید</p>
               </div>
             </div>
 
@@ -111,7 +111,7 @@ export default function FacePhotoWarningModal({ open, onConfirm, onCancel, title
                 </button>
                 <button
                   onClick={onConfirm}
-                  className="flex-1 py-3 rounded-2xl bg-ig-blue text-white text-sm font-black flex items-center justify-center gap-1.5 hover:bg-ig-blue transition-all active:scale-95"
+                  className="flex-1 py-3 rounded-2xl bg-ig-blue text-background text-sm font-black flex items-center justify-center gap-1.5 hover:bg-ig-blue transition-all active:scale-95"
                 >
                   <Check className="w-4 h-4" strokeWidth={3} />
                   متوجه شدم

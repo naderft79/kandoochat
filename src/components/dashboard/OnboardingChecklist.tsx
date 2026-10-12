@@ -46,7 +46,7 @@ export default function OnboardingChecklist({
       {/* نوار پیشرفت */}
       <div className="h-1.5 rounded-full bg-ig-btn2 overflow-hidden mb-3">
         <div
-          className="h-full rounded-full bg-neutral-800 transition-all"
+          className="h-full rounded-full bg-foreground transition-all"
           style={{ width: `${percent}%` }}
         />
       </div>
