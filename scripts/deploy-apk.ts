@@ -76,22 +76,17 @@ if (targets.length === 0) {
 const wifiTarget = targets.find((t) => t.includes(":"));
 const target = wifiTarget || targets[0];
 
-// تونل معکوس adb — روی USB و وایرلس هر دو کار می کند؛ localhost گوشی به dev server
-// سیستم می رسد، کانتکست امن است (میکروفون کار می کند) و آدرس ثابت می ماند
-let serverUrl = "http://localhost:3000";
-let reversed = false;
-try {
-  for (const p of [3000, 3001]) out(adb, ["-s", target, "reverse", `tcp:${p}`, `tcp:${p}`]);
-  reversed = true;
-} catch { /* پایین fallback */ }
-if (!reversed) {
-  if (!target.includes(":")) {
-    console.error("[deploy] adb reverse failed over USB — cannot reach dev server from the phone");
-    process.exit(1);
-  }
+// آدرس سرور روی گوشی:
+// USB -> تونل adb reverse، localhost گوشی به dev server می رسد (کانتکست امن — میکروفون کار می کند)
+// وایرلس -> IP شبکه سیستم؛ تونل وایرلس adb ناپایدار است و با قطع adb از کار می افتد
+let serverUrl: string;
+if (target.includes(":")) {
   const lanIp = hostLanIp(target.split(":")[0]);
   serverUrl = `http://${lanIp}:3000`;
-  console.log("[deploy] adb reverse failed — falling back to http://LAN-IP (insecure context: mic/voice won't work)");
+  console.log("[deploy] wireless uses http://LAN-IP — insecure context: mic/voice won't work (USB or https needed)");
+} else {
+  for (const p of [3000, 3001]) out(adb, ["-s", target, "reverse", `tcp:${p}`, `tcp:${p}`]);
+  serverUrl = "http://localhost:3000";
 }
 console.log(`[deploy] device: ${target} | server: ${serverUrl}`);
 
