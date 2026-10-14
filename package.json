@@ -49,7 +49,7 @@
     "dotenv": "^17.4.2",
     "echarts": "6.1.0",
     "flag-icons": "7.5.0",
-    "framer-motion": "^13.1.1",
+    "framer-motion": "^14.0.0",
     "google-auth-library": "^10.9.1",
     "ioredis": "^5.11.1",
     "ir-banks-info": "^1.2.1",
