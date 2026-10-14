@@ -16,8 +16,8 @@
 ```
 DATABASE_URL=postgresql://kandoo:PASS@127.0.0.1:5432/kandoo
 JWT_SECRET=<64+ chars random>
-NEXT_PUBLIC_BASE_URL=https://kandoo.ir
-KANDOO_PUBLIC_URL=https://kandoo.ir
+NEXT_PUBLIC_BASE_URL=https://kandoochat.top
+KANDOO_PUBLIC_URL=https://kandoochat.top
 KANDOOPAY_URL=https://kandoopay.com
 KANDOOPAY_SHARED_SECRET=<مشترک با کندوپی، حداقل ۳۲ کاراکتر>
 REDIS_URL=redis://127.0.0.1:6379
@@ -28,13 +28,13 @@ FACE_SERVICE_TOKEN=<64+ chars random>
 CRON_SECRET=<64+ chars random>
 NEXT_PUBLIC_VAPID_PUBLIC_KEY=...
 VAPID_PRIVATE_KEY=...
-VAPID_SUBJECT=mailto:admin@kandoo.ir
+VAPID_SUBJECT=mailto:admin@kandoochat.top
 S3_ENDPOINT=...
 S3_BUCKET=...
 S3_REGION=...
 S3_ACCESS_KEY_ID=...
 S3_SECRET_ACCESS_KEY=...
-S3_PUBLIC_URL=https://cdn.kandoo.ir
+S3_PUBLIC_URL=https://cdn.kandoochat.top
 CRON_SECRET=<random>
 FACE_DETECTOR_URL=http://127.0.0.1:8000  # اختیاری — سرویس محلی تشخیص چهره
 PG_POOL_MAX=50                          # حداکثر اتصال همزمان هر instance به Postgres
@@ -67,7 +67,7 @@ pm2 save && pm2 startup
 ```nginx
 server {
   listen 443 ssl http2;
-  server_name kandoo.ir;
+  server_name kandoochat.top;
   client_max_body_size 60m;
 
   location / {

@@ -8,7 +8,7 @@ const IG_UA = "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Instagram 300.
 const TG_UA = "Mozilla/5.0 (iPhone) Mobile Safari Telegram";
 const WV_UA = "Mozilla/5.0 (Linux; Android 14; wv) AppleWebKit/537.36 Chrome/120 Mobile Safari/537.36";
 const APP_UA = "Mozilla/5.0 (Linux; Android 14) KandooApp/1.0 Chrome/120";
-const base = { ownHost: "kandoo.ir", utmSource: null, utmMedium: null };
+const base = { ownHost: "kandoochat.top", utmSource: null, utmMedium: null };
 
 test.describe("طبقه بندی منبع ورود", () => {
   test("موتور جستجو از روی ارجاع دهنده", () => {
@@ -33,7 +33,7 @@ test.describe("طبقه بندی منبع ورود", () => {
   });
 
   test("ارجاع از همان دامنه و بدون منبع، مستقیم است؛ دامنه ناشناس ارجاع است", () => {
-    expect(classifyEntry({ ...base, ua: WEB_UA, referrer: "https://kandoo.ir/dashboard" }).channel).toBe("DIRECT");
+    expect(classifyEntry({ ...base, ua: WEB_UA, referrer: "https://kandoochat.top/dashboard" }).channel).toBe("DIRECT");
     expect(classifyEntry({ ...base, ua: WEB_UA, referrer: null }).channel).toBe("DIRECT");
     expect(classifyEntry({ ...base, ua: WEB_UA, referrer: "https://blog.example.org/post" })).toEqual({ channel: "REFERRAL", source: "blog.example.org", platform: "WEB" });
   });

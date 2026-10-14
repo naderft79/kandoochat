@@ -13,7 +13,7 @@ const release = process.argv.includes("--release");
 const serverUrl =
   process.env.CAPACITOR_SERVER_URL ||
   process.env.NEXT_PUBLIC_SITE_URL ||
-  "https://kandoochat.com";
+  "https://kandoochat.top";
 
 // نسخه ریلیز فقط با آدرس https ساخته می شود — جلوگیری از جاسازی آدرس HTTP در APK عمومی
 if (release && !/^https:\/\//.test(serverUrl)) {

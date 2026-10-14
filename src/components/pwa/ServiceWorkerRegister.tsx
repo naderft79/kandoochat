@@ -2,6 +2,7 @@
 
 // ثبت Service Worker برای PWA و اشتراک Push Notification
 import { useEffect } from "react";
+import { isNativeApp } from "@/lib/native";
 
 async function subscribePush(registration: ServiceWorkerRegistration) {
   if (!("Notification" in window) || !("PushManager" in window)) return;
@@ -38,7 +39,18 @@ export default function ServiceWorkerRegister() {
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return;
 
-    // سرویس ورکر همیشه فعال است — sw.js کد و API را کش نمی کند پس در dev هم امن است
+    // در اپ نیتیو (WebView کاپسیتور) سرویس ورکر نداریم — کش cache-first روی
+    // chunk های _next می تواند نسخه stale را به جای بیلد تازه بدهد و اپ را فلج کند.
+    // هر رجیستر و کش قبلی هم پاک می شود تا نصب های قدیمی پاک شوند
+    if (isNativeApp()) {
+      navigator.serviceWorker.getRegistrations().then((regs) => {
+        regs.forEach((r) => r.unregister());
+      });
+      caches.keys().then((keys) => keys.forEach((k) => caches.delete(k)));
+      return;
+    }
+
+    // سرویس ورکر فقط برای مرورگر/PWA فعال است — کش API ندارد
     navigator.serviceWorker
       .register("/sw.js")
       .then((registration) => {

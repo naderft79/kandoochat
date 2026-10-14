@@ -27,8 +27,16 @@ export default async function ChatList() {
   if (!user) redirect("/login");
 
   // ایجاد یا دریافت گفتگو با همراه هوش مصنوعی (براساس جنسیت کاربر)
-  const { conversation: aiConversation, config: aiConfig } =
-    await getOrCreateAIConversation(user.id);
+  // خطا در این بخش نباید کل صفحه را بکشد — بدون همراه ادامه می دهیم
+  let aiConversation: { id: string } | null = null;
+  let aiConfig: { firstName: string; gradient: string } | null = null;
+  try {
+    const ai = await getOrCreateAIConversation(user.id);
+    aiConversation = ai.conversation;
+    aiConfig = ai.config;
+  } catch (err) {
+    console.error("[chat] ai companion init failed:", err);
+  }
 
   const conversations = await prisma.conversation.findMany({
     where: { OR: [{ userAId: user.id }, { userBId: user.id }] },
@@ -99,9 +107,11 @@ export default async function ChatList() {
 
   // جدا کردن همراه هوش مصنوعی از سایر گفتگوها
   // همراه هوش مصنوعی همیشه بالای لیست پین است (حتی اگر قبلا حذف شده باشد)
-  const aiConv = conversations.find((c) => c.id === aiConversation.id);
+  const aiConv = aiConversation
+    ? conversations.find((c) => c.id === aiConversation.id)
+    : undefined;
   const otherConversations = visibleConversations.filter(
-    (c) => c.id !== aiConversation.id
+    (c) => c.id !== aiConversation?.id
   );
 
   function getLastMessagePreview(content: string, type: string) {
@@ -143,7 +153,7 @@ export default async function ChatList() {
       {/* لیست گفتگوها */}
       <div className="flex-1 overflow-y-auto thin-scroll">
         {/* گفتگوی همراه هوش مصنوعی - پین شده در بالا */}
-        {aiConv && (
+        {aiConv && aiConfig && (
           <Link
             href={`/dashboard/chat/${aiConv.id}`}
             className={`flex items-center gap-3 px-4 py-3 hover:bg-ig-gray-bg transition-colors border-b border-ig-border/50 bg-ig-gray-bg`}

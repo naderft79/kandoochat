@@ -8,8 +8,8 @@
 |---|---|---|
 | `DATABASE_URL` | رشته اتصال PostgreSQL | `postgresql://kandoo:pass@localhost:5432/kandoo?schema=public` |
 | `JWT_SECRET` | رمز امضای JWT (حداقل ۶۴ کاراکتر رندوم) | — |
-| `NEXT_PUBLIC_BASE_URL` | دامنه عمومی سایت | `https://kandoochat.com` |
-| `KANDOO_PUBLIC_URL` | دامنه سمت سرور | `https://kandoochat.com` |
+| `NEXT_PUBLIC_BASE_URL` | دامنه عمومی سایت | `https://kandoochat.top` |
+| `KANDOO_PUBLIC_URL` | دامنه سمت سرور | `https://kandoochat.top` |
 | `KANDOOPAY_URL` | آدرس KandooPay | `https://kandoopay.com` |
 | `KANDOOPAY_SHARED_SECRET` | کلید مخفی مشترک امضای توکن پرداخت | — |
 | `REDIS_URL` | آدرس Redis | `redis://localhost:6379` |
@@ -51,7 +51,7 @@ FACE_SERVICE_TOKEN=<همان مقدار .env> python -m uvicorn main:app --host 
 |---|---|
 | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | کلید عمومی VAPID |
 | `VAPID_PRIVATE_KEY` | کلید خصوصی VAPID |
-| `VAPID_SUBJECT` | آدرس تماس، مثلاً `mailto:admin@kandoochat.com` |
+| `VAPID_SUBJECT` | آدرس تماس، مثلاً `mailto:admin@kandoochat.top` |
 
 ## Object Storage (S3-compatible)
 

@@ -68,40 +68,65 @@ function getCompanionConfig(userGender: string): CompanionConfig {
 
 // دریافت یا ایجاد کاربر همراه
 async function getOrCreateCompanion(config: CompanionConfig) {
-  let companion = await prisma.user.findUnique({
-    where: { username: config.username },
+  // با یوزرنیم یا موبایل پیدا می شود — اگر یوزرنیم به هر دلیلی تغییر کرده بود خودش ترمیم می شود
+  let companion = await prisma.user.findFirst({
+    where: {
+      isAICompanion: true,
+      OR: [{ username: config.username }, { phone: config.phone }],
+    },
   });
 
   if (!companion) {
-    companion = await prisma.user.create({
-      data: {
-        phone: config.phone,
-        username: config.username,
-        password: "ai_companion_disabled_" + Math.random().toString(36),
-        role: "USER",
-        gender: config.gender,
-        firstName: config.firstName,
-        lastName: config.lastName,
-        province: "تهران",
-        city: "تهران",
-        age: config.gender === "FEMALE" ? 25 : 28,
-        height: config.gender === "FEMALE" ? 165 : 180,
-        weight: config.gender === "FEMALE" ? 55 : 75,
-        income: 0,
-        isVerified: true,
-        isAdminProfile: false,
-        isAICompanion: true,
-        isOnline: true,
-        bio: config.bio,
-      },
-    });
-    console.log(`[aiCompanion] Created ${config.firstName} user:`, companion.id);
-  } else if (companion.bio !== config.bio || companion.lastName !== config.lastName) {
-    // بیو و نام خانوادگی را با کانفیگ جدید همگام نگه می داریم
-    companion = await prisma.user.update({
-      where: { id: companion.id },
-      data: { bio: config.bio, lastName: config.lastName },
-    });
+    try {
+      companion = await prisma.user.create({
+        data: {
+          phone: config.phone,
+          username: config.username,
+          password: "ai_companion_disabled_" + Math.random().toString(36),
+          role: "USER",
+          gender: config.gender,
+          firstName: config.firstName,
+          lastName: config.lastName,
+          province: "تهران",
+          city: "تهران",
+          age: config.gender === "FEMALE" ? 25 : 28,
+          height: config.gender === "FEMALE" ? 165 : 180,
+          weight: config.gender === "FEMALE" ? 55 : 75,
+          income: 0,
+          isVerified: true,
+          isAdminProfile: false,
+          isAICompanion: true,
+          isOnline: true,
+          bio: config.bio,
+        },
+      });
+      console.log(`[aiCompanion] Created ${config.firstName} user:`, companion.id);
+    } catch {
+      // تداخل یونیک یا ریس — رکورد موجود را دوباره با موبایل می گیریم
+      companion = await prisma.user.findUnique({ where: { phone: config.phone } });
+      if (!companion) throw new Error("AI companion create failed");
+      if (!companion.isAICompanion) {
+        companion = await prisma.user.update({
+          where: { id: companion.id },
+          data: { isAICompanion: true },
+        });
+      }
+    }
+  } else if (
+    companion.username !== config.username ||
+    companion.bio !== config.bio ||
+    companion.lastName !== config.lastName
+  ) {
+    // یوزرنیم، بیو و نام خانوادگی را با کانفیگ جدید همگام نگه می داریم
+    // اگر یوزرنیم اشغال شده باشد آپدیت شکست می خورد — گفتگو با id کار می کند پس فقط رد می شویم
+    try {
+      companion = await prisma.user.update({
+        where: { id: companion.id },
+        data: { username: config.username, bio: config.bio, lastName: config.lastName },
+      });
+    } catch {
+      // نادیده گرفته می شود — کارکرد اصلی به id وابسته است نه یوزرنیم
+    }
   }
 
   return companion;

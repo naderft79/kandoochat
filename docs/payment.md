@@ -8,11 +8,11 @@
 4. کاربر در KandooPay پرداخت را انجام می‌دهد.
 5. بعد از پرداخت، KandooPay باید کاربر را به کال‌بک کندو برگرداند:
    ```
-   https://kandoochat.com/api/payment/callback?token=<token>&status=success&refId=<refId>
+   https://kandoochat.top/api/payment/callback?token=<token>&status=success&refId=<refId>
    ```
    برای پرداخت ناموفق:
    ```
-   https://kandoochat.com/api/payment/callback?token=<token>&status=failed
+   https://kandoochat.top/api/payment/callback?token=<token>&status=failed
    ```
    یا `status=canceled` برای انصراف.
 6. کال‌بک کندو توکن را تایید می‌کند، مبلغ/نوع/کاربر را مطابقت می‌دهد و در صورت `success` سکه یا اشتراک را به صورت idempotent اعطا می‌کند.
@@ -41,10 +41,10 @@
 
 - `KANDOOPAY_URL` — آدرس KandooPay (پیش‌فرض `https://kandoopay.com`)
 - `KANDOOPAY_SHARED_SECRET` — کلید ۳۲+ کاراکتری برای امضای توکن
-- `KANDOO_PUBLIC_URL` — دامنه عمومی کندو برای callback redirect (مثل `https://kandoochat.com`)
+- `KANDOO_PUBLIC_URL` — دامنه عمومی کندو برای callback redirect (مثل `https://kandoochat.top`)
 
 ## نیازمندی KandooPay (بدون تغییر کد)
 
-KandooPay باید بعد از تایید پرداخت، کاربر را به `https://kandoochat.com/api/payment/callback?token=<token>&status=<status>&refId=<refId>` redirect کند.
+KandooPay باید بعد از تایید پرداخت، کاربر را به `https://kandoochat.top/api/payment/callback?token=<token>&status=<status>&refId=<refId>` redirect کند.
 اگر KandooPay این قابلیت را فعلا ندارد، باید در deploy تنظیم شود (مثلاً با proxy یا تنظیم callback URL در پنل درگاه).
 در غیر این صورت کاربر بعد از پرداخت روی صفحه نتیجه فاکتور KandooPay می‌ماند و کندو می‌تواند از `/api/payment/status` برای polling وضعیت استفاده کند.

@@ -59,7 +59,7 @@
 3. کرون روزانه را اضافه کنید (با `crontab -e`):
 
 ```
-0 4 * * * . /var/www/kandoo/.env && curl -fsS -H "Authorization: Bearer $CRON_SECRET" https://kandoo.ir/api/cron/maintenance >> /var/log/kandoo-maintenance.log 2>&1
+0 4 * * * . /var/www/kandoo/.env && curl -fsS -H "Authorization: Bearer $CRON_SECRET" https://kandoochat.top/api/cron/maintenance >> /var/log/kandoo-maintenance.log 2>&1
 ```
 
 ## کارایی

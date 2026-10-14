@@ -28,7 +28,7 @@
 
 ## بیلد ریلیز
 ```bash
-CAPACITOR_SERVER_URL=https://kandoochat.com npm run build:apk -- --release
+CAPACITOR_SERVER_URL=https://kandoochat.top npm run build:apk -- --release
 ```
 خروجی: `android/app/build/outputs/apk/user/release/app-user-release.apk` و `.../admin/release/app-admin-release.apk` (با R8 و shrink فعال).
 

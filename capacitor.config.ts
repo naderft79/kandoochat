@@ -5,7 +5,7 @@ import type { CapacitorConfig } from "@capacitor/cli";
 const serverUrl =
   process.env.CAPACITOR_SERVER_URL ||
   process.env.NEXT_PUBLIC_SITE_URL ||
-  "https://kandoochat.com";
+  "https://kandoochat.top";
 
 // برای آدرس http (مثل IP شبکه در dev) باید cleartext فعال باشد
 const isHttp = serverUrl.startsWith("http:");
