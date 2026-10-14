@@ -82,3 +82,6 @@ data/geo/
 ---
 # کانفیگ تولیدشده فلیور admin در زمان بیلد
 android/app/src/admin/assets/capacitor.config.json
+
+# بکاپ های محلی دیتابیس و آپلودها (حاوی داده شخصی — هرگز کامیت نشود)
+backups/
