@@ -86,8 +86,8 @@ export default async function AdminHealthPage() {
   });
   checks.push({
     name: "پیامک",
-    status: process.env.SABANOVIN_API_KEY ? "ok" : "off",
-    detail: "Sabanovin",
+    status: process.env.KANDOOPAY_URL && process.env.KANDOOPAY_SHARED_SECRET ? "ok" : "off",
+    detail: "KandooPay → صبانوین",
   });
 
   const icons = [Database, Zap, ScanFace, CreditCard, HardDrive, BellRing, MessageSquare];

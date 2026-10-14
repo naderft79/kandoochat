@@ -1,71 +1,48 @@
-// ارسال SMS با صبانوین (REST v1) — مستندات: https://sabanovin.com/documentation
-// کد تایید از متد OTP هوشمند صبانوین ارسال می شود (gateway=otp)؛ در ارسال دوم در ۳ دقیقه، صبانوین خودش تماس صوتی می گیرد.
-// کلید API فقط در مسیر URL است؛ هرگز در لاگ چاپ نمی شود.
-const BASE_URL = "https://api.sabanovin.com/v1";
+// ارسال کد تایید از طریق KandooPay — کلید صبانوین فقط روی سرور کندوپی است و اینجا نیست
+// کد با توکن JWT امضاشده با کلید مشترک KANDOOPAY_SHARED_SECRET به کندوپی فرستاده می شود
+import { SignJWT } from "jose";
+
 const TIMEOUT_MS = 10000;
-const OTP_GATEWAY = "otp";
+const OTP_AUDIENCE = "kandoopay-sms";
 
-// کد وضعیت های موفق صبانوین
-const OK_CODE = 200;
-
-function apiKey(): string | null {
-  return process.env.SABANOVIN_API_KEY || null;
+function kandooPayConfig() {
+  const url = process.env.KANDOOPAY_URL?.replace(/\/$/, "");
+  const secret = process.env.KANDOOPAY_SHARED_SECRET;
+  if (!url || !secret || secret.length < 32) return null;
+  return { url, secret: new TextEncoder().encode(secret) };
 }
 
-async function callSabanovin(path: string, params: URLSearchParams): Promise<{ ok: boolean; code?: number }> {
-  const key = apiKey();
-  if (!key) return { ok: false };
-  try {
-    const res = await fetch(`${BASE_URL}/${encodeURIComponent(key)}/${path}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: params,
-      signal: AbortSignal.timeout(TIMEOUT_MS),
-    });
-    const data = (await res.json().catch(() => null)) as { status?: { code?: number } } | null;
-    const code = data?.status?.code;
-    if (res.ok && code === OK_CODE) return { ok: true, code };
-    console.error(`[sms] sabanovin rejected request: http=${res.status} code=${code ?? "unknown"}`);
-    return { ok: false, code };
-  } catch (err) {
-    console.error("[sms] sabanovin request error:", err instanceof Error ? err.name : "unknown");
-    return { ok: false };
-  }
-}
-
-export async function sendSms(phone: string, message: string): Promise<boolean> {
-  if (!apiKey()) {
-    if (process.env.NODE_ENV === "production") {
-      console.error("[sms] SABANOVIN_API_KEY is not set in production; SMS not sent");
-      return false;
-    }
-    // حالت توسعه: SMS واقعی ارسال نمی شود، فقط لاگ (بدون متن پیام)
-    console.log("[sms] dev-mode: SMS not sent (no SABANOVIN_API_KEY)");
-    return true;
-  }
-  const gateway = process.env.SABANOVIN_GATEWAY;
-  if (!gateway) {
-    console.error("[sms] SABANOVIN_GATEWAY is not set; SMS not sent");
-    return false;
-  }
-  const r = await callSabanovin("sms/send.json", new URLSearchParams({ gateway, to: phone, text: message }));
-  if (r.ok) console.log("[sms] sent");
-  return r.ok;
-}
-
-// کد تایید: متن باید ماهیت OTP داشته باشد و نام سایت را داشته باشد (الزام صبانوین)
 export async function sendOtpSms(phone: string, code: string): Promise<boolean> {
-  if (!apiKey()) {
+  const cfg = kandooPayConfig();
+  if (!cfg) {
     if (process.env.NODE_ENV === "production") {
-      console.error("[sms] SABANOVIN_API_KEY is not set in production; OTP not sent");
+      console.error("[sms] KANDOOPAY_URL or KANDOOPAY_SHARED_SECRET is not set in production; OTP not sent");
       return false;
     }
+    // حالت توسعه: پیامک واقعی ارسال نمی شود، فقط لاگ (بدون شماره کامل)
     console.log(`[sms] dev-mode OTP for ${phone.slice(0, 4)}***: code=${code}`);
     return true;
   }
-  // صبانوین برای متد OTP وجود عبارت «لغو11» در متن را الزامی کرده است (خطای ۴۲۲ در غیر این صورت)
-  const text = `کد ورود به سیستم کندو : ${code} لغو11`;
-  const r = await callSabanovin("sms/send.json", new URLSearchParams({ gateway: OTP_GATEWAY, to: phone, text }));
-  if (r.ok) console.log("[sms] otp sent");
-  return r.ok;
+
+  const token = await new SignJWT({ phone, code })
+    .setProtectedHeader({ alg: "HS512" })
+    .setIssuer("kandoo")
+    .setAudience(OTP_AUDIENCE)
+    .setIssuedAt()
+    .setExpirationTime("2m")
+    .sign(cfg.secret);
+
+  try {
+    const res = await fetch(`${cfg.url}/api/sms/otp`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      signal: AbortSignal.timeout(TIMEOUT_MS),
+    });
+    if (res.ok) return true;
+    console.error(`[sms] kandoopay rejected OTP request: http=${res.status}`);
+    return false;
+  } catch (err) {
+    console.error("[sms] kandoopay request error:", err instanceof Error ? err.name : "unknown");
+    return false;
+  }
 }
