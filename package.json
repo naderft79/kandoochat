@@ -18,6 +18,7 @@
     "deploy:apk": "tsx scripts/deploy-apk.ts",
     "cap:sync": "npx cap sync android",
     "db:seed-missions": "tsx prisma/seed-missions.ts",
+    "db:seed-production": "tsx prisma/seed-production.ts",
     "lint:ui": "tsx scripts/check-ui.ts --strict",
     "lint:ui:report": "tsx scripts/check-ui.ts",
     "e2e:seed": "tsx scripts/seed-e2e.ts",
