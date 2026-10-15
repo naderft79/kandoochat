@@ -526,12 +526,6 @@ function SpecialRegisterFormInner({ slug }: { slug: string }) {
                   }}
                   placeholder="KANDOO1"
                 />
-                {refLocked && (
-                  <p className="text-xs text-ig-gray flex items-center gap-1" role="note">
-                    <Lock className="w-3.5 h-3.5" aria-hidden />
-                    کد دعوت از لینک دعوت شما آمده و قابل تغییر نیست
-                  </p>
-                )}
                 {refState === "ok" && (
                   <p className="text-sm text-ig-online flex items-center gap-1" role="status">
                     <BadgeCheck className="w-4 h-4" aria-hidden />
