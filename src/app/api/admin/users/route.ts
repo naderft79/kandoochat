@@ -67,6 +67,8 @@ export async function GET(request: Request) {
     const verified = searchParams.get("verified") ?? "";
     const active = searchParams.get("active") ?? "";
     const tab = searchParams.get("tab") ?? "overview";
+    const sort = searchParams.get("sort") ?? "";
+    const hideFake = searchParams.get("hideFake") === "true";
     const deletedOnly = searchParams.get("deleted") === "true";
     const skip = parseInt(searchParams.get("skip") ?? "0", 10);
     const take = parseInt(searchParams.get("take") ?? "100", 10);
@@ -98,6 +100,9 @@ export async function GET(request: Request) {
 
     if (active === "active") where.isActive = true;
     if (active === "blocked") where.isActive = false;
+
+    // فیلتر «عدم نمایش فیک» — کاربران seed شده/ربات پنهان می شوند
+    if (hideFake) where.isFake = false;
 
     let orderBy: Prisma.UserOrderByWithRelationInput[] = [{ createdAt: "desc" }];
     switch (tab) {
@@ -136,6 +141,28 @@ export async function GET(request: Request) {
         break;
       case "fake":
         where.isFake = true;
+        break;
+    }
+
+    // مرتب سازی مستقل — در صورت انتخاب، بر ترتیب پیش فرض تب غلبه می کند
+    switch (sort) {
+      case "oldest":
+        orderBy = [{ createdAt: "asc" }];
+        break;
+      case "coins":
+        orderBy = [{ wallet: { balance: "desc" } }, { createdAt: "desc" }];
+        break;
+      case "income":
+        orderBy = [{ income: "desc" }, { createdAt: "desc" }];
+        break;
+      case "lastSeen":
+        orderBy = [{ lastSeen: "desc" }];
+        break;
+      case "ageAsc":
+        orderBy = [{ age: "asc" }, { createdAt: "desc" }];
+        break;
+      case "ageDesc":
+        orderBy = [{ age: "desc" }, { createdAt: "desc" }];
         break;
     }
 

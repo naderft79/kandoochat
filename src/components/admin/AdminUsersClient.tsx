@@ -100,6 +100,8 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
   const [cityFilter, setCityFilter] = useState("");
   const [verifiedFilter, setVerifiedFilter] = useState("");
   const [activeFilter, setActiveFilter] = useState("");
+  const [hideFake, setHideFake] = useState(false);
+  const [sort, setSort] = useState("newest");
   const [showFilters, setShowFilters] = useState(false);
   const [coinModalUserId, setCoinModalUserId] = useState<string | null>(null);
   const [subscriptionModalUserId, setSubscriptionModalUserId] = useState<string | null>(null);
@@ -139,6 +141,8 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
       cityFilter: string;
       verifiedFilter: string;
       activeFilter: string;
+      hideFake: boolean;
+      sort: string;
     }>
   ) {
     const s = overrides?.search ?? search;
@@ -148,6 +152,8 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
     const city = overrides?.cityFilter ?? cityFilter;
     const verified = overrides?.verifiedFilter ?? verifiedFilter;
     const active = overrides?.activeFilter ?? activeFilter;
+    const hideFakeVal = overrides?.hideFake ?? hideFake;
+    const sortVal = overrides?.sort ?? sort;
 
     const p = new URLSearchParams();
     if (s) p.set("search", s);
@@ -156,6 +162,8 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
     if (city) p.set("city", city);
     if (verified) p.set("verified", verified);
     if (active) p.set("active", active);
+    if (hideFakeVal) p.set("hideFake", "true");
+    if (sortVal && sortVal !== "newest") p.set("sort", sortVal);
     p.set("tab", tab);
     if (tab === "admins") p.set("admins", "true");
     if (tab === "deleted") p.set("deleted", "true");
@@ -258,7 +266,7 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
   // گزینه های شهر از لیست ثابت استان ها (نه فقط کاربران بارگذاری شده)
   const cities = provinceFilter ? PROVINCES[provinceFilter] ?? [] : [];
 
-  const hasActiveFilters = genderFilter || provinceFilter || cityFilter || verifiedFilter || activeFilter;
+  const hasActiveFilters = genderFilter || provinceFilter || cityFilter || verifiedFilter || activeFilter || hideFake;
 
   function clearFilters() {
     setGenderFilter("");
@@ -266,6 +274,7 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
     setCityFilter("");
     setVerifiedFilter("");
     setActiveFilter("");
+    setHideFake(false);
   }
 
   function handleActionComplete() {
@@ -317,6 +326,24 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
             className="w-full pr-9 pl-3 py-2.5 rounded-xl border border-[rgba(212,175,55,0.15)] bg-[#0d0d0d] text-[#e8e8e8] text-sm focus:outline-none focus:border-[rgba(212,175,55,0.4)] placeholder:text-[#555]"
           />
         </div>
+        <select
+          aria-label="مرتب سازی"
+          value={sort}
+          onChange={(e) => {
+            const value = e.target.value;
+            setSort(value);
+            fetchUsers(0, true, { sort: value });
+          }}
+          className="shrink-0 px-2 sm:px-3 py-2.5 rounded-xl border border-[rgba(212,175,55,0.15)] bg-[#0d0d0d] text-[#e8e8e8] text-xs sm:text-sm font-medium focus:outline-none focus:border-[rgba(212,175,55,0.4)]"
+        >
+          <option value="newest">جدیدترین</option>
+          <option value="oldest">قدیمی ترین</option>
+          <option value="coins">بیشترین سکه</option>
+          <option value="income">بیشترین درآمد</option>
+          <option value="lastSeen">آخرین بازدید</option>
+          <option value="ageAsc">کمترین سن</option>
+          <option value="ageDesc">بیشترین سن</option>
+        </select>
         <button
           onClick={() => setShowFilters(!showFilters)}
           className={`px-3 py-2.5 rounded-xl border text-sm font-bold flex items-center gap-1.5 transition-all ${
@@ -418,6 +445,21 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
               <option value="blocked">مسدود</option>
             </select>
 
+            {/* عدم نمایش فیک — کاربران seed شده/ربات از لیست پنهان می شوند */}
+            <label className="flex items-center gap-2 px-3 py-2 rounded-lg border border-[rgba(212,175,55,0.15)] text-xs font-medium text-[#e8e8e8] cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={hideFake}
+                onChange={(e) => {
+                  const value = e.target.checked;
+                  setHideFake(value);
+                  fetchUsers(0, true, { hideFake: value });
+                }}
+                className="w-4 h-4 accent-[#d4af37]"
+              />
+              عدم نمایش فیک
+            </label>
+
             {hasActiveFilters && (
               <button
                 onClick={() => {
@@ -428,6 +470,7 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
                     cityFilter: "",
                     verifiedFilter: "",
                     activeFilter: "",
+                    hideFake: false,
                   });
                 }}
                 className="px-3 py-2 rounded-lg border border-[rgba(239,68,68,0.2)] text-xs font-medium text-[#f87171] hover:bg-[rgba(239,68,68,0.08)] flex items-center gap-1 transition-colors"
