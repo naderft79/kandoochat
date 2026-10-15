@@ -78,10 +78,9 @@ export async function proxy(request: NextRequest) {
   }
 
   // کاربر وارد شده نباید صفحه ورود/ثبت نام ببیند
+  // فقط ریدایرکت می کنیم؛ حذف کوکی اینجا باعث خروج کاربر بعد از ورود می شد (prefetch صفحه ثبت نام)
   if (isAuthPage && session) {
-    const res = NextResponse.redirect(new URL("/dashboard", request.url));
-    res.cookies.delete(COOKIE_NAME);
-    return res;
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   return NextResponse.next();
