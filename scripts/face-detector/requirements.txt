@@ -3,3 +3,5 @@ uvicorn
 mediapipe
 opencv-python-headless
 numpy
+nudenet
+onnxruntime
