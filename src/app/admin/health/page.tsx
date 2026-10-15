@@ -95,10 +95,10 @@ export default async function AdminHealthPage() {
   // شاخص های اپ
   const mem = process.memoryUsage();
   const [userCount, messageCount, openTickets, pendingVerifies] = await Promise.all([
-    prisma.user.count({ where: { isActive: true } }),
-    prisma.message.count(),
-    prisma.ticket.count({ where: { status: "OPEN" } }),
-    prisma.verificationRequest.count({ where: { status: "PENDING" } }),
+    prisma.user.count({ where: { isActive: true, isFake: false } }),
+    prisma.message.count({ where: { sender: { isFake: false } } }),
+    prisma.ticket.count({ where: { status: "OPEN", NOT: { user: { isFake: true } } } }),
+    prisma.verificationRequest.count({ where: { status: "PENDING", user: { isFake: false } } }),
   ]);
 
   const uptimeSec = Math.floor(process.uptime());

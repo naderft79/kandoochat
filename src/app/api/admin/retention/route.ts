@@ -14,7 +14,7 @@ export async function GET() {
 
     const dailyRegistrations = await prisma.user.groupBy({
       by: ["createdAt"],
-      where: { createdAt: { gte: sevenDaysAgo } },
+      where: { createdAt: { gte: sevenDaysAgo }, isFake: false },
       _count: { id: true },
     });
 
@@ -35,39 +35,39 @@ export async function GET() {
     const oneDayAgo = new Date(now);
     oneDayAgo.setDate(oneDayAgo.getDate() - 1);
     const dau = await prisma.user.count({
-      where: { lastSeen: { gte: oneDayAgo }, isActive: true },
+      where: { lastSeen: { gte: oneDayAgo }, isActive: true, isFake: false },
     });
 
     // کاربران فعال در ۷ روز گذشته (WAU)
     const wau = await prisma.user.count({
-      where: { lastSeen: { gte: sevenDaysAgo }, isActive: true },
+      where: { lastSeen: { gte: sevenDaysAgo }, isActive: true, isFake: false },
     });
 
     // کاربران فعال در ۳۰ روز گذشته (MAU)
     const thirtyDaysAgo = new Date(now);
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     const mau = await prisma.user.count({
-      where: { lastSeen: { gte: thirtyDaysAgo }, isActive: true },
+      where: { lastSeen: { gte: thirtyDaysAgo }, isActive: true, isFake: false },
     });
 
     // کل کاربران فعال
-    const totalActive = await prisma.user.count({ where: { isActive: true } });
+    const totalActive = await prisma.user.count({ where: { isActive: true, isFake: false } });
 
     // کاربران غیرفعال (churned) — در ۳۰ روز گذشته بازدید نکرده اند
     const churned = await prisma.user.count({
-      where: { lastSeen: { lt: thirtyDaysAgo }, isActive: true },
+      where: { lastSeen: { lt: thirtyDaysAgo }, isActive: true, isFake: false },
     });
 
     // کاربران جدید امروز
     const todayStart = new Date(now);
     todayStart.setHours(0, 0, 0, 0);
     const newToday = await prisma.user.count({
-      where: { createdAt: { gte: todayStart } },
+      where: { createdAt: { gte: todayStart }, isFake: false },
     });
 
     // کاربران جدید ۷ روز گذشته
     const newThisWeek = await prisma.user.count({
-      where: { createdAt: { gte: sevenDaysAgo } },
+      where: { createdAt: { gte: sevenDaysAgo }, isFake: false },
     });
 
     // نرخ retention (DAU/MAU)
@@ -78,12 +78,12 @@ export async function GET() {
 
     // استریک های فعال
     const activeStreaks = await prisma.streak.count({
-      where: { count: { gte: 3 } },
+      where: { count: { gte: 3 }, user: { isFake: false } },
     });
 
     // اشتراک های فعال
     const activeSubscriptions = await prisma.subscription.count({
-      where: { endsAt: { gte: now } },
+      where: { endsAt: { gte: now }, user: { isFake: false } },
     });
 
     return NextResponse.json({

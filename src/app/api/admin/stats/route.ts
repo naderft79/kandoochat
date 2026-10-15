@@ -27,28 +27,29 @@ export async function GET() {
       transferVolume7d,
       todayLogins,
     ] = await Promise.all([
-      prisma.user.count({ where: { role: "USER" } }),
-      prisma.user.count({ where: { role: "USER", createdAt: { gte: sevenDaysAgo } } }),
-      prisma.user.count({ where: { role: "USER", createdAt: { gte: thirtyDaysAgo } } }),
-      prisma.subscription.count({ where: { endsAt: { gt: now } } }),
+      // همه آمارها بدون حساب های فیک
+      prisma.user.count({ where: { role: "USER", isFake: false } }),
+      prisma.user.count({ where: { role: "USER", isFake: false, createdAt: { gte: sevenDaysAgo } } }),
+      prisma.user.count({ where: { role: "USER", isFake: false, createdAt: { gte: thirtyDaysAgo } } }),
+      prisma.subscription.count({ where: { endsAt: { gt: now }, user: { isFake: false } } }),
       prisma.transaction.aggregate({
-        where: { type: "COIN_PURCHASE", status: "COMPLETED" },
+        where: { type: "COIN_PURCHASE", status: "COMPLETED", user: { isFake: false } },
         _sum: { amountToman: true },
       }),
       prisma.transaction.aggregate({
-        where: { type: "COIN_PURCHASE", status: "COMPLETED", createdAt: { gte: sevenDaysAgo } },
+        where: { type: "COIN_PURCHASE", status: "COMPLETED", createdAt: { gte: sevenDaysAgo }, user: { isFake: false } },
         _sum: { amountToman: true },
       }),
-      prisma.boost.count(),
-      prisma.boost.count({ where: { endsAt: { gt: now } } }),
-      prisma.report.count({ where: { status: "PENDING" } }),
-      prisma.withdrawRequest.count({ where: { status: "PENDING" } }),
-      prisma.coinTransfer.count({ where: { status: "COMPLETED" } }),
+      prisma.boost.count({ where: { user: { isFake: false } } }),
+      prisma.boost.count({ where: { endsAt: { gt: now }, user: { isFake: false } } }),
+      prisma.report.count({ where: { status: "PENDING", reporter: { isFake: false } } }),
+      prisma.withdrawRequest.count({ where: { status: "PENDING", user: { isFake: false } } }),
+      prisma.coinTransfer.count({ where: { status: "COMPLETED", sender: { isFake: false } } }),
       prisma.coinTransfer.aggregate({
-        where: { status: "COMPLETED", createdAt: { gte: sevenDaysAgo } },
+        where: { status: "COMPLETED", createdAt: { gte: sevenDaysAgo }, sender: { isFake: false } },
         _sum: { coins: true },
       }),
-      prisma.user.count({ where: { lastSeen: { gte: new Date(now.getTime() - 24 * 60 * 60 * 1000) } } }),
+      prisma.user.count({ where: { lastSeen: { gte: new Date(now.getTime() - 24 * 60 * 60 * 1000) }, isFake: false } }),
     ]);
 
     // آمار روزانه کاربران جدید (۷ روز)
@@ -60,7 +61,7 @@ export async function GET() {
       const end = new Date(start);
       end.setDate(end.getDate() + 1);
       const count = await prisma.user.count({
-        where: { role: "USER", createdAt: { gte: start, lt: end } },
+        where: { role: "USER", isFake: false, createdAt: { gte: start, lt: end } },
       });
       dailyNewUsers.push({ date: start.toDateString(), count });
     }
@@ -78,6 +79,7 @@ export async function GET() {
           type: { in: ["COIN_PURCHASE", "SUBSCRIPTION"] },
           status: "COMPLETED",
           createdAt: { gte: start, lt: end },
+          user: { isFake: false },
         },
         _sum: { amountToman: true },
       });
@@ -86,7 +88,7 @@ export async function GET() {
 
     // فعال ترین کاربران (بر اساس تعداد چت)
     const activeUsers = await prisma.user.findMany({
-      where: { role: "USER", isActive: true },
+      where: { role: "USER", isActive: true, isFake: false },
       orderBy: { lastSeen: "desc" },
       take: 10,
       select: {
