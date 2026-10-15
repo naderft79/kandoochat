@@ -86,6 +86,9 @@ function buildStatCards(s: UserStats) {
   ];
 }
 
+// کلید ذخیره سازی ترجیح عدم نمایش فیک در مرورگر ادمین
+const HIDE_FAKE_KEY = "admin-users-hide-fake";
+
 export default function AdminUsersClient({ initialUsers, total, hasMore: initialHasMore, canSetRole = false, canSeeIp = false }: Props) {
   const router = useRouter();
   const [users, setUsers] = useState<UserItem[]>(initialUsers);
@@ -231,6 +234,16 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
 
   const didMountRef = useRef(false);
 
+  // بازیابی ترجیح «عدم نمایش فیک» از حافظه محلی — چون لیست اولیه سمت سرور ساخته شده، با فیلتر دوباره واکشی می کنیم
+  useEffect(() => {
+    if (localStorage.getItem(HIDE_FAKE_KEY) === "1") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- ترجیح کاربر فقط در کلاینت قابل خواندن است
+      setHideFake(true);
+      fetchUsers(0, true, { hideFake: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // جستجو با تاخیر کوتاه
   useEffect(() => {
     if (!didMountRef.current) {
@@ -268,6 +281,17 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
 
   const hasActiveFilters = genderFilter || provinceFilter || cityFilter || verifiedFilter || activeFilter || hideFake;
 
+  // تغییر وضعیت عدم نمایش فیک + ماندگاری در مرورگر
+  function toggleHideFake(value: boolean) {
+    setHideFake(value);
+    if (value) {
+      localStorage.setItem(HIDE_FAKE_KEY, "1");
+    } else {
+      localStorage.removeItem(HIDE_FAKE_KEY);
+    }
+    fetchUsers(0, true, { hideFake: value });
+  }
+
   function clearFilters() {
     setGenderFilter("");
     setProvinceFilter("");
@@ -275,6 +299,7 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
     setVerifiedFilter("");
     setActiveFilter("");
     setHideFake(false);
+    localStorage.removeItem(HIDE_FAKE_KEY);
   }
 
   function handleActionComplete() {
@@ -344,6 +369,16 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
           <option value="ageAsc">کمترین سن</option>
           <option value="ageDesc">بیشترین سن</option>
         </select>
+        {/* عدم نمایش فیک — کنار مرتب سازی؛ وضعیتش در مرورگر ذخیره می شود */}
+        <label className="shrink-0 flex items-center gap-2 px-3 py-2.5 rounded-xl border border-[rgba(212,175,55,0.15)] text-xs sm:text-sm font-medium text-[#e8e8e8] cursor-pointer select-none whitespace-nowrap">
+          <input
+            type="checkbox"
+            checked={hideFake}
+            onChange={(e) => toggleHideFake(e.target.checked)}
+            className="w-4 h-4 accent-[#d4af37]"
+          />
+          عدم نمایش فیک
+        </label>
         <button
           onClick={() => setShowFilters(!showFilters)}
           className={`px-3 py-2.5 rounded-xl border text-sm font-bold flex items-center gap-1.5 transition-all ${
@@ -444,21 +479,6 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
               <option value="active">فعال</option>
               <option value="blocked">مسدود</option>
             </select>
-
-            {/* عدم نمایش فیک — کاربران seed شده/ربات از لیست پنهان می شوند */}
-            <label className="flex items-center gap-2 px-3 py-2 rounded-lg border border-[rgba(212,175,55,0.15)] text-xs font-medium text-[#e8e8e8] cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={hideFake}
-                onChange={(e) => {
-                  const value = e.target.checked;
-                  setHideFake(value);
-                  fetchUsers(0, true, { hideFake: value });
-                }}
-                className="w-4 h-4 accent-[#d4af37]"
-              />
-              عدم نمایش فیک
-            </label>
 
             {hasActiveFilters && (
               <button
