@@ -4,6 +4,7 @@ import { requireUser, AuthError } from "@/lib/auth";
 import { uploadFile, safeExtension } from "@/lib/storage";
 import { isMediaSignatureValid } from "@/lib/file-guard";
 import { optimizeImage } from "@/lib/image";
+import { detectNsfw } from "@/lib/face";
 
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const ALLOWED_VIDEO_TYPES = ["video/mp4", "video/webm"];
@@ -44,6 +45,14 @@ export async function POST(request: Request) {
       const opt = await optimizeImage(buffer, file.type);
       buffer = opt.buffer;
       contentType = opt.type;
+      // رد عکس های لخت و بسیار سکسی در چت — فقط وقتی موتور NSFW پاسخ بدهد اعمال می شود
+      const nsfw = await detectNsfw(buffer, contentType);
+      if (nsfw?.nsfw) {
+        return NextResponse.json(
+          { error: "این عکس با قوانین محتوایی سایت مغایرت دارد" },
+          { status: 400 }
+        );
+      }
     }
     const url = await uploadFile(fileName, buffer, contentType);
     console.log(`[upload] user ${user.id} uploaded ${fileName}`);

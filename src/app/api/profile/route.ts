@@ -6,6 +6,7 @@ import { requireUser, AuthError, isProtectedRoot, ROOT_LOCKED_MESSAGE } from "@/
 import { PROVINCES } from "@/lib/iran";
 import { sanitizeName, sanitizeUsername, sanitizeJob, sanitizeString, sanitizeBio } from "@/lib/sanitize";
 import { checkProfileCompletion } from "@/lib/profileCheck";
+import { containsProfanity } from "@/lib/profanity";
 import { incrementMissionProgress } from "@/lib/missions";
 
 const PERSIAN_NAME_RE = /^[آءأإابپتثجچحخدذرزژسشصضطظعغفقکگلمنوهیئؤ\s\u200C]+$/;
@@ -47,6 +48,16 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: "نام خانوادگی باید فارسی باشد" }, { status: 400 });
     }
     data.username = sanitizeUsername(data.username);
+    // فیلتر الفاظ رکیک و سکسی در نام، نام خانوادگی و یوزرنیم
+    if (containsProfanity(data.firstName)) {
+      return NextResponse.json({ error: "این نام مجاز نیست" }, { status: 400 });
+    }
+    if (data.lastName && containsProfanity(data.lastName)) {
+      return NextResponse.json({ error: "این نام خانوادگی مجاز نیست" }, { status: 400 });
+    }
+    if (containsProfanity(data.username)) {
+      return NextResponse.json({ error: "این یوزرنیم مجاز نیست" }, { status: 400 });
+    }
     if (data.bio) data.bio = sanitizeBio(data.bio);
     if (data.job) data.job = sanitizeJob(data.job);
     if (data.carModel) data.carModel = sanitizeString(data.carModel, 100);

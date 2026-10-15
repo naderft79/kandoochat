@@ -67,6 +67,27 @@ if _mp_detector is None:
     _haar = cv2.CascadeClassifier(_find_haarcascade())
     print("[face-detector] engine: opencv haar")
 
+# موتور NSFW: NudeNet روی onnxruntime — نصب با `pip install nudenet onnxruntime`
+# اگر در دسترس نباشد endpoint با 501 جواب می دهد و Node آپلود را رد نمی کند
+_nude = None
+try:
+    from nudenet import NudeDetector
+
+    _nude = NudeDetector()
+    print("[face-detector] nsfw engine: nudenet")
+except Exception as _e:
+    print(f"[face-detector] nudenet unavailable ({_e})")
+
+# فقط اندام های جنسیِ در معرض رد می شوند — موهای باز، آرایش و پوشش معمولی/کمی باز مجاز است
+# آستانه ها: اندام تناسلی و مقعد سخت گیرانه تر، پستان و باسن کمی محافظه کارانه تر (نویز روی لباس تنگ/مایو)
+NSFW_CLASSES = {
+    "FEMALE_GENITALIA_EXPOSED": 0.40,
+    "MALE_GENITALIA_EXPOSED": 0.40,
+    "ANUS_EXPOSED": 0.40,
+    "FEMALE_BREAST_EXPOSED": 0.50,
+    "BUTTOCKS_EXPOSED": 0.55,
+}
+
 
 def _detect(img_bgr) -> tuple[int, float]:
     """تعداد چهره و بهترین امتیاز را برمی گرداند."""
@@ -94,7 +115,7 @@ async def require_token(request: Request) -> None:
 
 @app.get("/health")
 async def health():
-    return {"ok": True}
+    return {"ok": True, "nsfw": _nude is not None}
 
 
 @app.post("/detect", dependencies=[Depends(require_token)])
@@ -112,3 +133,46 @@ async def detect(request: Request):
 
     faces, score = _detect(img)
     return {"faces": faces, "score": score}
+
+
+@app.post("/nsfw", dependencies=[Depends(require_token)])
+async def nsfw(request: Request):
+    # موتور نصب نشده باشد 501 برمی گردانیم تا Node بداند بررسی ممکن نیست
+    if _nude is None:
+        raise HTTPException(status_code=501, detail="nsfw engine unavailable")
+
+    data = await request.body()
+    if len(data) > MAX_IMAGE_BYTES:
+        raise HTTPException(status_code=413, detail="image too large")
+    if len(data) == 0:
+        raise HTTPException(status_code=400, detail="empty image")
+    arr = np.frombuffer(data, np.uint8)
+    img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
+    if img is None:
+        return {"nsfw": False, "score": 0.0, "hits": []}
+
+    # NudeNet نسخه های مختلف مسیر فایل را قابل اعتمادتر از آرایه می پذیرد — فایل موقت
+    import tempfile
+
+    fd, tmp_path = tempfile.mkstemp(suffix=".jpg")
+    try:
+        os.close(fd)
+        cv2.imwrite(tmp_path, img)
+        detections = _nude.detect(tmp_path)
+    finally:
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            pass
+
+    hits = []
+    best = 0.0
+    for d in detections or []:
+        cls = d.get("class", "")
+        sc = float(d.get("score", 0.0) or 0.0)
+        thr = NSFW_CLASSES.get(cls)
+        if thr is not None and sc >= thr:
+            hits.append({"class": cls, "score": round(sc, 3)})
+            best = max(best, sc)
+
+    return {"nsfw": len(hits) > 0, "score": best, "hits": hits}

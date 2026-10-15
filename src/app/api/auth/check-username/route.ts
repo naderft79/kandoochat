@@ -10,6 +10,8 @@ export async function GET(request: Request) {
     const username = new URL(request.url).searchParams.get("username") ?? "";
     if (username.length < 3) return NextResponse.json({ available: false, error: "حداقل ۳ کاراکتر" });
     if (!/^[a-zA-Z0-9_]+$/.test(username)) return NextResponse.json({ available: false, error: "فقط حروف انگلیسی، عدد و زیرخط" });
+    const { containsProfanity } = await import("@/lib/profanity");
+    if (containsProfanity(username)) return NextResponse.json({ available: false, error: "این یوزرنیم مجاز نیست" });
     const existing = await prisma.user.findUnique({ where: { username }, select: { id: true } });
     return NextResponse.json(existing ? { available: false, error: "این یوزرنیم قبلا انتخاب شده" } : { available: true });
   } catch (err) {

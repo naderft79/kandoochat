@@ -11,6 +11,7 @@ import { getRequestIp } from "@/lib/client-ip";
 import { recordLoginEvent } from "@/lib/login-events";
 import { verifyProof } from "@/lib/phoneOtp";
 import { getAllSettings } from "@/lib/settings";
+import { containsProfanity } from "@/lib/profanity";
 
 const PERSIAN_NAME_RE = /^[آءأإابپتثجچحخدذرزژسشصضطظعغفقکگلمنوهیئؤ\s\u200C]+$/;
 
@@ -88,6 +89,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "نام خانوادگی باید فارسی باشد" }, { status: 400 });
     }
     data.username = sanitizeUsername(data.username);
+    // فیلتر الفاظ رکیک و سکسی در نام، نام خانوادگی و یوزرنیم
+    if (containsProfanity(data.firstName)) {
+      return NextResponse.json({ error: "این نام مجاز نیست" }, { status: 400 });
+    }
+    if (data.lastName && containsProfanity(data.lastName)) {
+      return NextResponse.json({ error: "این نام خانوادگی مجاز نیست" }, { status: 400 });
+    }
+    if (containsProfanity(data.username)) {
+      return NextResponse.json({ error: "این یوزرنیم مجاز نیست" }, { status: 400 });
+    }
     if (data.carModel) data.carModel = sanitizeString(data.carModel, 100);
     if (data.neighborhood) data.neighborhood = sanitizeString(data.neighborhood, 100);
     if (data.job) data.job = sanitizeJob(data.job);

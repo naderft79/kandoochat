@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { requireUser, AuthError } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { uploadFile, deleteFile, safeExtension } from "@/lib/storage";
-import { detectFaces } from "@/lib/face";
+import { detectFaces, detectNsfw } from "@/lib/face";
 import { isMediaSignatureValid } from "@/lib/file-guard";
 import { optimizeImage } from "@/lib/image";
 
@@ -82,6 +82,15 @@ export async function POST(request: Request) {
     } else if (faceResult.score < 0.6) {
       return NextResponse.json(
         { error: "کیفیت عکس برای تشخیص چهره کافی نیست. لطفا عکس واضح تری از چهره خودتان آپلود کنید" },
+        { status: 400 }
+      );
+    }
+
+    // رد عکس های لخت و بسیار سکسی — فقط وقتی موتور NSFW پاسخ بدهد اعمال می شود
+    const nsfw = await detectNsfw(optimized.buffer, optimized.type);
+    if (nsfw?.nsfw) {
+      return NextResponse.json(
+        { error: "این عکس با قوانین محتوایی سایت مغایرت دارد. لطفا عکس مناسب تری انتخاب کنید" },
         { status: 400 }
       );
     }
