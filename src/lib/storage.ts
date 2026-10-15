@@ -19,9 +19,9 @@ export function isS3Enabled(): boolean {
 
 let s3Client: import("@aws-sdk/client-s3").S3Client | null = null;
 
-function getS3() {
+async function getS3() {
   if (!s3Client) {
-    const { S3Client } = require("@aws-sdk/client-s3") as typeof import("@aws-sdk/client-s3");
+    const { S3Client } = await import("@aws-sdk/client-s3");
     s3Client = new S3Client({
       endpoint: S3_ENDPOINT,
       region: S3_REGION || "us-east-1",
@@ -52,7 +52,7 @@ export async function uploadFile(
   // (public توسط next start از دیسک سرو می شود و فایل های جدید هم دیده می شوند)
   if (isS3Enabled()) {
     const { PutObjectCommand } = await import("@aws-sdk/client-s3");
-    await getS3().send(
+    await (await getS3()).send(
       new PutObjectCommand({
         Bucket: S3_BUCKET,
         Key: safeKey,
@@ -63,26 +63,36 @@ export async function uploadFile(
     return `${S3_PUBLIC_URL!.replace(/\/$/, "")}/${safeKey}`;
   }
 
-  // fallback محلی — public/uploads
+  // fallback محلی — public/uploads؛ URL از مسیر API می رود تا قوانین استاتیک nginx عکس را 404 نکنند
   const filePath = path.join(process.cwd(), "public", "uploads", safeKey);
   const dir = path.dirname(filePath);
   if (!existsSync(dir)) await mkdir(dir, { recursive: true });
   await writeFile(filePath, buffer);
-  return `/uploads/${safeKey}`;
+  return `/api/media?p=${encodeURIComponent(safeKey)}`;
+}
+
+// استخراج کلید فایل محلی از URL — هر دو قالب /api/media?p=key و /uploads/key قدیمی
+export function localKeyFromUrl(url: string): string | null {
+  if (url.startsWith("/uploads/")) return url.slice("/uploads/".length).replace(/\.\./g, "");
+  if (url.startsWith("/api/media?p=")) {
+    return decodeURIComponent(url.slice("/api/media?p=".length)).replace(/\.\./g, "");
+  }
+  return null;
 }
 
 // حذف فایل — محلی یا S3 بر اساس URL
 export async function deleteFile(url: string) {
   try {
-    if (url.startsWith("/uploads/")) {
-      const filePath = path.join(process.cwd(), "public", url);
+    const localKey = localKeyFromUrl(url);
+    if (localKey) {
+      const filePath = path.join(process.cwd(), "public", "uploads", localKey);
       if (existsSync(filePath)) await unlink(filePath);
       return;
     }
     if (isS3Enabled() && url.startsWith(S3_PUBLIC_URL!)) {
       const { DeleteObjectCommand } = await import("@aws-sdk/client-s3");
       const key = url.slice(S3_PUBLIC_URL!.replace(/\/$/, "").length + 1);
-      await getS3().send(new DeleteObjectCommand({ Bucket: S3_BUCKET, Key: key }));
+      await (await getS3()).send(new DeleteObjectCommand({ Bucket: S3_BUCKET, Key: key }));
     }
   } catch (err) {
     console.error("[storage] delete failed:", url, err);

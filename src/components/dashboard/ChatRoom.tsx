@@ -130,6 +130,8 @@ export default function ChatRoom({
   const [showJump, setShowJump] = useState(false);
   // وضعیت لحظه ای درخواست های سکه — از SSE و پاسخ PATCH به روز می شود
   const [transferStatuses, setTransferStatuses] = useState<Record<string, string>>(initialTransferStatuses);
+  // نمایش تمام صفحه عکس پیام — با کلیک روی عکس در چت باز می شود
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
   // وضعیت زنده آنلاین بودن طرف مقابل — با SSE سراسری به روز می شود
   const livePresence = useLivePresence(otherUserId, otherOnline, otherLastSeen);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -1013,9 +1015,20 @@ export default function ChatRoom({
                     }`}
                   >
                     {m.type === "IMAGE" && m.mediaUrl ? (
-                      <div className="relative w-full max-w-[240px] h-48 rounded-2xl overflow-hidden mb-1">
-                        <Image src={m.mediaUrl} alt="عکس" fill className="object-cover" sizes="240px" />
-                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setLightboxUrl(m.mediaUrl!)}
+                        className="block mb-1 cursor-zoom-in rounded-2xl overflow-hidden"
+                        aria-label="نمایش عکس"
+                      >
+                        {/* عرض ثابت و ارتفاع طبیعی — عکس در بابل له نمی شود؛ img ساده تا آپتماایزر next روی فایل های تازه آپلودشده خراب نشود */}
+                        <img
+                          src={m.mediaUrl}
+                          alt="عکس"
+                          loading="lazy"
+                          className="w-56 sm:w-64 max-h-80 object-cover"
+                        />
+                      </button>
                     ) : m.type === "VIDEO" && m.mediaUrl ? (
                       <video
                         src={m.mediaUrl}
@@ -1731,6 +1744,32 @@ export default function ChatRoom({
         onConfirm={handleDeleteConversation}
         confirmLabel={deletingConv ? "در حال حذف..." : "حذف کن"}
       />
+
+      {/* نمایش تمام صفحه عکس */}
+      {lightboxUrl && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 ig-fade-in"
+          onClick={() => setLightboxUrl(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="نمایش عکس"
+        >
+          <button
+            type="button"
+            onClick={() => setLightboxUrl(null)}
+            aria-label="بستن"
+            className="absolute top-4 left-4 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+          <img
+            src={lightboxUrl}
+            alt="عکس"
+            className="max-w-full max-h-full object-contain rounded-xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { requireAdmin, AuthError } from "@/lib/auth";
 import { unlink } from "fs/promises";
 import path from "path";
+import { localKeyFromUrl } from "@/lib/storage";
 
 export async function DELETE(
   _request: Request,
@@ -18,9 +19,10 @@ export async function DELETE(
       return NextResponse.json({ error: "پیام یافت نشد" }, { status: 404 });
     }
 
-    // حذف فایل از سرور در صورت وجود
-    if (message.mediaUrl?.startsWith("/uploads/")) {
-      const filePath = path.join(process.cwd(), "public", message.mediaUrl);
+    // حذف فایل از سرور در صورت وجود — هر دو قالب URL محلی
+    const localKey = message.mediaUrl ? localKeyFromUrl(message.mediaUrl) : null;
+    if (localKey) {
+      const filePath = path.join(process.cwd(), "public", "uploads", localKey);
       try {
         await unlink(filePath);
       } catch {

@@ -7,6 +7,7 @@ import sharp from "sharp";
 import { prisma } from "@/lib/prisma";
 import { requireUser, AuthError } from "@/lib/auth";
 import { hasActiveSubscription } from "@/lib/finance";
+import { localKeyFromUrl } from "@/lib/storage";
 
 export async function GET(
   _request: Request,
@@ -41,8 +42,9 @@ export async function GET(
     if (!photoUrl) return NextResponse.json({ error: "یافت نشد" }, { status: 404 });
 
     let buf: Buffer;
-    if (photoUrl.startsWith("/uploads/")) {
-      buf = await readFile(path.join(process.cwd(), "public", photoUrl));
+    const localKey = localKeyFromUrl(photoUrl);
+    if (localKey) {
+      buf = await readFile(path.join(process.cwd(), "public", "uploads", localKey));
     } else {
       const res = await fetch(photoUrl);
       if (!res.ok) throw new Error("fetch failed");
