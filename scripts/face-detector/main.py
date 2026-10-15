@@ -86,6 +86,8 @@ NSFW_CLASSES = {
     "ANUS_EXPOSED": 0.40,
     "FEMALE_BREAST_EXPOSED": 0.50,
     "BUTTOCKS_EXPOSED": 0.55,
+    # سینه با پوشش اما برجسته/چاک سینه — آستانه بالا تا فقط موارد واضح رد شوند
+    "FEMALE_BREAST_COVERED": float(os.environ.get("NSFW_BREAST_COVERED_THRESHOLD", "0.70")),
 }
 
 
