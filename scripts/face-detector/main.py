@@ -47,8 +47,10 @@ except Exception as _e:
 # یافتن فایل Haar — در نصب pip در cv2.data است و در پکیج های دبیان/اوبونتو در مسیرهای سیستمی
 def _find_haarcascade() -> str:
     candidates = []
-    if hasattr(cv2, "data") and getattr(cv2.data, "haarcascades", None):
+    try:
         candidates.append(Path(cv2.data.haarcascades) / "haarcascade_frontalface_default.xml")
+    except AttributeError:
+        pass
     candidates += [
         Path("/usr/share/opencv4/haarcascades/haarcascade_frontalface_default.xml"),
         Path("/usr/share/opencv/haarcascades/haarcascade_frontalface_default.xml"),
