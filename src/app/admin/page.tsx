@@ -3,6 +3,7 @@ import { LayoutDashboard } from "lucide-react";
 import { getAllSettings } from "@/lib/settings";
 import { formatToman } from "@/lib/format";
 import AdminCharts from "@/components/admin/AdminCharts";
+import FreeWeekToggle from "@/components/admin/FreeWeekToggle";
 import AdminAlertsBanner from "@/components/admin/AdminAlertsBanner";
 import QrLoginCard from "@/components/admin/QrLoginCard";
 import NotificationTester from "@/components/admin/NotificationTester";
@@ -14,6 +15,9 @@ export default async function AdminDashboardPage() {
 
   return (
     <div className="space-y-6">
+      {/* قانون اشتراک یک هفته ای رایگان برای اعضای دعوت شده */}
+      <FreeWeekToggle initial={settings.freeWeekSubscription} />
+
       {/* کارت داشبورد و کارت ورود سریع کنار هم (دسکتاپ)؛ اگر QR فعال نباشد، کارت داشبورد تمام عرض می ماند */}
       <div className={`grid grid-cols-1 gap-4 items-stretch ${showQr ? "lg:grid-cols-2" : ""}`}>
         <div className="lux-card p-5">

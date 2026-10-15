@@ -322,6 +322,7 @@ const FIELD_MAP: Record<string, SettingKey> = {
   registerErrorMessage: "REGISTER_ERROR_MESSAGE",
   registerGoogleEnabled: "REGISTER_GOOGLE_ENABLED",
   // تب ۲۴: اشتراک و VIP
+  freeWeekSubscription: "FREE_WEEK_SUBSCRIPTION",
   freeTrialDays: "FREE_TRIAL_DAYS",
   firstPurchaseDiscount: "FIRST_PURCHASE_DISCOUNT",
   subscriptionExpiryWarnDays: "SUBSCRIPTION_EXPIRY_WARN_DAYS",

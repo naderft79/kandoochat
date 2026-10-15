@@ -160,12 +160,31 @@ export async function POST(request: Request) {
     await createSession(user.id, user.role as import("@/lib/auth").UserRole);
 
     // ثبت کد دعوت اگر وجود داشته باشد — رکورد در انتظار ساخته می شود و پاداش بعد از فعالیت دعوت شده آزاد می شود
+    let freeWeekSub = false;
+    let referrerName = "";
     if (data.referralCode) {
       try {
         const referrer = await findUserByReferralCode(data.referralCode);
         if (referrer && referrer.id !== user.id) {
           const created = await createPendingReferral(referrer.id, user.id);
           if (created) {
+            referrerName = referrer.firstName;
+            // قانون «اشتراک یک هفته ای» — اعضای دعوت شده یک هفته اشتراک رایگان می گیرند
+            if (settings0.freeWeekSubscription) {
+              const endsAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+              await prisma.subscription.create({
+                data: { userId: user.id, tier: "یک هفته رایگان", startsAt: new Date(), endsAt, coinsPaid: 0 },
+              });
+              await prisma.notification.create({
+                data: {
+                  userId: user.id,
+                  type: "SUBSCRIPTION_PURCHASED",
+                  title: "اشتراک هدیه",
+                  body: `یک هفته اشتراک رایگان به هدیه دعوت ${referrer.firstName} فعال شد`,
+                },
+              });
+              freeWeekSub = true;
+            }
             await prisma.notification.create({
               data: {
                 userId: referrer.id,
@@ -185,7 +204,7 @@ export async function POST(request: Request) {
       }
     }
 
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true, freeWeekSub, referrerName });
   } catch (err) {
     console.error("[register] error:", err);
     return NextResponse.json({ error: "خطای سرور" }, { status: 500 });

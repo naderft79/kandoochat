@@ -4,7 +4,7 @@
 import { useCallback, useEffect, useRef, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowRight, ArrowLeft, Check, BadgeCheck } from "lucide-react";
+import { ArrowRight, ArrowLeft, Check, BadgeCheck, Gift } from "lucide-react";
 import { PROVINCES, PROVINCE_NAMES } from "@/lib/iran";
 import { toPersianDigits, normalizeDigits } from "@/lib/format";
 import { currentJalaliYear } from "@/lib/jalali";
@@ -85,6 +85,8 @@ function RegisterForm() {
   const refLocked = Boolean(searchParams.get("ref")?.trim());
   const [refState, setRefState] = useState<"idle" | "checking" | "ok" | "invalid">("idle");
   const [refName, setRefName] = useState("");
+  // نام دعوت کننده وقتی «اشتراک یک هفته ای» فعال و تعلق گرفته باشد — null یعنی صفحه تبریک نشان داده نمی شود
+  const [giftFrom, setGiftFrom] = useState<string | null>(null);
   const [form, setForm] = useState<Form>({
     phone: "", password: "", gender: "", username: "", firstName: "", lastName: "", province: "", city: "",
     birthYear: "", height: "", weight: "", income: "",
@@ -308,6 +310,11 @@ function RegisterForm() {
         setFormError(data.error ?? "خطایی رخ داد");
         return;
       }
+      // اگر «اشتراک یک هفته ای» به حساب افتاده باشد، اول صفحه تبریک نشان داده می شود
+      if (data.freeWeekSub) {
+        setGiftFrom(data.referrerName || refName || "");
+        return;
+      }
       // مجوز اعلان بلافاصله بعد از ثبت نام — بدون بلاک کردن ورود
       void requestPushPermission();
       router.push("/dashboard");
@@ -317,6 +324,32 @@ function RegisterForm() {
     } finally {
       setLoading(false);
     }
+  }
+
+  // صفحه تبریک — فقط وقتی اشتراک یک هفته ای به عضو دعوت شده تعلق گرفته باشد
+  if (giftFrom !== null) {
+    return (
+      <div className="min-h-dvh bg-surface flex items-center justify-center p-4">
+        <div className="w-full max-w-[400px] bg-surface border border-ig-border rounded-xl p-6 sm:p-8 text-center">
+          <div className="w-16 h-16 rounded-full bg-ig-btn2 flex items-center justify-center mx-auto mb-4">
+            <Gift className="w-8 h-8 text-ig-blue" aria-hidden />
+          </div>
+          <h1 className="text-xl font-bold mb-2">تبریک!</h1>
+          <p className="text-sm text-ig-gray leading-6 mb-6">
+            شما با لینک دعوت {giftFrom ? `«${giftFrom}»` : ""} عضو شدید و یک هفته اشتراک رایگان گرفتید.
+          </p>
+          <Button
+            onClick={() => {
+              void requestPushPermission();
+              router.push("/dashboard");
+              router.refresh();
+            }}
+          >
+            شروع استفاده از کندو
+          </Button>
+        </div>
+      </div>
+    );
   }
 
   return (

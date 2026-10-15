@@ -324,6 +324,7 @@ export const DEFAULT_SETTINGS = {
   REGISTER_ERROR_MESSAGE: "ثبت نام ناموفق بود. لطفا دوباره تلاش کنید",
   REGISTER_GOOGLE_ENABLED: "false",
   // --- تب ۲۴: اشتراک و VIP ---
+  FREE_WEEK_SUBSCRIPTION: "false",
   FREE_TRIAL_DAYS: "0",
   FIRST_PURCHASE_DISCOUNT: "0",
   SUBSCRIPTION_EXPIRY_WARN_DAYS: "3",
@@ -867,6 +868,7 @@ function buildSettings(map: Map<string, string>) {
     registerErrorMessage: get("REGISTER_ERROR_MESSAGE"),
     registerGoogleEnabled: getBool("REGISTER_GOOGLE_ENABLED"),
     // تب ۲۴: اشتراک و VIP
+    freeWeekSubscription: getBool("FREE_WEEK_SUBSCRIPTION"),
     freeTrialDays: getNum("FREE_TRIAL_DAYS"),
     firstPurchaseDiscount: getNum("FIRST_PURCHASE_DISCOUNT"),
     subscriptionExpiryWarnDays: getNum("SUBSCRIPTION_EXPIRY_WARN_DAYS"),
