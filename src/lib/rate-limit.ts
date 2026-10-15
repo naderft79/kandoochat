@@ -68,9 +68,12 @@ export async function rateLimit(
 }
 
 export function getClientIdentifier(request: Request): string {
-  const forwarded = request.headers.get("x-forwarded-for");
-  const ip = forwarded?.split(",")[0]?.trim() || "unknown";
-  return ip;
+  // ترتیب اعتماد: Cloudflare → زنجیره پروکسی → nginx مستقیم
+  // نکته: اگر هیچ کدام نباشد همه کاربران روی «unknown» با یک سقف مشترک می افتند
+  const cf = request.headers.get("cf-connecting-ip")?.trim();
+  const forwarded = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+  const real = request.headers.get("x-real-ip")?.trim();
+  return cf || forwarded || real || "unknown";
 }
 
 // پیش‌تنظیم‌های پرکاربرد
