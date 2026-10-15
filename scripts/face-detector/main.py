@@ -7,10 +7,8 @@ import os
 from pathlib import Path
 
 import cv2
-import mediapipe as mp
 import numpy as np
-from fastapi import Depends, FastAPI, File, HTTPException, Request, UploadFile
-from mediapipe.tasks.python import vision
+from fastapi import Depends, FastAPI, HTTPException, Request
 
 # خواندن FACE_SERVICE_TOKEN از فایل .env کنار اسکریپت (بدون وابستگی اضافه)
 _env_file = Path(__file__).parent / ".env"
@@ -29,12 +27,45 @@ if len(SERVICE_TOKEN) < 32:
     raise RuntimeError("FACE_SERVICE_TOKEN must be set (at least 32 chars)")
 
 app = FastAPI()
-detector = vision.FaceDetector.create_from_options(
-    vision.FaceDetectorOptions(
-        base_options=mp.tasks.BaseOptions(model_asset_path=MODEL_PATH),
-        min_detection_confidence=0.5,
+
+# موتور اصلی: MediaPipe BlazeFace — اگر نصب نشده باشد به OpenCV Haar برمی گردیم
+_mp_detector = None
+try:
+    import mediapipe as mp
+    from mediapipe.tasks.python import vision
+
+    _mp_detector = vision.FaceDetector.create_from_options(
+        vision.FaceDetectorOptions(
+            base_options=mp.tasks.BaseOptions(model_asset_path=MODEL_PATH),
+            min_detection_confidence=0.5,
+        )
     )
-)
+    print("[face-detector] engine: mediapipe/blazeface")
+except Exception as _e:
+    print(f"[face-detector] mediapipe unavailable ({_e}); falling back to opencv haar")
+
+_haar = None
+if _mp_detector is None:
+    _haar = cv2.CascadeClassifier(
+        str(Path(cv2.data.haarcascades) / "haarcascade_frontalface_default.xml")
+    )
+    print("[face-detector] engine: opencv haar")
+
+
+def _detect(img_bgr) -> tuple[int, float]:
+    """تعداد چهره و بهترین امتیاز را برمی گرداند."""
+    if _mp_detector is not None:
+        rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+        mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb)
+        result = _mp_detector.detect(mp_image)
+        if not result.detections:
+            return 0, 0.0
+        scores = [d.categories[0].score for d in result.detections]
+        return len(scores), float(max(scores))
+    # haar فقط آستانه تعداد دارد — امتیاز را ۱ گزارش می کنیم
+    gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
+    faces = _haar.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(60, 60))
+    return len(faces), 1.0 if len(faces) else 0.0
 
 
 async def require_token(request: Request) -> None:
@@ -51,21 +82,17 @@ async def health():
 
 
 @app.post("/detect", dependencies=[Depends(require_token)])
-async def detect(image: UploadFile = File(...)):
-    data = await image.read(MAX_IMAGE_BYTES + 1)
+async def detect(request: Request):
+    # تصویر به صورت خام در بدنه درخواست می آید (بدون multipart)
+    data = await request.body()
     if len(data) > MAX_IMAGE_BYTES:
         raise HTTPException(status_code=413, detail="image too large")
+    if len(data) == 0:
+        raise HTTPException(status_code=400, detail="empty image")
     arr = np.frombuffer(data, np.uint8)
     img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
     if img is None:
         return {"faces": 0, "score": 0.0}
 
-    rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb)
-    result = detector.detect(mp_image)
-
-    if not result.detections:
-        return {"faces": 0, "score": 0.0}
-
-    scores = [d.categories[0].score for d in result.detections]
-    return {"faces": len(scores), "score": float(max(scores))}
+    faces, score = _detect(img)
+    return {"faces": faces, "score": score}

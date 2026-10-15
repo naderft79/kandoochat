@@ -16,13 +16,14 @@ export async function detectFaces(imageBuffer: Buffer, contentType: string): Pro
   if (!url || !token) return null;
 
   try {
-    const form = new FormData();
-    form.append("image", new Blob([new Uint8Array(imageBuffer)], { type: contentType }), "selfie.jpg");
-
+    // تصویر به صورت خام با Content-Type تصویر ارسال می شود — multipart لازم نیست
     const res = await fetch(`${url.replace(/\/$/, "")}/detect`, {
       method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-      body: form,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": contentType || "image/jpeg",
+      },
+      body: new Uint8Array(imageBuffer),
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
 
