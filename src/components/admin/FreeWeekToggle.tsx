@@ -1,7 +1,7 @@
 "use client";
 
 // سوییچ قانون «اشتراک یک هفته ای» — با فعال بودن، اعضای دعوت شده یک هفته اشتراک رایگان می گیرند
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Gift } from "lucide-react";
 
@@ -9,12 +9,27 @@ export default function FreeWeekToggle({ initial }: { initial: boolean }) {
   const router = useRouter();
   const [on, setOn] = useState(initial);
   const [busy, setBusy] = useState(false);
+  const [saveError, setSaveError] = useState(false);
+  const errTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (errTimer.current) clearTimeout(errTimer.current);
+    };
+  }, []);
+
+  function flashError() {
+    setSaveError(true);
+    if (errTimer.current) clearTimeout(errTimer.current);
+    errTimer.current = setTimeout(() => setSaveError(false), 4000);
+  }
 
   async function toggle() {
     if (busy) return;
     const next = !on;
     setOn(next);
     setBusy(true);
+    setSaveError(false);
     try {
       const res = await fetch("/api/admin/settings", {
         method: "PUT",
@@ -23,11 +38,13 @@ export default function FreeWeekToggle({ initial }: { initial: boolean }) {
       });
       if (!res.ok) {
         setOn(!next);
+        flashError();
         return;
       }
       router.refresh();
     } catch {
       setOn(!next);
+      flashError();
     } finally {
       setBusy(false);
     }
@@ -44,6 +61,11 @@ export default function FreeWeekToggle({ initial }: { initial: boolean }) {
               ? "فعال — اعضایی که با لینک دعوت ثبت نام می کنند یک هفته اشتراک رایگان می گیرند"
               : "غیرفعال — عضویت با لینک دعوت مثل قبل بدون هدیه انجام می شود"}
           </p>
+          {saveError && (
+            <p className="text-[10px] text-[#f87171] leading-4 mt-0.5" role="alert">
+              ذخیره نشد — اتصال را بررسی و دوباره تلاش کنید
+            </p>
+          )}
         </div>
       </div>
       <button
