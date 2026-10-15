@@ -233,8 +233,8 @@ function RegisterForm() {
       else if (usernameState === "taken") e.username = "این یوزرنیم قبلا انتخاب شده است";
       if (form.firstName.trim().length < 2) e.firstName = "نام را وارد کنید";
       else if (!PERSIAN_NAME_RE.test(form.firstName.trim())) e.firstName = "فقط اسم فارسی پشتیبانی می شود";
-      if (form.lastName.trim().length < 2) e.lastName = "نام خانوادگی را وارد کنید";
-      else if (!PERSIAN_NAME_RE.test(form.lastName.trim())) e.lastName = "فقط اسم فارسی پشتیبانی می شود";
+      // نام خانوادگی اختیاری است — اگر وارد شده باشد باید فارسی باشد
+      if (form.lastName.trim() && !PERSIAN_NAME_RE.test(form.lastName.trim())) e.lastName = "فقط اسم فارسی پشتیبانی می شود";
       if (!form.province) e.province = "استان را انتخاب کنید";
       if (!form.city) e.city = "شهر را انتخاب کنید";
       if (!form.birthYear) e.birthYear = "سال تولد را انتخاب کنید";
@@ -521,7 +521,7 @@ function RegisterForm() {
                   error={errors.firstName}
                 />
                 <Input
-                  label="نام خانوادگی"
+                  label="نام خانوادگی (اختیاری)"
                   autoComplete="family-name"
                   value={form.lastName}
                   onChange={(e) => {

@@ -148,7 +148,7 @@ export default function ProfileForm({ initial, onClose }: { initial: ProfileData
             />
           </div>
           <div>
-            <label className="block text-xs font-bold text-ig-gray mb-1">نام خانوادگی</label>
+            <label className="block text-xs font-bold text-ig-gray mb-1">نام خانوادگی (اختیاری)</label>
             <input
               value={form.lastName}
               onChange={(e) => set("lastName", e.target.value)}
