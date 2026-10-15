@@ -375,18 +375,16 @@ export async function PATCH(request: Request) {
         return NextResponse.json({ ok: true, role });
       }
       case "deleteUser": {
-        // فقط سوپر ادمین و با دلیل اجباری؛ حذف نرم با ۳۰ روز مهلت بازیابی
+        // فقط سوپر ادمین؛ حذف نرم با ۳۰ روز مهلت بازیابی (دلیل اختیاری است)
         if (admin.role !== "SUPER_ADMIN") {
           return NextResponse.json({ error: "فقط سوپر ادمین مجاز است" }, { status: 403 });
-        }
-        if (!reason) {
-          return NextResponse.json({ error: "ثبت دلیل حذف الزامی است" }, { status: 400 });
         }
         if (userId === admin.id) {
           return NextResponse.json({ error: "نمی توانید حساب خود را حذف کنید" }, { status: 400 });
         }
+        const deleteReason = reason?.trim() || "حذف توسط مدیر";
         try {
-          await softDeleteUser(admin.id, userId, reason);
+          await softDeleteUser(admin.id, userId, deleteReason);
         } catch (e) {
           if (e instanceof DeleteUserError) {
             const msg = ({ NOT_FOUND: "کاربر یافت نشد", ALREADY_DELETED: "کاربر قبلاً حذف شده است", IS_ADMIN: "حساب مدیر را نمی توان حذف کرد" } as Record<string, string>)[e.code] ?? "خطا";
@@ -395,7 +393,7 @@ export async function PATCH(request: Request) {
           throw e;
         }
         console.log(`[admin] ${admin.id} soft-deleted user ${userId}`);
-        await logAction(admin.id, "DELETE_USER", "USER", userId, reason.slice(0, 200));
+        await logAction(admin.id, "DELETE_USER", "USER", userId, deleteReason.slice(0, 200));
         return NextResponse.json({ ok: true });
       }
       case "restoreUser": {

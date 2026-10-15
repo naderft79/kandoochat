@@ -1,6 +1,6 @@
 "use client";
 
-// مودال حذف کامل کاربر (حذف نرم با ۳۰ روز مهلت بازیابی) — فقط سوپر ادمین؛ دلیل حذف اجباری است
+// مودال حذف کامل کاربر (حذف نرم با ۳۰ روز مهلت بازیابی) — فقط سوپر ادمین؛ فقط با تایید داخل مودال
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { X, Loader2, Trash2, AlertTriangle } from "lucide-react";
@@ -17,21 +17,16 @@ type Props = {
 export default function DeleteUserModal({ userId, displayName, username, onClose, onSuccess }: Props) {
   const router = useRouter();
   const { toast } = useToast();
-  const [reason, setReason] = useState("");
-  const [confirmName, setConfirmName] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const nameMatches = confirmName.trim() === username;
-  const canSubmit = reason.trim().length >= 3 && nameMatches && !loading;
-
   async function submit() {
-    if (!canSubmit) return;
+    if (loading) return;
     setLoading(true);
     try {
       const res = await fetch("/api/admin/users", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, action: "deleteUser", reason: reason.trim() }),
+        body: JSON.stringify({ userId, action: "deleteUser" }),
       });
       const data = await res.json();
       if (res.ok) {
@@ -75,42 +70,15 @@ export default function DeleteUserModal({ userId, displayName, username, onClose
           </div>
         </div>
 
-        <div>
-          <label htmlFor="del-reason" className="block text-xs font-bold text-foreground mb-1">دلیل حذف (اجباری)</label>
-          <textarea
-            id="del-reason"
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            rows={3}
-            placeholder="مثلاً: درخواست خود کاربر، تخلف، حساب تکراری..."
-            className="w-full px-3 py-2.5 rounded-xl border border-[rgba(212,175,55,0.15)] bg-[#0d0d0d] text-[#e8e8e8] text-sm focus:outline-none focus:border-[rgba(212,175,55,0.4)] placeholder:text-[#555]"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="del-confirm" className="block text-xs font-bold text-foreground mb-1">
-            برای تایید، نام کاربری <span dir="ltr" className="text-[#d4af37]">@{username}</span> را بنویسید
-          </label>
-          <input
-            id="del-confirm"
-            type="text"
-            dir="ltr"
-            value={confirmName}
-            onChange={(e) => setConfirmName(e.target.value)}
-            placeholder={username}
-            className="w-full px-3 py-2.5 rounded-xl border border-[rgba(212,175,55,0.15)] bg-[#0d0d0d] text-[#e8e8e8] text-sm text-left focus:outline-none focus:border-[rgba(212,175,55,0.4)] placeholder:text-[#555]"
-          />
-        </div>
-
         <div className="flex gap-2">
           <button
             type="button"
             onClick={submit}
-            disabled={!canSubmit}
+            disabled={loading}
             className="flex-1 py-2.5 rounded-xl bg-[rgba(239,68,68,0.15)] border border-[rgba(239,68,68,0.4)] text-[#f87171] text-xs font-black disabled:opacity-40 flex items-center justify-center gap-1.5"
           >
             {loading && <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden />}
-            حذف کامل کاربر
+            تایید حذف
           </button>
           <button type="button" onClick={onClose} className="flex-1 py-2.5 rounded-xl lux-btn-outline text-xs font-bold">
             انصراف
