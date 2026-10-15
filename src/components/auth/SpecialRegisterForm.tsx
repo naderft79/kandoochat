@@ -398,6 +398,12 @@ function SpecialRegisterFormInner({ slug }: { slug: string }) {
             </p>
           </div>
 
+          {/* دکمه شروع — رفتن به مرحله دوم (فرم ثبت نام) */}
+          <Button size="lg" fullWidth onClick={() => setView("form")}>
+            شروع ثبت نام ویژه
+            <ArrowLeft className="w-4 h-4" aria-hidden />
+          </Button>
+
           {/* حریم خصوصی */}
           <div className="rounded-2xl border border-ig-border bg-ig-blue/[0.04] p-3.5 flex items-start gap-2.5">
             <Lock className="w-4 h-4 text-ig-blue shrink-0 mt-0.5" />
@@ -406,12 +412,6 @@ function SpecialRegisterFormInner({ slug }: { slug: string }) {
               شماره موبایل، نام خانوادگی و اطلاعات شخصی شما به هیچ عنوان به کاربران دیگر نمایش داده نمی شود.
             </p>
           </div>
-
-          {/* دکمه شروع — رفتن به مرحله دوم (فرم ثبت نام) */}
-          <Button size="lg" fullWidth onClick={() => setView("form")}>
-            شروع ثبت نام ویژه
-            <ArrowLeft className="w-4 h-4" aria-hidden />
-          </Button>
           <p className="text-center text-sm text-ig-gray">
             قبلا ثبت نام کرده اید؟{" "}
             <Link href="/login" className="text-ig-blue font-bold">
