@@ -15,7 +15,7 @@ type Props = {
 
 export default function Captcha({ onChange, refreshKey = 0, label = "کد امنیتی" }: Props) {
   const [captchaId, setCaptchaId] = useState("");
-  const [svg, setSvg] = useState("");
+  const [png, setPng] = useState("");
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -26,7 +26,7 @@ export default function Captcha({ onChange, refreshKey = 0, label = "کد امن
       if (!res.ok) return;
       const data = await res.json();
       setCaptchaId(data.id);
-      setSvg(data.svg);
+      setPng(data.png);
       setText("");
       onChange(data.id, "");
     } catch {
@@ -52,15 +52,20 @@ export default function Captcha({ onChange, refreshKey = 0, label = "کد امن
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-2">
-        {svg ? (
-          <div
-            className="flex-1 min-h-[64px] rounded-xl border border-ig-border overflow-hidden bg-[#fafafa] flex items-center justify-center"
-            aria-hidden
-            // SVG توسط سرور خودمان ساخته می شود — امن است
-            dangerouslySetInnerHTML={{ __html: svg }}
-          />
+        {png ? (
+          <div className="flex-1 h-[64px] rounded-xl border border-ig-border overflow-hidden bg-[#fafafa] flex items-center justify-center select-none">
+            {/* PNG سمت سرور ساخته می شود — حروف قابل کپی/خواندن از DOM نیستند */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={`data:image/png;base64,${png}`}
+              alt=""
+              aria-hidden
+              draggable={false}
+              className="h-full w-auto pointer-events-none"
+            />
+          </div>
         ) : (
-          <div className="flex-1 min-h-[64px] rounded-xl border border-ig-border bg-[#fafafa] flex items-center justify-center">
+          <div className="flex-1 h-[64px] rounded-xl border border-ig-border bg-[#fafafa] flex items-center justify-center">
             <span className="text-xs text-ig-gray">در حال بارگذاری…</span>
           </div>
         )}

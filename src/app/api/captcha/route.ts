@@ -9,9 +9,9 @@ export async function GET(request: Request) {
   if (!rl.allowed) {
     return rateLimitError("تعداد درخواست ها بیش از حد مجاز است؛ کمی صبر کنید", rl.retryAfterMs);
   }
-  const { id, svg } = createCaptcha();
+  const { id, png } = await createCaptcha();
   return NextResponse.json(
-    { id, svg },
+    { id, png },
     { headers: { "Cache-Control": "no-store" } }
   );
 }
