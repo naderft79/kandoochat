@@ -61,6 +61,8 @@ export default function PullToRefresh({ children }: { children: ReactNode }) {
 
     const onStart = (e: TouchEvent) => {
       if (refreshingRef.current) return;
+      // صفحات خودکفا مثل اتاق چت از pull-to-refresh مستثنی اند
+      if ((e.target as Element | null)?.closest?.("[data-no-pull]")) return;
       if (scroller.scrollTop > 0) return;
       const t = e.touches[0];
       startY = t.clientY;

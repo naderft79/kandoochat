@@ -240,9 +240,10 @@ export default function ChatRoom({
       return;
     }
     // هنگام ورود به اتاق روی آخرین پیام قرار می گیریم
+    // توجه: فقط اسکرول لیست پیام ها — scrollIntoView اجداد (main) را هم می غلتاند و ورودی را تکان می دهد
     if (!didInitScrollRef.current) {
       didInitScrollRef.current = true;
-      bottomRef.current?.scrollIntoView({ behavior: "auto" });
+      if (el) el.scrollTop = el.scrollHeight;
       return;
     }
     if (isNewLast) {
@@ -250,7 +251,7 @@ export default function ChatRoom({
       const dist = el ? el.scrollHeight - el.scrollTop - el.clientHeight : 0;
       const nearBottom = dist < 80;
       if (nearBottom || last!.senderId === currentUserId) {
-        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+        el?.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
       } else {
         setShowJump(true);
       }
@@ -768,7 +769,7 @@ export default function ChatRoom({
   const REACTIONS = ["❤️", "😂", "😍", "🔥", "👏", "😮"];
 
   return (
-    <div className={`flex flex-col h-[calc(100dvh-3.5rem)] lg:h-[100dvh] lg:mx-auto relative bg-surface overflow-hidden ${(contextMessage || reactionFor || showTransfer || showMenu) ? "select-none" : ""}`}>
+    <div data-no-pull className={`flex flex-col h-[calc(100dvh-3.75rem-env(safe-area-inset-bottom))] lg:h-[100dvh] lg:mx-auto relative bg-surface overflow-hidden ${(contextMessage || reactionFor || showTransfer || showMenu) ? "select-none" : ""}`}>
       {/* هدر مدرن */}
       <div className="flex items-center gap-3 px-3 py-2.5 border-b border-ig-border bg-surface shrink-0 z-30 pt-[max(0.625rem,env(safe-area-inset-top))]">
         <Link href="/dashboard/chat" aria-label="بازگشت به لیست گفتگوها" className="p-1.5 shrink-0 active:scale-90 transition-transform lg:hidden">
@@ -894,7 +895,7 @@ export default function ChatRoom({
       )}
 
       {/* پیام ها */}
-      <div ref={listRef} onScroll={handleScroll} data-testid="message-list" className="flex-1 overflow-y-auto overflow-x-hidden thin-scroll px-3 py-4 space-y-1 min-h-0">
+      <div ref={listRef} onScroll={handleScroll} data-testid="message-list" className="flex-1 overflow-y-auto overflow-x-hidden overscroll-contain thin-scroll px-3 py-4 space-y-1 min-h-0">
         {loadingOlder && (
           <p className="text-center text-xs text-ig-gray py-2" role="status">در حال بارگذاری پیام های قدیمی تر...</p>
         )}
@@ -1089,7 +1090,7 @@ export default function ChatRoom({
       {/* دکمه پرش به پیام جدید وقتی کاربر بالاتر را می خواند */}
       {showJump && (
         <button
-          onClick={() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); setShowJump(false); }}
+          onClick={() => { listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" }); setShowJump(false); }}
           className="absolute bottom-24 left-1/2 -translate-x-1/2 z-40 px-4 py-2 rounded-full bg-foreground text-background text-xs font-bold ig-shadow-lg ig-fade-in active:scale-95 transition-transform"
         >
           پیام جدید ↓
