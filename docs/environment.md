@@ -17,10 +17,7 @@
 
 ## SMS / OTP
 
-| نام | توضیح |
-|---|---|
-| `SABANOVIN_API_KEY` | کلید API وب سرویس صبانوین (از بخش وب سرویس پنل صبانوین) |
-| `SABANOVIN_GATEWAY` | شماره خط ارسال (درگاه) صبانوین؛ کد تایید با متد OTP همین خط ارسال می شود |
+کندو هیچ ارتباط مستقیمی با صبانوین ندارد. کد تایید با `POST /api/sms/otp` به KandooPay می رود (امضای JWT با `KANDOOPAY_SHARED_SECRET`) و کندوپی با کلید خودش به صبانوین پیامک می زند. کلید `SABANOVIN_API_KEY` فقط در `.env` کندوپی تنظیم می شود.
 
 ## AI همراه
 
@@ -69,4 +66,4 @@ FACE_SERVICE_TOKEN=<همان مقدار .env> python -m uvicorn main:app --host 
 - برای توسعه محلی می توانید از `DATABASE_URL="postgresql://postgres:postgres@localhost:5432/kandoo?schema=public"` استفاده کنید.
 - از یک generator برای `JWT_SECRET` و `KANDOOPAY_SHARED_SECRET` استفاده کنید (مثلاً `openssl rand -hex 64`).
 - برای تولید کلیدهای VAPID از `npx web-push generate-vapid-keys` استفاده کنید و کلیدها را در `.env` قرار دهید.
-- در محیط توسعه بدون `SABANOVIN_API_KEY`، کد OTP فقط در لاگ سرور چاپ می شود و پیامکی ارسال نمی شود.
+- در محیط توسعه بدون `KANDOOPAY_URL`/`KANDOOPAY_SHARED_SECRET`، کد OTP فقط در لاگ سرور چاپ می شود و پیامکی ارسال نمی شود.

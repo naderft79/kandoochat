@@ -21,8 +21,7 @@ KANDOO_PUBLIC_URL=https://kandoochat.top
 KANDOOPAY_URL=https://kandoopay.com
 KANDOOPAY_SHARED_SECRET=<مشترک با کندوپی، حداقل ۳۲ کاراکتر>
 REDIS_URL=redis://127.0.0.1:6379
-SABANOVIN_API_KEY=...
-SABANOVIN_GATEWAY=...
+# کلید صبانوین روی سرور کندوپی تنظیم می شود، نه اینجا
 FACE_DETECTOR_URL=http://127.0.0.1:8100
 FACE_SERVICE_TOKEN=<64+ chars random>
 CRON_SECRET=<64+ chars random>
