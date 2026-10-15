@@ -4,7 +4,7 @@
 import { useCallback, useEffect, useRef, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowRight, ArrowLeft, Check, BadgeCheck } from "lucide-react";
+import { ArrowRight, ArrowLeft, Check, BadgeCheck, Lock } from "lucide-react";
 import { PROVINCES, PROVINCE_NAMES } from "@/lib/iran";
 import { toPersianDigits, normalizeDigits } from "@/lib/format";
 import { currentJalaliYear } from "@/lib/jalali";
@@ -81,6 +81,8 @@ function RegisterForm() {
   const [usernameState, setUsernameState] = useState<"idle" | "checking" | "ok" | "taken">("idle");
   // کد دعوت — باید با دکمه بررسی تایید شود؛ نامعتبر یعنی ثبت نام بدون کد
   const [referralCode, setReferralCode] = useState(() => searchParams.get("ref") || "");
+  // کد دعوتی که از لینک دعوت آمده قابل ویرایش یا پاک شدن نیست
+  const refLocked = Boolean(searchParams.get("ref")?.trim());
   const [refState, setRefState] = useState<"idle" | "checking" | "ok" | "invalid">("idle");
   const [refName, setRefName] = useState("");
   const [form, setForm] = useState<Form>({
@@ -392,20 +394,23 @@ function RegisterForm() {
                 {errors.gender && <p role="alert" className="text-sm text-ig-red mt-1.5">{errors.gender}</p>}
               </fieldset>
 
-              {/* کد دعوت — اختیاری؛ هنگام زدن «بعدی» خودکار بررسی می شود */}
+              {/* کد دعوت — اختیاری؛ اگر از لینک دعوت آمده باشد قفل است */}
               <div className="space-y-1.5">
-                <span className="block text-sm font-semibold">کد دعوت (اختیاری)</span>
+                <span className="block text-sm font-semibold">کد دعوت {refLocked ? "" : "(اختیاری)"}</span>
                 <input
                   dir="ltr"
                   autoCapitalize="characters"
+                  readOnly={refLocked}
                   aria-invalid={!!errors.referral || undefined}
                   className={cn(
                     "w-full h-11 px-3 rounded-lg border bg-ig-gray-bg text-base text-left outline-none transition-colors",
-                    "focus:bg-surface focus:border-ig-gray",
+                    !refLocked && "focus:bg-surface focus:border-ig-gray",
+                    refLocked && "opacity-80",
                     errors.referral || refState === "invalid" ? "border-ig-red" : refState === "ok" ? "border-ig-online" : "border-ig-border"
                   )}
                   value={referralCode}
                   onChange={(e) => {
+                    if (refLocked) return;
                     setReferralCode(e.target.value);
                     setRefState("idle");
                     setRefName("");
@@ -413,6 +418,12 @@ function RegisterForm() {
                   }}
                   placeholder="KANDOO1"
                 />
+                {refLocked && (
+                  <p className="text-xs text-ig-gray flex items-center gap-1" role="note">
+                    <Lock className="w-3.5 h-3.5" aria-hidden />
+                    کد دعوت از لینک دعوت شما آمده و قابل تغییر نیست
+                  </p>
+                )}
                 {refState === "ok" && (
                   <p className="text-sm text-ig-online flex items-center gap-1" role="status">
                     <BadgeCheck className="w-4 h-4" aria-hidden />

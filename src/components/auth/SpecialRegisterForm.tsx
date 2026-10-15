@@ -101,8 +101,12 @@ function SpecialRegisterFormInner({ slug }: { slug: string }) {
   const [usernameState, setUsernameState] = useState<"idle" | "checking" | "ok" | "taken">("idle");
   // کد دعوت — هنگام زدن «بعدی» خودکار بررسی می شود؛ نامعتبر یعنی ثبت نام بدون کد
   const [referralCode, setReferralCode] = useState(() => searchParams.get("ref") || "");
+  // کد دعوتی که از لینک دعوت آمده قابل ویرایش یا پاک شدن نیست
+  const refLocked = Boolean(searchParams.get("ref")?.trim());
   const [refState, setRefState] = useState<"idle" | "checking" | "ok" | "invalid">("idle");
   const [refName, setRefName] = useState("");
+  // مرحله نمایش: ابتدا معرفی ویژه، بعد فرم ثبت نام
+  const [view, setView] = useState<"intro" | "form">("intro");
   const [form, setForm] = useState<Form>({
     phone: "", password: "", gender: "", username: "", firstName: "", lastName: "", province: "", city: "",
     birthYear: "", height: "", weight: "", income: "",
@@ -341,8 +345,8 @@ function SpecialRegisterFormInner({ slug }: { slug: string }) {
 
   return (
     <div className="min-h-dvh bg-surface flex flex-col items-center justify-center p-4 gap-4">
-      {/* هیروی جذاب — فقط در قدم اول */}
-      {step === 0 && (
+      {/* هیروی جذاب — مرحله اول: توضیحات و دکمه شروع ثبت نام */}
+      {view === "intro" && (
         <div className="w-full max-w-[400px] space-y-3">
           <div className="rounded-2xl overflow-hidden border border-ig-border ig-shadow-sm">
             <div className="bg-gradient-to-br from-amber-400 via-ig-gold to-amber-600 p-5 text-center">
@@ -402,10 +406,23 @@ function SpecialRegisterFormInner({ slug }: { slug: string }) {
               شماره موبایل، نام خانوادگی و اطلاعات شخصی شما به هیچ عنوان به کاربران دیگر نمایش داده نمی شود.
             </p>
           </div>
+
+          {/* دکمه شروع — رفتن به مرحله دوم (فرم ثبت نام) */}
+          <Button size="lg" fullWidth onClick={() => setView("form")}>
+            شروع ثبت نام ویژه
+            <ArrowLeft className="w-4 h-4" aria-hidden />
+          </Button>
+          <p className="text-center text-sm text-ig-gray">
+            قبلا ثبت نام کرده اید؟{" "}
+            <Link href="/login" className="text-ig-blue font-bold">
+              وارد شوید
+            </Link>
+          </p>
         </div>
       )}
 
-      {/* کارت فرم — دقیقا مثل فرم ثبت نام عادی */}
+      {/* کارت فرم — مرحله دوم؛ دقیقا مثل فرم ثبت نام عادی */}
+      {view === "form" && (
       <div className="w-full max-w-[400px] bg-surface border border-ig-border rounded-xl p-6 sm:p-8">
         <div className="flex items-center justify-center gap-2 mb-1">
           <h1 className="text-2xl font-bold text-center">کندو</h1>
@@ -485,20 +502,23 @@ function SpecialRegisterFormInner({ slug }: { slug: string }) {
                 {errors.gender && <p role="alert" className="text-sm text-ig-red mt-1.5">{errors.gender}</p>}
               </fieldset>
 
-              {/* کد دعوت — اختیاری؛ هنگام زدن «بعدی» خودکار بررسی می شود */}
+              {/* کد دعوت — اختیاری؛ اگر از لینک دعوت آمده باشد قفل است */}
               <div className="space-y-1.5">
-                <span className="block text-sm font-semibold">کد دعوت (اختیاری)</span>
+                <span className="block text-sm font-semibold">کد دعوت {refLocked ? "" : "(اختیاری)"}</span>
                 <input
                   dir="ltr"
                   autoCapitalize="characters"
+                  readOnly={refLocked}
                   aria-invalid={!!errors.referral || undefined}
                   className={cn(
                     "w-full h-11 px-3 rounded-lg border bg-ig-gray-bg text-base text-left outline-none transition-colors",
-                    "focus:bg-surface focus:border-ig-gray",
+                    !refLocked && "focus:bg-surface focus:border-ig-gray",
+                    refLocked && "opacity-80",
                     errors.referral || refState === "invalid" ? "border-ig-red" : refState === "ok" ? "border-ig-online" : "border-ig-border"
                   )}
                   value={referralCode}
                   onChange={(e) => {
+                    if (refLocked) return;
                     setReferralCode(e.target.value);
                     setRefState("idle");
                     setRefName("");
@@ -506,6 +526,12 @@ function SpecialRegisterFormInner({ slug }: { slug: string }) {
                   }}
                   placeholder="KANDOO1"
                 />
+                {refLocked && (
+                  <p className="text-xs text-ig-gray flex items-center gap-1" role="note">
+                    <Lock className="w-3.5 h-3.5" aria-hidden />
+                    کد دعوت از لینک دعوت شما آمده و قابل تغییر نیست
+                  </p>
+                )}
                 {refState === "ok" && (
                   <p className="text-sm text-ig-online flex items-center gap-1" role="status">
                     <BadgeCheck className="w-4 h-4" aria-hidden />
@@ -719,6 +745,7 @@ function SpecialRegisterFormInner({ slug }: { slug: string }) {
           </Link>
         </p>
       </div>
+      )}
     </div>
   );
 }
