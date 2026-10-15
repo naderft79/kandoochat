@@ -27,6 +27,12 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "**" },
       { protocol: "http", hostname: "**" },
     ],
+    // در Next 16 عکس های لوکال با query string به طور پیش فرض رد می شوند؛
+    // آپلودهای محلی با قالب /api/media?p=key سرو می شوند و باید مجاز باشند
+    localPatterns: [
+      { pathname: "/api/media" },
+      { pathname: "**", search: "" },
+    ],
     formats: ["image/avif", "image/webp"],
   },
   experimental: {
