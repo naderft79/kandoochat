@@ -4,17 +4,27 @@ import { Wallet } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { getAllSettings } from "@/lib/settings";
-import { ensureWallet } from "@/lib/finance";
+import { ensureWallet, getActiveSubscription } from "@/lib/finance";
+import { formatDate, toPersianDigits } from "@/lib/format";
+import { SUBSCRIPTION_PLANS } from "@/lib/subscriptionPlans";
 import CoinsActions from "@/components/dashboard/CoinsActions";
 import PageHeader from "@/components/dashboard/PageHeader";
 import CoinBadge from "@/components/dashboard/CoinBadge";
 import PaymentResultModal from "@/components/dashboard/PaymentResultModal";
 
+// محاسبه روزهای باقی مانده اشتراک — خارج از بدنه کامپوننت (توابع ناخالص در render مجاز نیستند)
+function calcDaysLeft(endsAt: string | Date) {
+  return Math.max(
+    0,
+    Math.ceil((new Date(endsAt).getTime() - Date.now()) / 86_400_000)
+  );
+}
+
 export default async function CoinsPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
 
-  const [wallet, settings, transactions] = await Promise.all([
+  const [wallet, settings, transactions, active] = await Promise.all([
     ensureWallet(user.id),
     getAllSettings(),
     prisma.transaction.findMany({
@@ -22,7 +32,17 @@ export default async function CoinsPage() {
       orderBy: { createdAt: "desc" },
       take: 50,
     }),
+    getActiveSubscription(user.id),
   ]);
+
+  // وضعیت اشتراک فعال برای نمایش در تب اشتراک کیف پول
+  const daysLeft = active ? calcDaysLeft(active.endsAt) : 0;
+  const isLifetime = daysLeft > 365 * 50;
+  const subStatus = active
+    ? isLifetime
+      ? "بدون تاریخ انقضا — مادام العمر"
+      : `${toPersianDigits(daysLeft)} روز باقی مانده — تا ${formatDate(active.endsAt)}`
+    : null;
 
   const serializedTransactions = transactions.map((t) => ({
     id: t.id,
@@ -53,6 +73,9 @@ export default async function CoinsPage() {
         transactions={serializedTransactions}
         buyCoinsEnabled={settings.buyCoinsEnabled}
         withdrawCoinsEnabled={settings.withdrawCoinsEnabled}
+        plans={SUBSCRIPTION_PLANS}
+        subTier={active?.tier ?? null}
+        subStatus={subStatus}
       />
       </div>
       <PaymentResultModal />

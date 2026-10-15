@@ -12,7 +12,6 @@ import {
   Check,
   Loader2,
   Sparkles,
-  Flame,
   ArrowDown,
   ArrowUp,
   Clock,
@@ -27,10 +26,13 @@ import {
   formatCoins,
   formatDateTime,
   toPersianDigits,
+  normalizeDigits,
 } from "@/lib/format";
 import { detectBank, formatCardNumber } from "@/lib/iranianBanks";
 import { MISSION_ICONS } from "@/lib/mission-icons";
 import Button from "@/components/ui/Button";
+import SubscriptionPlans from "@/components/dashboard/SubscriptionPlans";
+import type { SubscriptionPlan } from "@/lib/subscriptionPlans";
 import { BottomSheet } from "@/components/ui/Modal";
 import { cn } from "@/components/ui/cn";
 
@@ -65,21 +67,23 @@ type Props = {
   transactions: Transaction[];
   buyCoinsEnabled: boolean;
   withdrawCoinsEnabled: boolean;
+  plans: SubscriptionPlan[];
+  // اشتراک فعال کاربر — تیتر و متن وضعیت از سرور آماده می شود
+  subTier: string | null;
+  subStatus: string | null;
 };
 
-type Tab = "buy" | "sell" | "history";
+type Tab = "buy" | "sell" | "history" | "sub";
 
 const inputClass =
   "w-full px-4 py-3 rounded-lg border border-ig-border focus:border-neutral-400 outline-none transition-colors text-left";
 
-// پکیج های سکه با تخفیف
+// پکیج های پیشنهادی سکه — بدون تخفیف
 const coinPackages = [
-  { coins: 10, discount: 0 },
-  { coins: 40, discount: 5 },
-  { coins: 100, discount: 10, badge: "محبوب" },
-  { coins: 200, discount: 15 },
-  { coins: 500, discount: 20, badge: "بهترین" },
-  { coins: 1000, discount: 25, badge: "VIP" },
+  { coins: 10 },
+  { coins: 50 },
+  { coins: 100 },
+  { coins: 500 },
 ];
 
 // حداقل موجودی لازم برای برداشت (قانون ۲)
@@ -156,12 +160,17 @@ export default function CoinsActions({
   transactions,
   buyCoinsEnabled,
   withdrawCoinsEnabled,
+  plans,
+  subTier,
+  subStatus,
 }: Props) {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("buy");
   const [missions, setMissions] = useState<Mission[]>([]);
   const [missionsLoading, setMissionsLoading] = useState(true);
   const [selectedPkg, setSelectedPkg] = useState(2);
+  // مبلغ دلخواه — اگر پر باشد جای پکیج پیشنهادی خرید می شود
+  const [customCoins, setCustomCoins] = useState("");
   const [buyLoading, setBuyLoading] = useState(false);
   const [buyMsg, setBuyMsg] = useState<{ ok: boolean; text: string } | null>(
     null
@@ -214,13 +223,25 @@ export default function CoinsActions({
   async function handleBuy(e: React.FormEvent) {
     e.preventDefault();
     setBuyMsg(null);
+    const n = parseInt(customCoins, 10);
+    if (customCoins.trim() && (!Number.isFinite(n) || n < 1 || n > 100_000)) {
+      setBuyMsg({ ok: false, text: "تعداد سکه باید بین ۱ تا ۱۰۰٬۰۰۰ باشد" });
+      return;
+    }
+    const coinsToBuy = customCoins.trim() ? n : coinPackages[selectedPkg].coins;
+    if (coinsToBuy * coinValue < 1000) {
+      setBuyMsg({
+        ok: false,
+        text: `حداقل خرید ${toPersianDigits(Math.ceil(1000 / coinValue))} سکه است`,
+      });
+      return;
+    }
     setBuyLoading(true);
-    const pkg = coinPackages[selectedPkg];
     try {
       const res = await fetch("/api/payment/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "COINS", coins: pkg.coins }),
+        body: JSON.stringify({ type: "COINS", coins: coinsToBuy }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -323,10 +344,11 @@ export default function CoinsActions({
     (historyPage + 1) * pageSize
   );
 
-  const pkg = coinPackages[selectedPkg];
-  const basePrice = pkg.coins * coinValue;
-  const discountAmount = Math.round((basePrice * pkg.discount) / 100);
-  const finalPrice = basePrice - discountAmount;
+  const customN = parseInt(customCoins, 10);
+  const buyCoinsCount = customCoins.trim()
+    ? Number.isFinite(customN) ? customN : 0
+    : coinPackages[selectedPkg].coins;
+  const finalPrice = Math.max(0, buyCoinsCount) * coinValue;
   const withdrawAmount = (parseInt(withdrawCoins, 10) || 0) * coinValue;
   const withdrawFee = Math.round(withdrawAmount * 0.09);
   const withdrawNet = withdrawAmount - withdrawFee;
@@ -335,6 +357,7 @@ export default function CoinsActions({
   const tabs: { key: Tab; label: string; icon: typeof Coins }[] = [
     { key: "buy" as Tab, label: "خرید سکه", icon: ArrowDown },
     { key: "sell" as Tab, label: "برداشت سکه", icon: ArrowUp },
+    { key: "sub" as Tab, label: "اشتراک", icon: Crown },
     { key: "history" as Tab, label: "تاریخچه", icon: Clock },
   ].filter((t) => {
     if (t.key === "buy") return buyCoinsEnabled;
@@ -405,18 +428,7 @@ export default function CoinsActions({
       {/* === تب خرید سکه === */}
       {resolvedTab === "buy" && (
         <div key="buy" className="space-y-4 ig-rise">
-          {/* بنر تخفیف روز */}
-          <div className="rounded-2xl bg-ig-blue p-4 text-white">
-            <div className="flex items-center gap-2 mb-1">
-              <Flame className="w-5 h-5" fill="currentColor" />
-              <span className="text-sm font-black">تخفیف روز</span>
-            </div>
-            <p className="text-xs opacity-75">
-              امروز با تخفیف ویژه سکه بخرید! تا ۲۵٪ تخفیف برای پکیج های بزرگ تر
-            </p>
-          </div>
-
-          {/* پکیج های سکه */}
+          {/* پکیج های سکه — بدون تخفیف */}
           <form
             onSubmit={handleBuy}
             className="bg-surface border border-ig-border rounded-2xl p-5 space-y-4"
@@ -430,29 +442,59 @@ export default function CoinsActions({
               خرید سکه
             </h2>
 
+            {/* ورود مقدار دلخواه */}
+            <div>
+              <label className="block text-xs font-bold text-ig-gray mb-1.5">
+                مقدار دلخواه (هر مقدار سکه که بخواهید)
+              </label>
+              <input
+                dir="ltr"
+                inputMode="numeric"
+                value={customCoins}
+                onChange={(e) =>
+                  setCustomCoins(normalizeDigits(e.target.value).replace(/\D/g, "").slice(0, 6))
+                }
+                placeholder="مثلا ۲۵۰"
+                className={`${inputClass} text-center font-bold tabular-nums`}
+              />
+              {customCoins.trim() && Number.isFinite(customN) && customN > 0 && (
+                <p className="text-xs text-ig-gray mt-1.5 text-center">
+                  {toPersianDigits(customN.toLocaleString("en-US"))} سکه ={" "}
+                  {formatToman(finalPrice)}
+                </p>
+              )}
+            </div>
+
+            {/* پکیج های پیشنهادی */}
+            <p className="text-xs font-bold text-ig-gray">
+              یا یکی از پکیج های پیشنهادی:
+            </p>
             <div
               role="radiogroup"
               aria-label="پکیج سکه"
-              className="grid grid-cols-2 md:grid-cols-3 gap-2"
+              className="grid grid-cols-2 md:grid-cols-4 gap-2"
             >
               {coinPackages.map((p, i) => {
-                const pBase = p.coins * coinValue;
-                const pFinal = pBase - Math.round((pBase * p.discount) / 100);
+                const pPrice = p.coins * coinValue;
+                const active = !customCoins.trim() && selectedPkg === i;
                 return (
                   <button
                     key={p.coins}
                     type="button"
                     role="radio"
-                    aria-checked={selectedPkg === i}
-                    onClick={() => setSelectedPkg(i)}
+                    aria-checked={active}
+                    onClick={() => {
+                      setSelectedPkg(i);
+                      setCustomCoins("");
+                    }}
                     className={cn(
                       "relative py-3 px-2 rounded-xl text-center border-2 transition-all duration-200 active:scale-95",
-                      selectedPkg === i
+                      active
                         ? "border-ig-blue bg-ig-gray-bg scale-[1.03] shadow-sm"
                         : "border-ig-border hover:border-ig-gray"
                     )}
                   >
-                    {selectedPkg === i && (
+                    {active && (
                       <span
                         className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-ig-blue text-white flex items-center justify-center ig-pop"
                         aria-hidden
@@ -460,36 +502,17 @@ export default function CoinsActions({
                         <Check className="w-3 h-3" strokeWidth={3} />
                       </span>
                     )}
-                    {p.badge && (
-                      <span className="absolute -top-2 left-1/2 -translate-x-1/2 text-xs font-bold px-2 py-0.5 rounded-full bg-ig-blue text-white whitespace-nowrap">
-                        {p.badge}
-                      </span>
-                    )}
                     <p className="text-sm font-black text-foreground">
                       {toPersianDigits(p.coins)}
                     </p>
                     <p className="text-xs text-ig-gray">سکه</p>
-                    {p.discount > 0 && (
-                      <p className="text-xs text-foreground font-bold mt-0.5">
-                        {toPersianDigits(p.discount)}٪ تخفیف
-                      </p>
-                    )}
                     <p className="text-xs font-bold text-foreground mt-0.5">
-                      {formatToman(pFinal)}
+                      {formatToman(pPrice)}
                     </p>
                   </button>
                 );
               })}
             </div>
-
-            {pkg.discount > 0 && (
-              <div className="flex items-center justify-between text-xs bg-ig-btn2 rounded-lg px-3 py-2">
-                <span className="text-foreground font-bold">تخفیف شما:</span>
-                <span className="text-foreground font-bold">
-                  {formatToman(discountAmount)}
-                </span>
-              </div>
-            )}
 
             <div className="flex items-center justify-between text-sm">
               <span className="text-ig-gray">مبلغ قابل پرداخت:</span>
@@ -645,6 +668,36 @@ export default function CoinsActions({
                 )}
               </Button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* === تب خرید اشتراک — عین صفحه اشتراک === */}
+      {resolvedTab === "sub" && (
+        <div key="sub" className="space-y-4 ig-rise">
+          {subTier && (
+            <div className="rounded-xl border border-ig-border bg-surface p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-ig-gray-bg flex items-center justify-center shrink-0">
+                <Check className="w-5 h-5 text-foreground" strokeWidth={2.5} />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-foreground">
+                  اشتراک {subTier} شما فعال است
+                </p>
+                <p className="text-xs text-ig-gray mt-0.5">{subStatus}</p>
+              </div>
+            </div>
+          )}
+          <div className="bg-surface border border-ig-border rounded-2xl p-5">
+            <h2 className="text-sm font-bold text-foreground flex items-center gap-2 mb-4">
+              <Crown className="w-5 h-5 text-foreground" strokeWidth={1.8} />
+              خرید اشتراک
+            </h2>
+            <SubscriptionPlans
+              plans={plans}
+              balance={balance}
+              isRenewal={!!subTier}
+            />
           </div>
         </div>
       )}
