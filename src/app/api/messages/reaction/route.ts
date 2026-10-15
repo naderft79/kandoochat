@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireUser, AuthError } from "@/lib/auth";
+import { publishToConversation } from "@/lib/chatEvents";
 
 const reactionSchema = z.object({
   messageId: z.string().min(1),
@@ -36,6 +37,13 @@ export async function PATCH(request: Request) {
     await prisma.message.update({
       where: { id: messageId },
       data: { reaction: emoji },
+    });
+
+    // اطلاع لحظه ای واکنش به طرف مقابل گفتگو
+    publishToConversation(message.conversationId, "reaction", {
+      messageId,
+      reaction: emoji,
+      byUserId: user.id,
     });
 
     return NextResponse.json({ ok: true });

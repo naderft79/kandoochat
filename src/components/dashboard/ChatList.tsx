@@ -15,9 +15,10 @@ import {
 } from "lucide-react";
 import VerifiedBadge from "@/components/dashboard/VerifiedBadge";
 import DefaultAvatar from "@/components/dashboard/DefaultAvatar";
+import { PresenceDot, PresenceLastSeen } from "@/components/dashboard/PresenceBits";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
-import { formatTime, toPersianDigits, formatLastSeen } from "@/lib/format";
+import { formatTime, toPersianDigits } from "@/lib/format";
 import PageHeader from "@/components/dashboard/PageHeader";
 import CoinBadge from "@/components/dashboard/CoinBadge";
 import { getOrCreateAIConversation } from "@/lib/aiCompanion";
@@ -256,9 +257,7 @@ export default async function ChatList() {
                 ) : (
                   <DefaultAvatar size={56} />
                 )}
-                {other.isOnline && (
-                  <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-ig-online rounded-full border-2 border-white ig-pulse" />
-                )}
+                <PresenceDot userId={other.id} initialOnline={other.isOnline} />
                 {unread > 0 && (
                   <span className="absolute -top-0.5 -right-0.5 min-w-[20px] h-5 bg-ig-red rounded-full flex items-center justify-center text-xs font-bold text-white px-1.5">
                     {toPersianDigits(unread)}
@@ -305,11 +304,13 @@ export default async function ChatList() {
                   >
                     {formatTime(lastMessage.createdAt)}
                   </span>
-                ) : !other.isOnline ? (
-                  <span className="text-xs text-ig-gray">
-                    {formatLastSeen(other.lastSeen)}
-                  </span>
-                ) : null}
+                ) : (
+                  <PresenceLastSeen
+                    userId={other.id}
+                    initialOnline={other.isOnline}
+                    initialLastSeen={other.lastSeen?.toISOString() ?? null}
+                  />
+                )}
               </div>
             </Link>
           );

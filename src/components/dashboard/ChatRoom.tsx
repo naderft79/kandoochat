@@ -15,6 +15,7 @@ import VerifiedBadge from "@/components/dashboard/VerifiedBadge";
 import DefaultAvatar from "@/components/dashboard/DefaultAvatar";
 import AlertModal from "@/components/AlertModal";
 import { formatTime, toPersianDigits, formatLastSeen } from "@/lib/format";
+import { useLivePresence } from "@/lib/presenceClient";
 import { nativeCopy } from "@/lib/native";
 import { useToast } from "@/components/ToastProvider";
 
@@ -129,6 +130,8 @@ export default function ChatRoom({
   const [showJump, setShowJump] = useState(false);
   // وضعیت لحظه ای درخواست های سکه — از SSE و پاسخ PATCH به روز می شود
   const [transferStatuses, setTransferStatuses] = useState<Record<string, string>>(initialTransferStatuses);
+  // وضعیت زنده آنلاین بودن طرف مقابل — با SSE سراسری به روز می شود
+  const livePresence = useLivePresence(otherUserId, otherOnline, otherLastSeen);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isTypingRef = useRef(false);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -364,6 +367,19 @@ export default function ChatRoom({
       try {
         const data = JSON.parse(event.data) as { userId: string; isTyping: boolean };
         if (data.userId !== currentUserId) setOtherTyping(data.isTyping);
+      } catch {
+        // داده نامعتبر
+      }
+    });
+
+    // واکنش لحظه ای طرف مقابل به پیام ها
+    es.addEventListener("reaction", (event) => {
+      try {
+        const data = JSON.parse(event.data) as { messageId: string; reaction: string | null; byUserId: string };
+        if (data.byUserId === currentUserId) return;
+        setMessages((prev) =>
+          prev.map((m) => (m.id === data.messageId ? { ...m, reaction: data.reaction } : m))
+        );
       } catch {
         // داده نامعتبر
       }
@@ -801,7 +817,7 @@ export default function ChatRoom({
             ) : null}
           </p>
           <p className="text-xs text-ig-gray">
-            {otherTyping ? <span className="text-ig-blue">در حال تایپ...</span> : otherOnline ? "فعال الآن" : `آخرین بازدید ${formatLastSeen(new Date(otherLastSeen))}`}
+            {otherTyping ? <span className="text-ig-blue">در حال تایپ...</span> : livePresence.isOnline ? "فعال الآن" : `آخرین بازدید ${formatLastSeen(new Date(livePresence.lastSeen ?? otherLastSeen))}`}
           </p>
         </Link>
         {messages.length > 0 && !isAIChat && (

@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { requireUser, isImpersonating, AuthError } from "@/lib/auth";
 import { getRequestIp } from "@/lib/client-ip";
 import { recordHeartbeatIfDue } from "@/lib/login-events";
+import { publishPresence } from "@/lib/presenceEvents";
 
 export async function POST(request: Request) {
   try {
@@ -23,6 +24,8 @@ export async function POST(request: Request) {
       },
     });
     if (trackIp) await recordHeartbeatIfDue(user.id, ip, request.headers.get("user-agent"));
+    // اطلاع لحظه ای تغییر وضعیت آنلاین/آفلاین به شنوندگان SSE
+    publishPresence({ userId: user.id, isOnline, lastSeen: new Date().toISOString() });
     return NextResponse.json({ ok: true });
   } catch (err) {
     if (err instanceof AuthError)
