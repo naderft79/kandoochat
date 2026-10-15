@@ -92,6 +92,14 @@ export async function POST(request: Request) {
       );
     }
 
+    // رد عکس های خیلی تار — حساسیت کم؛ فقط وقتی سرویس امتیاز وضوح بفرستد اعمال می شود
+    if (faceResult !== null && typeof faceResult.sharpness === "number" && faceResult.sharpness < 50) {
+      return NextResponse.json(
+        { error: "عکس تار یا بی کیفیت است. لطفا عکس واضح تری آپلود کنید" },
+        { status: 400 }
+      );
+    }
+
     // رد عکس های لخت و بسیار سکسی — فقط وقتی موتور NSFW پاسخ بدهد اعمال می شود
     const nsfw = await detectNsfw(optimized.buffer, optimized.type);
     if (nsfw?.nsfw) {

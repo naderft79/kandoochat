@@ -6,6 +6,8 @@
 export type FaceResult = {
   faces: number;
   score: number;
+  // واریانس لاپلاسین — وضوح عکس؛ هرچه کمتر تارتر (سرویس های قدیمی ممکن است نفرستند)
+  sharpness?: number;
 };
 
 const TIMEOUT_MS = 15000;

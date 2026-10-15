@@ -131,10 +131,14 @@ async def detect(request: Request):
     arr = np.frombuffer(data, np.uint8)
     img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
     if img is None:
-        return {"faces": 0, "score": 0.0}
+        return {"faces": 0, "score": 0.0, "sharpness": 0.0}
+
+    # واریانس لاپلاسین — معیار وضوح تصویر؛ عدد کم یعنی عکس تار
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    sharpness = float(cv2.Laplacian(gray, cv2.CV_64F).var())
 
     faces, score = _detect(img)
-    return {"faces": faces, "score": score}
+    return {"faces": faces, "score": score, "sharpness": round(sharpness, 1)}
 
 
 @app.post("/nsfw", dependencies=[Depends(require_token)])
