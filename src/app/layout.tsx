@@ -5,6 +5,7 @@ import ServiceWorkerRegister from "@/components/pwa/ServiceWorkerRegister";
 import InstallBanner from "@/components/pwa/InstallBanner";
 import AndroidBackHandler from "@/components/AndroidBackHandler";
 import PortraitGuard from "@/components/PortraitGuard";
+import ZoomGuard from "@/components/ZoomGuard";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { ToastProvider } from "@/components/ToastProvider";
 import PageViewTracker from "@/components/analytics/PageViewTracker";
@@ -75,6 +76,9 @@ export const viewport = {
   themeColor: "#ffffff",
   width: "device-width",
   initialScale: 1,
+  minimumScale: 1,
+  maximumScale: 1,
+  userScalable: false,
   viewportFit: "cover",
 };
 
@@ -96,6 +100,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           <ServiceWorkerRegister />
           <AndroidBackHandler />
           <PortraitGuard />
+          <ZoomGuard />
           <ToastProvider>
             <LiveDataProvider enabled={!!session}>
               {children}
