@@ -122,11 +122,12 @@ export async function fireSystemNotification(title: string, body: string, url?: 
     if (shownNotifIds.size > 300) shownNotifIds.delete(shownNotifIds.values().next().value as string);
   }
 
-  // اپ اندروید — نوتیفیکیشن بومی در نوار وضعیت (فقط فورگراند؛ بک گراند را FCM هندل می کند)
+  // اپ اندروید — نوتیفیکیشن بومی فقط وقتی اپ در پس زمینه است
+  // وقتی کاربر داخل اپ است فقط توست داخلی نمایش داده می شود
   try {
     const { Capacitor } = await import("@capacitor/core");
     if (Capacitor.isNativePlatform()) {
-      if (document.visibilityState !== "visible") return;
+      if (document.visibilityState === "visible") return;
       const { LocalNotifications } = await import("@capacitor/local-notifications");
       const perm = await LocalNotifications.checkPermissions();
       if (perm.display !== "granted") return;

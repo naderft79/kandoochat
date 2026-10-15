@@ -147,13 +147,19 @@ export async function POST(request: Request) {
         create: { userAId, userBId },
       });
 
+      // username طرف مقابل برای لینک مستقیم اعلان به پروفایل
+      const receiverUser = await prisma.user.findUnique({
+        where: { id: receiverId },
+        select: { username: true },
+      });
+
       // نوتیفیکیشن match برای هر دو کاربر
       await notifyUser(receiverId, "MATCH", "مچ جدید!", `شما و ${user.firstName} همدیگر را لایک کردید`, {
-        data: JSON.stringify({ matchUserId: user.id }),
+        data: JSON.stringify({ matchUserId: user.id, senderUsername: user.username }),
         url: "/dashboard/chat",
       });
       await notifyUser(user.id, "MATCH", "مچ جدید!", "شما و این کاربر همدیگر را لایک کردید", {
-        data: JSON.stringify({ matchUserId: receiverId }),
+        data: JSON.stringify({ matchUserId: receiverId, senderUsername: receiverUser?.username }),
         url: "/dashboard/chat",
       });
 
@@ -169,7 +175,7 @@ export async function POST(request: Request) {
         type === "SUPER_LIKE"
           ? `${user.firstName} شما را سوپر لایک کرد — میخواید گفتگو رو شروع کنید؟`
           : `${user.firstName} از شما خوشش آمده و پروفایل شما را لایک کرده — میخواید گفتگو رو شروع کنید؟`,
-        { data: JSON.stringify({ senderId: user.id }), url: "/dashboard/notifications" }
+        { data: JSON.stringify({ senderId: user.id, senderUsername: user.username }), url: "/dashboard/notifications" }
       );
     }
 

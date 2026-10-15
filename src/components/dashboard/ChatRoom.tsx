@@ -15,7 +15,7 @@ import VerifiedBadge from "@/components/dashboard/VerifiedBadge";
 import DefaultAvatar from "@/components/dashboard/DefaultAvatar";
 import AlertModal from "@/components/AlertModal";
 import { formatTime, toPersianDigits, formatLastSeen } from "@/lib/format";
-import { nativeCopy, pickAudioMime } from "@/lib/native";
+import { nativeCopy } from "@/lib/native";
 import { useToast } from "@/components/ToastProvider";
 
 type ReplyTo = {
@@ -145,7 +145,6 @@ export default function ChatRoom({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
   const recordTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const lastDateRef = useRef<string | null>(
     initialMessages.length
@@ -538,53 +537,9 @@ export default function ChatRoom({
     }
   }
 
-  // ضبط پیام صوتی
-  async function startRecording() {
-    if (!navigator.mediaDevices?.getUserMedia) {
-      // کانتکست ناامن (http روی IP) — میکروفون فقط روی https/localhost کار می کند
-      toast("میکروفون فقط روی اتصال امن (https) در دسترس است", "error");
-      return;
-    }
-    const format = pickAudioMime();
-    if (!format) {
-      toast("ضبط صدا روی این دستگاه پشتیبانی نمی شود", "error");
-      return;
-    }
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream, { mimeType: format.mime });
-      audioChunksRef.current = [];
-      recorder.ondataavailable = (e) => { if (e.data.size > 0) audioChunksRef.current.push(e.data); };
-      recorder.onstop = async () => {
-        const blob = new Blob(audioChunksRef.current, { type: format.mime });
-        stream.getTracks().forEach((t) => t.stop());
-        if (blob.size < 1000) return;
-        const formData = new FormData();
-        formData.append("file", blob, `voice.${format.ext}`);
-        setUploading(true);
-        try {
-          const res = await fetch("/api/voice", { method: "POST", body: formData });
-          const data = await res.json();
-          if (res.ok && data.url) {
-            const duration = recordTime;
-            const msgRes = await fetch("/api/messages", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ conversationId, content: "پیام صوتی", type: "VOICE", mediaUrl: data.url, duration }),
-            });
-            const msgData = await msgRes.json();
-            if (msgRes.ok && msgData.message) {
-              addMessage(msgData.message);
-            }
-          }
-        } finally { setUploading(false); }
-      };
-      recorder.start();
-      mediaRecorderRef.current = recorder;
-      setRecording(true);
-    } catch {
-      toast("دسترسی به میکروفون ممکن نشد", "error");
-    }
+  // ضبط پیام صوتی — فعلا غیرفعال؛ فقط ایکون باقی مانده
+  function startRecording() {
+    toast("پیام صوتی به زودی فعال می شود", "info");
   }
 
   function stopRecording() {

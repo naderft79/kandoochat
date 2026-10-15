@@ -2,13 +2,16 @@
 
 // Provider داده های زنده داشبورد — یک اتصال SSE مشترک برای بج ها و موجودی
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
-import LiveNotifBanner, { type LiveNotif } from "@/components/dashboard/LiveNotifBanner";
+import LiveNotifBanner, { type LiveToast } from "@/components/dashboard/LiveNotifBanner";
 import { fireSystemNotification } from "@/lib/pushClient";
+import { getNotifHref } from "@/components/dashboard/notifConfig";
 
-// حداقل فاصله بین دو توست — در این بازه اعلان ها فقط روی بج عددی حساب می شوند
+// حداقل فاصله بین دو توست اعلان — در این بازه اعلان ها فقط روی بج عددی حساب می شوند
 const TOAST_COOLDOWN_MS = 20_000;
+// فاصله کوتاه تر برای توست پیام جدید — پیام ها مهم ترند ولی اسپم نشوند
+const MSG_TOAST_COOLDOWN_MS = 8_000;
 
-// پیام زنده که از SSE می آید — برای نوتیف تلگرامی اندروید
+// پیام زنده که از SSE می آید — برای توست پیام جدید و نوتیف پس زمینه
 type LiveMessage = {
   id: string;
   conversationId: string;
@@ -39,21 +42,12 @@ export default function LiveDataProvider({ children, enabled = true }: { childre
   const [unreadConversations, setUnreadConversations] = useState(0);
   const [balance, setBalance] = useState<number | null>(null);
   // آخرین اعلان رسیده از SSE — برای نمایش بنر زنده
-  const [liveNotif, setLiveNotif] = useState<LiveNotif | null>(null);
-  // پلتفرم بومی (اندروید) — توست داخل برنامه نشان داده نمی شود
-  const isNative = useRef(false);
-  // آخرین زمان نمایش توست — محدودیت یک توست در هر ۲۰ ثانیه
+  const [liveToast, setLiveToast] = useState<LiveToast | null>(null);
+  // آخرین زمان نمایش توست — محدودیت اسپم
   const lastToastAt = useRef(0);
-  // پیام هایی که برایشان نوتیف بومی ارسال شده — جلوگیری از تکرار
+  const lastMsgToastAt = useRef(0);
+  // پیام هایی که برایشان نوتیف ارسال شده — جلوگیری از تکرار
   const notifiedMsgs = useRef(new Set<string>());
-
-  useEffect(() => {
-    void import("@capacitor/core")
-      .then(({ Capacitor }) => {
-        isNative.current = Capacitor.isNativePlatform();
-      })
-      .catch(() => {});
-  }, []);
 
   async function fetchCounts() {
     try {
@@ -107,23 +101,42 @@ export default function LiveDataProvider({ children, enabled = true }: { childre
           if (d.unreadConversations !== undefined) setUnreadConversations(d.unreadConversations);
           // اعلان جدید رسیده
           if (d.notification?.id) {
-            // توست داخل برنامه — فقط وب/PWA و حداکثر یکی در هر ۲۰ ثانیه
+            // توست داخل برنامه — همه پلتفرم ها، حداکثر یکی در هر ۲۰ ثانیه
             const now = Date.now();
-            if (!isNative.current && now - lastToastAt.current >= TOAST_COOLDOWN_MS) {
+            if (now - lastToastAt.current >= TOAST_COOLDOWN_MS) {
               lastToastAt.current = now;
-              setLiveNotif(d.notification);
+              const n = d.notification as { id: string; type: string; title: string; data: string | null };
+              setLiveToast({
+                id: n.id,
+                iconKey: n.type,
+                text: n.title,
+                label: "مشاهده",
+                href: getNotifHref(n.type, n.data),
+              });
             }
-            // نوتیف سیستمی — اندروید همیشه، وب فقط وقتی تب مخفی است
-            void fireSystemNotification(d.notification.title, d.notification.body, "/dashboard/notifications", d.notification.id);
+            // نوتیف سیستمی — فقط وقتی اپ/تب در پس زمینه است
+            void fireSystemNotification(d.notification.title, d.notification.body, getNotifHref(d.notification.type, d.notification.data), d.notification.id);
           }
-          // پیام جدید — نوتیف تلگرامی فقط روی اندروید (اسم فرستنده + متن پیام)
+          // پیام جدید — توست داخلی «شما پیام جدیدی دارید» + نوتیف پس زمینه
           const msg = d.message as LiveMessage | undefined;
-          if (d.scope === "messages" && msg?.id && isNative.current) {
-            const insideChat = window.location.pathname.startsWith(`/dashboard/chat/${msg.conversationId}`);
+          if (d.scope === "messages" && msg?.id) {
+            const chatUrl = `/dashboard/chat/${msg.conversationId}`;
+            const insideChat = window.location.pathname.startsWith(chatUrl);
             if (!insideChat && !notifiedMsgs.current.has(msg.id)) {
               notifiedMsgs.current.add(msg.id);
               if (notifiedMsgs.current.size > 200) notifiedMsgs.current.clear();
-              void fireSystemNotification(msg.senderName, msg.preview, `/dashboard/chat/${msg.conversationId}`, `msg-${msg.id}`);
+              const now = Date.now();
+              if (now - lastMsgToastAt.current >= MSG_TOAST_COOLDOWN_MS) {
+                lastMsgToastAt.current = now;
+                setLiveToast({
+                  id: `msg-${msg.id}`,
+                  iconKey: "MESSAGE",
+                  text: "شما پیام جدیدی دارید",
+                  label: "مشاهده پیام",
+                  href: chatUrl,
+                });
+              }
+              void fireSystemNotification(msg.senderName, msg.preview, chatUrl, `msg-${msg.id}`);
             }
           }
         } catch {}
@@ -152,7 +165,7 @@ export default function LiveDataProvider({ children, enabled = true }: { childre
       }}
     >
       {children}
-      <LiveNotifBanner notif={liveNotif} onClose={() => setLiveNotif(null)} />
+      <LiveNotifBanner toast={liveToast} onClose={() => setLiveToast(null)} />
     </LiveDataContext.Provider>
   );
 }

@@ -1,32 +1,30 @@
 "use client";
 
-// توست اعلان زنده — فقط وب و PWA؛ در اپ اندروید هیچ توستی داخل برنامه نمی آید
-// (اندروید: نوتیف بومی گوشی + بج عددی روی قلب)
+// توست اعلان زنده — روی همه پلتفرم ها (وب، PWA، اپ اندروید) نمایش داده می شود
+// وقتی کاربر داخل اپ است فقط همین توست داخلی می آید، نه نوتیفیکیشن سیستمی گوشی
 // توست داخل هدر می آید — حباب کوچکی روبروی دکمه لایک
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Heart } from "lucide-react";
-import { Capacitor } from "@capacitor/core";
+import { NOTIF_ICONS, DEFAULT_NOTIF_ICON } from "@/components/dashboard/notifConfig";
 
-export type LiveNotif = {
+// توست زنده — نوع آیکن از روی نوع اعلان (یا MESSAGE برای پیام جدید) انتخاب می شود
+export type LiveToast = {
   id: string;
-  type: string;
-  title: string;
-  body: string;
-  data: string | null;
+  iconKey: string;
+  text: string;
+  label: string;
+  href: string;
 };
 
 const AUTO_DISMISS_MS = 5000;
 
-export default function LiveNotifBanner({ notif, onClose }: { notif: LiveNotif | null; onClose: () => void }) {
-  // نسخه اندروید: توست داخل برنامه کاملا حذف است
-  if (Capacitor.isNativePlatform()) return null;
-  if (!notif) return null;
+export default function LiveNotifBanner({ toast, onClose }: { toast: LiveToast | null; onClose: () => void }) {
+  if (!toast) return null;
   // key روی id اعلان — state داخلی برای هر اعلان جدید تازه می شود
-  return <Pill key={notif.id} onClose={onClose} />;
+  return <Pill key={toast.id} toast={toast} onClose={onClose} />;
 }
 
-function Pill({ onClose }: { onClose: () => void }) {
+function Pill({ toast, onClose }: { toast: LiveToast; onClose: () => void }) {
   const router = useRouter();
   const [leaving, setLeaving] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -46,8 +44,12 @@ function Pill({ onClose }: { onClose: () => void }) {
 
   function view() {
     dismiss();
-    router.push("/dashboard/notifications");
+    router.push(toast.href);
   }
+
+  const style = NOTIF_ICONS[toast.iconKey] ?? DEFAULT_NOTIF_ICON;
+  const Icon = style.icon;
+  const filled = toast.iconKey === "LIKE" || toast.iconKey === "MATCH";
 
   return (
     // لایه هم‌پوشان روی هدر — فقط حباب کلیک می گیرد
@@ -65,10 +67,10 @@ function Pill({ onClose }: { onClose: () => void }) {
             leaving ? "ig-notif-out" : "ig-notif-drop"
           }`}
         >
-          <Heart className="w-5 h-5 text-ig-red ig-heart-pop" fill="currentColor" strokeWidth={1.8} />
-          <span className="text-sm font-bold whitespace-nowrap">پیامی جدید دارید</span>
+          <Icon className={`w-5 h-5 ig-heart-pop ${style.iconCls}`} fill={filled ? "currentColor" : "none"} strokeWidth={1.8} />
+          <span className="text-sm font-bold whitespace-nowrap">{toast.text}</span>
           <span className="shrink-0 h-7 px-3 rounded-full bg-ig-blue text-white text-xs font-bold flex items-center justify-center hover:bg-ig-blue-hover transition-colors">
-            مشاهده
+            {toast.label}
           </span>
         </button>
       </div>

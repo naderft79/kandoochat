@@ -26,6 +26,7 @@ export const NOTIF_ICONS: Record<string, NotifIconStyle> = {
   VERIFY_BADGE: { icon: BadgeCheck, iconCls: "text-ig-blue", bgCls: "bg-ig-blue/10" },
   VERIFY_IDENTITY: { icon: ShieldCheck, iconCls: "text-ig-online", bgCls: "bg-ig-online/10" },
   ADMIN_BROADCAST: { icon: Megaphone, iconCls: "text-foreground", bgCls: "bg-ig-gray-bg" },
+  MESSAGE: { icon: MessageCircle, iconCls: "text-ig-blue-bright", bgCls: "bg-ig-blue/10" },
 };
 
 export const DEFAULT_NOTIF_ICON: NotifIconStyle = {
@@ -88,5 +89,38 @@ export function getNotifAction(type: string, data: string | null): NotifAction |
     default:
       // اعلان های دارای لینک سفارشی
       return typeof d.link === "string" ? { kind: "link", href: d.link, label: "مشاهده" } : null;
+  }
+}
+
+// مقصد کلیک روی اعلان — برای توست زنده (بدون نیاز به اکشن گفتگو)
+export function getNotifHref(type: string, data: string | null): string {
+  const d = parseData(data);
+  if (typeof d.link === "string") return d.link;
+  if (typeof d.conversationId === "string") return `/dashboard/chat/${d.conversationId}`;
+  const username = typeof d.senderUsername === "string" && d.senderUsername ? d.senderUsername : null;
+
+  switch (type) {
+    // لایک و مچ → پروفایل کسی که لایک کرده
+    case "LIKE":
+    case "SUPER_LIKE":
+    case "MATCH":
+      return username ? `/profile/${username}` : "/dashboard/likes";
+    // سکه و هدیه → اگر گفتگو دارد همان چت، وگرنه صفحه لایک ها
+    case "GIFT_RECEIVED":
+    case "REQUEST_RECEIVED":
+    case "REQUEST_APPROVED":
+    case "REQUEST_REJECTED":
+    case "COIN_PURCHASE":
+      return "/dashboard/likes";
+    case "SUBSCRIPTION_PURCHASED":
+    case "SUBSCRIPTION_ENDING":
+      return "/dashboard/subscription";
+    case "VERIFY_BADGE":
+    case "VERIFY_IDENTITY":
+      return "/dashboard/profile";
+    case "PROFILE_VIEW":
+      return "/dashboard/activity";
+    default:
+      return "/dashboard/notifications";
   }
 }

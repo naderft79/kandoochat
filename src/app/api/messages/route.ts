@@ -130,6 +130,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "پیام نامعتبر است" }, { status: 400 });
     }
 
+    // پیام صوتی فعلا غیرفعال است
+    if (parsed.data.type === "VOICE") {
+      return NextResponse.json({ error: "پیام صوتی به زودی فعال می شود" }, { status: 400 });
+    }
+
     const conversation = await getConversationForUser(
       parsed.data.conversationId,
       user.id
@@ -227,8 +232,8 @@ export async function POST(request: Request) {
         conversation.createdAt >= startOfToday ? "daily_new_chats" : "daily_old_chats"
       );
     }
-    // ویس/عکس فقط یک بار در هر چت در روز به حساب می آید
-    if (parsed.data.type === "VOICE" || parsed.data.type === "IMAGE") {
+    // عکس فقط یک بار در هر چت در روز به حساب می آید (ویس فعلا غیرفعال است)
+    if (parsed.data.type === "IMAGE") {
       const prevSameType = await prisma.message.count({
         where: {
           conversationId: conversation.id,
@@ -239,10 +244,7 @@ export async function POST(request: Request) {
         },
       });
       if (prevSameType === 0) {
-        void incrementMissionProgress(
-          user.id,
-          parsed.data.type === "VOICE" ? "daily_voice" : "daily_photo"
-        );
+        void incrementMissionProgress(user.id, "daily_photo");
       }
     }
 
