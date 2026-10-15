@@ -79,6 +79,7 @@ export default function FeedCard({
   );
 
   const profilePhoto = match.photos.find((p) => p.isProfile)?.url ?? null;
+  const galleryPhotos = match.photos.filter((p) => !p.isProfile).slice(0, 3);
   const fullName = `${match.firstName} ${match.lastName}`;
 
   // دابل تپ روی بدنه کارت = لایک؛ تک تپ روی عکس ها = مودال بزرگ عکس
@@ -222,10 +223,11 @@ export default function FeedCard({
           )}
         </div>
 
-        {/* ردیف عکس ها — فقط عکس های واقعی کاربر، بدون آیکن خالی */}
-        {match.photos.length > 0 && (
-          <div className="flex gap-1 px-3 pb-3 shrink-0">
-            {match.photos.slice(0, 3).map((photo, i) => (
+        {/* ردیف عکس های گالری — حداکثر سه عکس؛ جای خالی به صورت باکس خالی */}
+        <div className="flex gap-1 px-3 pb-3 shrink-0">
+          {[0, 1, 2].map((i) => {
+            const photo = galleryPhotos[i];
+            return photo ? (
               <button
                 key={i}
                 onClick={(e) => {
@@ -243,9 +245,15 @@ export default function FeedCard({
                   sizes="120px"
                 />
               </button>
-            ))}
-          </div>
-        )}
+            ) : (
+              <div
+                key={i}
+                aria-hidden
+                className="relative flex-1 aspect-square rounded-lg bg-ig-btn2"
+              />
+            );
+          })}
+        </div>
 
         {bigHeart && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
