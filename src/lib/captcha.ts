@@ -66,11 +66,11 @@ export async function createCaptcha(): Promise<{ id: string; png: string }> {
   const payload = b64url(JSON.stringify({ h: hashAnswer(code), exp: Date.now() + TTL_MS }));
   const id = `${payload}.${sign(payload)}`;
 
-  const w = 170;
-  const h = 64;
-  const gap = 9; // فاصله نقاط
-  const dotR = 3.6;
-  const cellW = 5 * gap + 12;
+  const w = 150;
+  const h = 60;
+  const gap = 7; // فاصله نقاط — فشرده برای خوانایی بهتر
+  const dotR = 3.2;
+  const cellW = 5 * gap + 10;
   const parts: string[] = [`<rect width="${w}" height="${h}" fill="#f6f6f6" rx="10"/>`];
 
   // یک منحنی خیلی کم رنگ برای امنیت پایه
@@ -90,7 +90,7 @@ export async function createCaptcha(): Promise<{ id: string; png: string }> {
     for (let row = 0; row < 7; row++) {
       for (let col = 0; col < 5; col++) {
         if (glyph[row][col] !== "1") continue;
-        const x = startX + i * cellW + col * gap + 6;
+        const x = startX + i * cellW + col * gap + 5;
         const y = (h - 6 * gap) / 2 + row * gap;
         dots.push(`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${dotR}" fill="#222"/>`);
       }

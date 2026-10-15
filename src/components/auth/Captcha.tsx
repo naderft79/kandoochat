@@ -2,7 +2,7 @@
 
 // کپچای خودمیزبان — عکس SVG + فیلد ورودی + دکمه تازه سازی
 // با prop «refreshKey» والد می تواند بعد از خطا کپچای جدید بگیرد
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { RefreshCw } from "lucide-react";
 
 type Props = {
@@ -19,30 +19,32 @@ export default function Captcha({ onChange, refreshKey = 0, label = "کد امن
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const load = useCallback(async () => {
+  async function load(attempt = 0) {
     setLoading(true);
     try {
       const res = await fetch("/api/captcha", { cache: "no-store" });
-      if (!res.ok) return;
+      if (!res.ok) throw new Error("captcha load failed");
       const data = await res.json();
       setCaptchaId(data.id);
       setPng(data.png);
       setText("");
       onChange(data.id, "");
     } catch {
-      // خطا در لود کپچا — کاربر می تواند دوباره تلاش کند
+      // یک تلاش مجدد خودکار — کپچا باید همیشه لود شود
+      if (attempt === 0) {
+        setTimeout(() => void load(1), 1500);
+        return;
+      }
     } finally {
       setLoading(false);
     }
-    // onChange عمدا وابستگی نیست تا رفرش مجدد ایجاد نشود
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }
 
   useEffect(() => {
     // دریافت کپچا فقط در کلاینت ممکن است — همین جا فراخوانی می شود
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     void load();
-  }, [load, refreshKey]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refreshKey]);
 
   function handleText(v: string) {
     setText(v);
@@ -53,7 +55,7 @@ export default function Captcha({ onChange, refreshKey = 0, label = "کد امن
     <div className="space-y-2">
       <div className="flex items-center gap-2">
         {png ? (
-          <div className="flex-1 h-[64px] rounded-xl border border-ig-border overflow-hidden bg-[#fafafa] flex items-center justify-center select-none">
+          <div className="flex-1 h-[60px] rounded-xl border border-ig-border overflow-hidden bg-[#fafafa] flex items-center justify-center select-none">
             {/* PNG سمت سرور ساخته می شود — حروف قابل کپی/خواندن از DOM نیستند */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -65,7 +67,7 @@ export default function Captcha({ onChange, refreshKey = 0, label = "کد امن
             />
           </div>
         ) : (
-          <div className="flex-1 h-[64px] rounded-xl border border-ig-border bg-[#fafafa] flex items-center justify-center">
+          <div className="flex-1 h-[60px] rounded-xl border border-ig-border bg-[#fafafa] flex items-center justify-center">
             <span className="text-xs text-ig-gray">در حال بارگذاری…</span>
           </div>
         )}
