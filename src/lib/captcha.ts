@@ -24,44 +24,30 @@ function normalizeAnswer(text: string): string {
     .toUpperCase();
 }
 
-function randomColor(): string {
-  const h = randomInt(0, 360);
-  return `hsl(${h},70%,45%)`;
-}
-
 export function createCaptcha(): { id: string; svg: string } {
-  const code = Array.from({ length: 5 }, () => CHARS[randomInt(0, CHARS.length)]).join("");
+  // سه حرف، بزرگ و خوانا — بدون حساسیت به بزرگ/کوچک در بررسی
+  const code = Array.from({ length: 3 }, () => CHARS[randomInt(0, CHARS.length)]).join("");
   const payload = b64url(JSON.stringify({ h: hashAnswer(code), exp: Date.now() + TTL_MS }));
   const id = `${payload}.${sign(payload)}`;
 
-  // ساخت SVG: پس زمینه روشن + خطوط نویز + هر حرف با چرخش و رنگ تصادفی
-  const w = 180;
+  const w = 150;
   const h = 64;
   const parts: string[] = [
     `<rect width="${w}" height="${h}" fill="#fafafa" rx="10"/>`,
   ];
-  // نویز: چند منحنی تصادفی
-  for (let i = 0; i < 4; i++) {
-    const y1 = randomInt(5, h - 5), y2 = randomInt(5, h - 5), cy = randomInt(10, h - 10);
-    parts.push(
-      `<path d="M0 ${y1} Q ${w / 2} ${cy} ${w} ${y2}" stroke="${randomColor()}" stroke-width="1.2" fill="none" opacity="0.5"/>`
-    );
-  }
-  // نویز: نقطه ها
-  for (let i = 0; i < 30; i++) {
-    parts.push(
-      `<circle cx="${randomInt(0, w)}" cy="${randomInt(0, h)}" r="${randomInt(1, 2)}" fill="${randomColor()}" opacity="0.4"/>`
-    );
-  }
-  // حروف
+  // یک منحنی خیلی کم رنگ فقط برای امنیت پایه
+  const y1 = randomInt(10, h - 10), y2 = randomInt(10, h - 10);
+  parts.push(
+    `<path d="M0 ${y1} Q ${w / 2} ${randomInt(15, h - 15)} ${w} ${y2}" stroke="#ddd" stroke-width="1" fill="none"/>`
+  );
+  // حروف بزرگ، تقریبا صاف، با رنگ تیره
   const step = w / (code.length + 1);
   for (let i = 0; i < code.length; i++) {
-    const x = step * (i + 1) + randomInt(-4, 4);
-    const y = h / 2 + randomInt(-3, 6);
-    const rot = randomInt(-30, 30);
-    const size = randomInt(26, 32);
+    const x = step * (i + 1);
+    const y = h / 2 + 11;
+    const rot = randomInt(-12, 12);
     parts.push(
-      `<text x="${x}" y="${y}" transform="rotate(${rot} ${x} ${y})" font-family="Verdana,sans-serif" font-size="${size}" font-weight="700" fill="${randomColor()}">${code[i]}</text>`
+      `<text x="${x}" y="${y}" text-anchor="middle" transform="rotate(${rot} ${x} ${y})" font-family="Verdana,sans-serif" font-size="36" font-weight="700" fill="#333">${code[i]}</text>`
     );
   }
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${parts.join("")}</svg>`;
