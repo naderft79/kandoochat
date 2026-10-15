@@ -22,7 +22,7 @@ type Photo = {
 };
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
-const MAX_SIZE = 10 * 1024 * 1024; // ۱۰ مگابایت
+const MAX_SIZE = 50 * 1024 * 1024;
 
 export default function PhotoGallery({ initialPhotos }: { initialPhotos: Photo[] }) {
   const [photos, setPhotos] = useState<Photo[]>(initialPhotos);
@@ -43,7 +43,7 @@ export default function PhotoGallery({ initialPhotos }: { initialPhotos: Photo[]
       return;
     }
     if (file.size > MAX_SIZE) {
-      setAlertMsg("حداکثر حجم فایل ۱۰ مگابایت است");
+      setAlertMsg("حجم عکس بیش از حد مجاز است");
       return;
     }
 

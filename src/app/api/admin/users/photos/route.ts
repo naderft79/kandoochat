@@ -4,9 +4,10 @@ import { requireAdmin, AuthError } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { uploadFile, deleteFile, safeExtension } from "@/lib/storage";
 import { isMediaSignatureValid } from "@/lib/file-guard";
+import { optimizeImage } from "@/lib/image";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
-const MAX_SIZE = 10 * 1024 * 1024;
+const MAX_SIZE = 50 * 1024 * 1024;
 const MAX_GALLERY = 3;
 
 // POST — آپلود عکس برای کاربر (پروفایل یا گالری)
@@ -38,7 +39,7 @@ export async function POST(request: Request) {
     }
 
     if (file.size > MAX_SIZE) {
-      return NextResponse.json({ error: "حداکثر حجم فایل ۱۰ مگابایت است" }, { status: 400 });
+      return NextResponse.json({ error: "حجم عکس بیش از حد مجاز است" }, { status: 400 });
     }
 
     if (!isMediaSignatureValid(Buffer.from(await file.slice(0, 16).arrayBuffer()), file.type)) {
@@ -71,8 +72,8 @@ export async function POST(request: Request) {
     const ext = safeExtension(file.name, file.type);
     const prefix = isProfile ? "profile" : "gallery";
     const fileName = `${prefix}/${prefix}-${userId}-${Date.now()}.${ext}`;
-    const buffer = Buffer.from(await file.arrayBuffer());
-    const url = await uploadFile(fileName, buffer, file.type);
+    const optimized = await optimizeImage(Buffer.from(await file.arrayBuffer()), file.type);
+    const url = await uploadFile(fileName, optimized.buffer, optimized.type);
 
     const order = isProfile ? 0 : await prisma.profilePhoto.count({ where: { userId } });
     const photo = await prisma.profilePhoto.create({

@@ -29,7 +29,7 @@ type Props = {
 };
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
-const MAX_SIZE = 10 * 1024 * 1024;
+const MAX_SIZE = 50 * 1024 * 1024;
 
 export default function AdminUserPhotosModal({ user, onClose, onUpdate }: Props) {
   const [photos, setPhotos] = useState<Photo[]>(user.photos);
@@ -58,7 +58,7 @@ export default function AdminUserPhotosModal({ user, onClose, onUpdate }: Props)
       return;
     }
     if (file.size > MAX_SIZE) {
-      setAlertMsg("حداکثر حجم فایل ۱۰ مگابایت است");
+      setAlertMsg("حجم عکس بیش از حد مجاز است");
       return;
     }
 

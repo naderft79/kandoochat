@@ -3,10 +3,11 @@ import { NextResponse } from "next/server";
 import { requireUser, AuthError } from "@/lib/auth";
 import { uploadFile, safeExtension } from "@/lib/storage";
 import { isMediaSignatureValid } from "@/lib/file-guard";
+import { optimizeImage } from "@/lib/image";
 
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const ALLOWED_VIDEO_TYPES = ["video/mp4", "video/webm"];
-const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // ۱۰ مگابایت
+const MAX_IMAGE_SIZE = 50 * 1024 * 1024; // ۵۰ مگابایت
 const MAX_VIDEO_SIZE = 50 * 1024 * 1024; // ۵۰ مگابایت
 
 export async function POST(request: Request) {
@@ -27,18 +28,24 @@ export async function POST(request: Request) {
 
     const maxSize = isVideo ? MAX_VIDEO_SIZE : MAX_IMAGE_SIZE;
     if (file.size > maxSize) {
-      return NextResponse.json({ error: isVideo ? "حداکثر حجم ویدیو ۵۰ مگابایت است" : "حداکثر حجم عکس ۱۰ مگابایت است" }, { status: 400 });
+      return NextResponse.json({ error: "حجم فایل بیش از حد مجاز است" }, { status: 400 });
     }
 
     if (!isMediaSignatureValid(Buffer.from(await file.slice(0, 16).arrayBuffer()), file.type)) {
       return NextResponse.json({ error: "محتوای فایل با فرمت آن مطابقت ندارد" }, { status: 400 });
     }
 
-    // ذخیره در S3 یا دیسک محلی
+    // ذخیره در S3 یا دیسک محلی — عکس ها قبل از ذخیره بهینه می شوند
     const ext = safeExtension(file.name, file.type);
     const fileName = `${user.id}-${Date.now()}.${ext}`;
-    const buffer = Buffer.from(await file.arrayBuffer());
-    const url = await uploadFile(fileName, buffer, file.type);
+    let buffer: Buffer = Buffer.from(await file.arrayBuffer());
+    let contentType = file.type;
+    if (isImage) {
+      const opt = await optimizeImage(buffer, file.type);
+      buffer = opt.buffer;
+      contentType = opt.type;
+    }
+    const url = await uploadFile(fileName, buffer, contentType);
     console.log(`[upload] user ${user.id} uploaded ${fileName}`);
     return NextResponse.json({ ok: true, url });
   } catch (err) {

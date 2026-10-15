@@ -5,9 +5,10 @@ import { prisma } from "@/lib/prisma";
 import { uploadFile, deleteFile, safeExtension } from "@/lib/storage";
 import { detectFaces } from "@/lib/face";
 import { isMediaSignatureValid } from "@/lib/file-guard";
+import { optimizeImage } from "@/lib/image";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
-const MAX_SIZE = 10 * 1024 * 1024;
+const MAX_SIZE = 50 * 1024 * 1024;
 const MAX_GALLERY = 3;
 
 // GET — لیست عکس های کاربر
@@ -44,7 +45,7 @@ export async function POST(request: Request) {
     }
 
     if (file.size > MAX_SIZE) {
-      return NextResponse.json({ error: "حداکثر حجم فایل ۱۰ مگابایت است" }, { status: 400 });
+      return NextResponse.json({ error: "حجم عکس بیش از حد مجاز است" }, { status: 400 });
     }
 
     if (!isMediaSignatureValid(Buffer.from(await file.slice(0, 16).arrayBuffer()), file.type)) {
@@ -61,9 +62,9 @@ export async function POST(request: Request) {
       }
     }
 
-    // تشخیص چهره قبل از ذخیره — در production اجباری است؛ عکس بدون چهره یا سرویس از کارافتاده پذیرفته نمی شود
-    const buffer = Buffer.from(await file.arrayBuffer());
-    const faceResult = await detectFaces(buffer, file.type);
+    // بهینه سازی و تشخیص چهره قبل از ذخیره — در production اجباری است؛ عکس بدون چهره یا سرویس از کارافتاده پذیرفته نمی شود
+    const optimized = await optimizeImage(Buffer.from(await file.arrayBuffer()), file.type);
+    const faceResult = await detectFaces(optimized.buffer, optimized.type);
 
     if (faceResult === null) {
       // هر وقت سرویس چهره پیکربندی شده (لوکال یا production) آپلود بدون بررسی انجام نمی شود
@@ -89,7 +90,7 @@ export async function POST(request: Request) {
     const ext = safeExtension(file.name, file.type);
     const prefix = isProfile ? "profile" : "gallery";
     const fileName = `${prefix}/${prefix}-${user.id}-${Date.now()}.${ext}`;
-    const url = await uploadFile(fileName, buffer, file.type);
+    const url = await uploadFile(fileName, optimized.buffer, optimized.type);
 
     // ثبت در دیتابیس — برای عکس پروفایل، حذف نرم عکس های قبلی و ایجاد رکورد جدید در یک تراکنش
     const order = isProfile ? 0 : await prisma.profilePhoto.count({ where: { userId: user.id, isDeletedByUser: false } });
