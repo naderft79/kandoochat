@@ -2,7 +2,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { MapPin, Ruler, Weight, Briefcase, Car, Wallet, Sparkles, ShieldCheck, Phone, ArrowRight, Star } from "lucide-react";
 import VerifiedBadge from "@/components/dashboard/VerifiedBadge";
 import { prisma } from "@/lib/prisma";
@@ -14,6 +13,7 @@ import PageHeader from "@/components/dashboard/PageHeader";
 import DefaultAvatar from "@/components/dashboard/DefaultAvatar";
 import PublicProfileActions from "@/components/dashboard/PublicProfileActions";
 import PublicGallery from "@/components/dashboard/PublicGallery";
+import PublicProfilePhoto from "@/components/dashboard/PublicProfilePhoto";
 
 export async function generateMetadata({
   params,
@@ -144,9 +144,13 @@ export default async function PublicProfilePage({
                 <div className="relative shrink-0">
                   <div className="w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden ig-shadow-lg flex items-center justify-center">
                     {user.photos?.find((p) => p.isProfile)?.url ? (
-                      <div className="relative w-full h-full">
-                        <Image src={user.photos.find((p) => p.isProfile)!.url} alt={user.firstName} fill className="object-cover" sizes="96px" />
-                      </div>
+                      <PublicProfilePhoto
+                        url={user.photos.find((p) => p.isProfile)!.url}
+                        name={user.firstName}
+                        targetUserId={user.id}
+                        initialLiked={!!viewerLike}
+                        loggedIn={!!viewer}
+                      />
                     ) : (
                       <DefaultAvatar size={80} className="md:!w-24 md:!h-24" />
                     )}

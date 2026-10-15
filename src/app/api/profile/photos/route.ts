@@ -61,23 +61,28 @@ export async function POST(request: Request) {
       }
     }
 
-    // تشخیص چهره قبل از ذخیره — اگر سرویس فعال باشد، عکس بدون چهره پذیرفته نمی شود
+    // تشخیص چهره قبل از ذخیره — در production اجباری است؛ عکس بدون چهره یا سرویس از کارافتاده پذیرفته نمی شود
     const buffer = Buffer.from(await file.arrayBuffer());
     const faceResult = await detectFaces(buffer, file.type);
 
-    if (faceResult !== null) {
-      if (faceResult.faces === 0) {
+    if (faceResult === null) {
+      // در توسعه بدون سرویس چهره آپلود ادامه می یابد؛ در production آپلود نباید بدون بررسی انجام شود
+      if (process.env.NODE_ENV === "production") {
         return NextResponse.json(
-          { error: "چهره ای در این عکس تشخیص داده نشد. لطفا عکسی آپلود کنید که چهره شما در آن مشخص باشد" },
-          { status: 400 }
+          { error: "سرویس بررسی عکس موقتا در دسترس نیست؛ چند دقیقه بعد دوباره تلاش کنید" },
+          { status: 503 }
         );
       }
-      if (faceResult.score < 0.6) {
-        return NextResponse.json(
-          { error: "کیفیت عکس برای تشخیص چهره کافی نیست. لطفا عکس واضح تری از چهره خودتان آپلود کنید" },
-          { status: 400 }
-        );
-      }
+    } else if (faceResult.faces === 0) {
+      return NextResponse.json(
+        { error: "چهره ای در این عکس تشخیص داده نشد. لطفا عکسی آپلود کنید که چهره شما در آن مشخص باشد" },
+        { status: 400 }
+      );
+    } else if (faceResult.score < 0.6) {
+      return NextResponse.json(
+        { error: "کیفیت عکس برای تشخیص چهره کافی نیست. لطفا عکس واضح تری از چهره خودتان آپلود کنید" },
+        { status: 400 }
+      );
     }
 
     // ذخیره فایل — S3 در production، دیسک محلی در توسعه

@@ -48,11 +48,8 @@ export async function uploadFile(
   // پاکسازی key از کاراکترهای خطرناک
   const safeKey = key.replace(/[^a-zA-Z0-9\-_./]/g, "").replace(/\.\./g, "");
 
-  // در production فقط S3 مجاز است — ذخیره محلی روی سرور عمومی نباید رخ دهد
-  if (!isS3Enabled() && process.env.NODE_ENV === "production") {
-    throw new Error("S3 storage is not configured in production");
-  }
-
+  // اگر S3 پیکربندی شده به باکت می رود، در غیر این صورت fallback محلی public/uploads
+  // (public توسط next start از دیسک سرو می شود و فایل های جدید هم دیده می شوند)
   if (isS3Enabled()) {
     const { PutObjectCommand } = await import("@aws-sdk/client-s3");
     await getS3().send(
