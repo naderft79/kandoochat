@@ -2,6 +2,7 @@
 import { test, expect } from "@playwright/test";
 import bcrypt from "bcryptjs";
 import { query } from "./helpers/db";
+import { captchaFields, CAPTCHA_BYPASS } from "./helpers/captcha";
 
 const phoneFor = (_n: number) => `0919${Math.floor(1000000 + Math.random() * 8999999)}`;
 
@@ -12,7 +13,7 @@ test.beforeEach(async ({}, info) => {
 });
 
 async function otpApi(request: import("@playwright/test").APIRequestContext, phone: string, purpose: string) {
-  const r = await request.post("/api/auth/otp/send", { data: { phone, purpose } });
+  const r = await request.post("/api/auth/otp/send", { data: { phone, purpose, ...(await captchaFields(request)) } });
   return { status: r.status(), body: await r.json() };
 }
 
@@ -23,10 +24,10 @@ test("API: بدون proof ثبت نام رد می شود و OTP اشتباه خ�
     province: "تهران", city: "تهران", age: 30, height: 175, weight: 70, income: 1000000,
   };
   // بدون تیک قوانین
-  let r = await request.post("/api/auth/register", { data: base });
+  let r = await request.post("/api/auth/register", { data: { ...base, ...(await captchaFields(request)) } });
   expect(r.status()).toBe(400);
   // با تیک ولی بدون proof
-  r = await request.post("/api/auth/register", { data: { ...base, termsAccepted: true } });
+  r = await request.post("/api/auth/register", { data: { ...base, termsAccepted: true, ...(await captchaFields(request)) } });
   expect(r.status()).toBe(400);
   expect((await r.json()).error).toContain("تایید کنید");
   // کد اشتباه
@@ -56,6 +57,7 @@ test("UI: ثبت نام کامل با OTP، خطای inline و ورود", async 
   await page.getByLabel("رمز عبور").fill("1357913");
   await page.getByRole("radio", { name: "مرد" }).click();
   await page.getByRole("checkbox").check();
+  await page.getByLabel("کد امنیتی").fill(CAPTCHA_BYPASS);
 
   // پاسخ ارسال کد را برای دریافت devCode شنود می کنیم
   const sent = page.waitForResponse((r) => r.url().includes("/api/auth/otp/send"));
@@ -87,6 +89,7 @@ test("UI: ثبت نام کامل با OTP، خطای inline و ورود", async 
   await pick("قد", /سانتی متر/);
   await pick("وزن", /کیلوگرم/);
   await pick("درآمد ماهانه", /تومان/);
+  await page.getByLabel("کد امنیتی").fill(CAPTCHA_BYPASS);
   await page.getByRole("button", { name: "تکمیل ثبت نام" }).click();
   await expect(page).toHaveURL(/\/dashboard/);
 
@@ -107,6 +110,7 @@ test("ورود: نمایش رمز، لینک فراموشی و خطای نادر
   await page.getByLabel("رمز عبور", { exact: true }).fill("99999");
   await page.getByRole("button", { name: "نمایش رمز" }).click();
   await expect(page.getByLabel("رمز عبور", { exact: true })).toHaveAttribute("type", "text");
+  await page.getByLabel("کد امنیتی").fill(CAPTCHA_BYPASS);
   await page.getByRole("button", { name: "ورود" }).click();
   await expect(page.getByRole("alert")).toBeVisible();
 });
@@ -123,6 +127,7 @@ test("بازیابی رمز: کد → رمز جدید → ورود با رمز �
   try {
     await page.goto("/forgot-password");
     await page.getByLabel("شماره موبایل").fill(phone);
+    await page.getByLabel("کد امنیتی").fill(CAPTCHA_BYPASS);
     const sent = page.waitForResponse((r) => r.url().includes("/api/auth/otp/send"));
     await page.getByRole("button", { name: "ارسال کد" }).click();
     const code = (await (await sent).json()).devCode as string;
@@ -132,9 +137,9 @@ test("بازیابی رمز: کد → رمز جدید → ورود با رمز �
     await page.getByRole("button", { name: "ذخیره رمز جدید" }).click();
     await expect(page.getByText("رمز عبور تغییر کرد")).toBeVisible();
 
-    const login = await request.post("/api/auth/login", { data: { phone, password: "246810" } });
+    const login = await request.post("/api/auth/login", { data: { phone, password: "246810", ...(await captchaFields(request)) } });
     expect(login.status()).toBe(200);
-    const oldLogin = await request.post("/api/auth/login", { data: { phone, password: "135791" } });
+    const oldLogin = await request.post("/api/auth/login", { data: { phone, password: "135791", ...(await captchaFields(request)) } });
     expect(oldLogin.status()).toBe(401);
 
     // شماره ناشناس: پاسخ یکسان و بدون افشای وجود حساب

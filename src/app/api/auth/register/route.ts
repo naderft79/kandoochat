@@ -11,6 +11,7 @@ import { getRequestIp } from "@/lib/client-ip";
 import { recordLoginEvent } from "@/lib/login-events";
 import { verifyProof } from "@/lib/phoneOtp";
 import { getAllSettings } from "@/lib/settings";
+import { verifyCaptcha } from "@/lib/captcha";
 import { containsProfanity } from "@/lib/profanity";
 
 const PERSIAN_NAME_RE = /^[آءأإابپتثجچحخدذرزژسشصضطظعغفقکگلمنوهیئؤ\s\u200C]+$/;
@@ -37,6 +38,8 @@ const registerSchema = z.object({
   termsAccepted: z.boolean().optional(),
   isSpecial: z.boolean().optional(),
   specialSlug: z.string().max(100).optional(),
+  captchaId: z.string().min(1),
+  captchaText: z.string().min(1).max(20),
 });
 
 export async function POST(request: Request) {
@@ -59,6 +62,14 @@ export async function POST(request: Request) {
       );
     }
     const data = parsed.data;
+
+    // کپچا — جلوی ثبت نام انبوه بات ها
+    if (!(await verifyCaptcha(data.captchaId, data.captchaText))) {
+      return NextResponse.json(
+        { error: "کد امنیتی اشتباه است یا منقضی شده؛ دوباره تلاش کنید" },
+        { status: 400 }
+      );
+    }
 
     const settings0 = await getAllSettings();
 

@@ -4,10 +4,13 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { rateLimit, getClientIdentifier } from "@/lib/rate-limit";
 import { issueOtp } from "@/lib/phoneOtp";
+import { verifyCaptcha } from "@/lib/captcha";
 
 const schema = z.object({
   phone: z.string().regex(/^09\d{9}$/, "شماره موبایل معتبر نیست"),
   purpose: z.enum(["REGISTER", "RESET"]),
+  captchaId: z.string().min(1),
+  captchaText: z.string().min(1).max(20),
 });
 
 export async function POST(request: Request) {
@@ -15,6 +18,11 @@ export async function POST(request: Request) {
     const parsed = schema.safeParse(await request.json());
     if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "درخواست نامعتبر" }, { status: 400 });
     const { phone, purpose } = parsed.data;
+
+    // کپچا — جلوی اسپم پیامک و ثبت نام انبوه بات ها را می گیرد
+    if (!(await verifyCaptcha(parsed.data.captchaId, parsed.data.captchaText))) {
+      return NextResponse.json({ error: "کد امنیتی اشتباه است یا منقضی شده؛ دوباره تلاش کنید" }, { status: 400 });
+    }
 
     // محدودیت هم بر اساس IP و هم شماره (جلوگیری از اسپم پیامک)
     const ip = getClientIdentifier(request);

@@ -3,6 +3,7 @@
 // کامپوننت تایید موبایل OTP
 import { useEffect, useState } from "react";
 import { Phone, Check, Loader2 } from "lucide-react";
+import Captcha from "@/components/auth/Captcha";
 
 export default function OtpVerification({ phoneVerified, phone }: { phoneVerified: boolean; phone: string }) {
   const [otpEnabled, setOtpEnabled] = useState(false);
@@ -12,6 +13,9 @@ export default function OtpVerification({ phoneVerified, phone }: { phoneVerifie
   const [verifying, setVerifying] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [captchaId, setCaptchaId] = useState("");
+  const [captchaText, setCaptchaText] = useState("");
+  const [captchaKey, setCaptchaKey] = useState(0);
 
   useEffect(() => {
     fetch("/api/settings")
@@ -26,12 +30,17 @@ export default function OtpVerification({ phoneVerified, phone }: { phoneVerifie
     setSending(true);
     setError("");
     try {
-      const res = await fetch("/api/otp/send", { method: "POST" });
+      const res = await fetch("/api/otp/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ captchaId, captchaText }),
+      });
       const data = await res.json();
       if (res.ok) {
         setShowOtp(true);
       } else {
         setError(data.error || "خطا");
+        setCaptchaKey((k) => k + 1); // کپچای یکبارمصرف — تازه شود
       }
     } finally {
       setSending(false);
@@ -80,14 +89,20 @@ export default function OtpVerification({ phoneVerified, phone }: { phoneVerifie
       </div>
 
       {!showOtp ? (
-        <button
-          onClick={sendOtp}
-          disabled={sending}
-          className="w-full py-2.5 rounded-xl bg-ig-blue text-white text-sm font-bold disabled:opacity-40 flex items-center justify-center gap-2"
-        >
-          {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Phone className="w-4 h-4" />}
-          ارسال کد تایید
-        </button>
+        <div className="space-y-2">
+          <Captcha
+            onChange={(id, text) => { setCaptchaId(id); setCaptchaText(text); }}
+            refreshKey={captchaKey}
+          />
+          <button
+            onClick={sendOtp}
+            disabled={sending || !captchaText.trim()}
+            className="w-full py-2.5 rounded-xl bg-ig-blue text-white text-sm font-bold disabled:opacity-40 flex items-center justify-center gap-2"
+          >
+            {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Phone className="w-4 h-4" />}
+            ارسال کد تایید
+          </button>
+        </div>
       ) : (
         <div className="space-y-2">
           <input

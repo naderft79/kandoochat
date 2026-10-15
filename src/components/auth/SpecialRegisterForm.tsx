@@ -16,6 +16,7 @@ import { requestPushPermission } from "@/lib/pushClient";
 import Button from "@/components/ui/Button";
 import Input, { PasswordInput } from "@/components/ui/Input";
 import SelectMenu, { type SelectOption } from "@/components/ui/SelectMenu";
+import Captcha from "@/components/auth/Captcha";
 import { cn } from "@/components/ui/cn";
 
 const STEPS = ["حساب کاربری", "تایید موبایل", "مشخصات فردی"];
@@ -64,7 +65,7 @@ type Form = {
   phone: string; password: string; gender: string; username: string; firstName: string; lastName: string;
   province: string; city: string; birthYear: string; height: string; weight: string; income: string;
 };
-type Errors = Partial<Record<keyof Form | "terms" | "code" | "referral", string>>;
+type Errors = Partial<Record<keyof Form | "terms" | "code" | "referral" | "captcha" | "captcha2", string>>;
 
 export default function SpecialRegisterForm({ slug }: { slug: string }) {
   return (
@@ -98,6 +99,13 @@ function SpecialRegisterFormInner({ slug }: { slug: string }) {
   const [proof, setProof] = useState("");
   const [sentTo, setSentTo] = useState("");
   const [cooldown, setCooldown] = useState(0);
+  // دو کپچا: یکی برای ارسال OTP (مرحله ۰)، یکی برای ثبت نام نهایی (مرحله ۲)
+  const [otpCaptchaId, setOtpCaptchaId] = useState("");
+  const [otpCaptchaText, setOtpCaptchaText] = useState("");
+  const [otpCaptchaKey, setOtpCaptchaKey] = useState(0);
+  const [regCaptchaId, setRegCaptchaId] = useState("");
+  const [regCaptchaText, setRegCaptchaText] = useState("");
+  const [regCaptchaKey, setRegCaptchaKey] = useState(0);
   const [usernameState, setUsernameState] = useState<"idle" | "checking" | "ok" | "taken">("idle");
   // کد دعوت — هنگام زدن «بعدی» خودکار بررسی می شود؛ نامعتبر یعنی ثبت نام بدون کد
   const [referralCode, setReferralCode] = useState(() => searchParams.get("ref") || "");
@@ -191,12 +199,13 @@ function SpecialRegisterFormInner({ slug }: { slug: string }) {
       const res = await fetch("/api/auth/otp/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: form.phone, purpose: "REGISTER" }),
+        body: JSON.stringify({ phone: form.phone, purpose: "REGISTER", captchaId: otpCaptchaId, captchaText: otpCaptchaText }),
       });
       const d = await res.json();
       if (!res.ok) {
         setFormError(d.error ?? "ارسال کد ناموفق بود");
         if (d.retryAfterSec) setCooldown(d.retryAfterSec);
+        setOtpCaptchaKey((k) => k + 1); // کپچای یکبارمصرف — تازه شود
         return false;
       }
       setSentTo(form.phone);
@@ -208,7 +217,7 @@ function SpecialRegisterFormInner({ slug }: { slug: string }) {
     } finally {
       setLoading(false);
     }
-  }, [form.phone]);
+  }, [form.phone, otpCaptchaId, otpCaptchaText]);
 
   async function verifyCode() {
     if (proof) {
@@ -250,6 +259,7 @@ function SpecialRegisterFormInner({ slug }: { slug: string }) {
       if (!form.gender) e.gender = "جنسیت را انتخاب کنید";
       if (referralCode.trim() && refState === "invalid") e.referral = "کد دعوت معتبر نیست — آن را پاک یا اصلاح کنید";
       if (!terms) e.terms = "پذیرش قوانین و تایید ۱۸ سال تمام الزامی است";
+      if (!otpCaptchaText.trim()) e.captcha = "کد امنیتی را وارد کنید";
     }
     if (s === 2) {
       if (form.username.trim().length < 3) e.username = "یوزرنیم باید حداقل ۳ کاراکتر باشد";
@@ -265,6 +275,7 @@ function SpecialRegisterFormInner({ slug }: { slug: string }) {
       if (!form.height) e.height = "قد را انتخاب کنید";
       if (!form.weight) e.weight = "وزن را انتخاب کنید";
       if (form.income === "") e.income = "درآمد ماهانه را انتخاب کنید";
+      if (!regCaptchaText.trim()) e.captcha2 = "کد امنیتی را وارد کنید";
     }
     return e;
   }
@@ -325,11 +336,14 @@ function SpecialRegisterFormInner({ slug }: { slug: string }) {
           specialSlug: slug,
           // فقط کد دعوت تایید شده ارسال می شود — نامعتبر یعنی ثبت نام بدون کد
           ...(refState === "ok" && referralCode.trim() ? { referralCode: referralCode.trim() } : {}),
+          captchaId: regCaptchaId,
+          captchaText: regCaptchaText,
         }),
       });
       const data = await res.json();
       if (!res.ok) {
         setFormError(data.error ?? "خطایی رخ داد");
+        setRegCaptchaKey((k) => k + 1); // کپچای یکبارمصرف — تازه شود
         return;
       }
       // مجوز اعلان بلافاصله بعد از ثبت نام — بدون بلاک کردن ورود
@@ -559,6 +573,14 @@ function SpecialRegisterFormInner({ slug }: { slug: string }) {
                 </label>
                 {errors.terms && <p role="alert" className="text-sm text-ig-red mt-1.5">{errors.terms}</p>}
               </div>
+
+              <div>
+                <Captcha
+                  onChange={(id, text) => { setOtpCaptchaId(id); setOtpCaptchaText(text); }}
+                  refreshKey={otpCaptchaKey}
+                />
+                {errors.captcha && <p role="alert" className="text-sm text-ig-red mt-1.5">{errors.captcha}</p>}
+              </div>
             </>
           )}
 
@@ -589,7 +611,8 @@ function SpecialRegisterFormInner({ slug }: { slug: string }) {
                 <button
                   type="button"
                   disabled={cooldown > 0 || loading}
-                  onClick={sendCode}
+                  // کپچا یکبارمصرف است — برای ارسال مجدد به مرحله شماره برمی گردیم
+                  onClick={() => { setStep(0); setOtpCaptchaKey((k) => k + 1); }}
                   className="font-semibold text-ig-blue disabled:text-ig-gray"
                 >
                   {cooldown > 0 ? `ارسال مجدد (${toPersianDigits(cooldown)})` : "ارسال مجدد کد"}
@@ -701,6 +724,13 @@ function SpecialRegisterFormInner({ slug }: { slug: string }) {
                 searchable={false}
                 error={errors.income}
               />
+              <div>
+                <Captcha
+                  onChange={(id, text) => { setRegCaptchaId(id); setRegCaptchaText(text); }}
+                  refreshKey={regCaptchaKey}
+                />
+                {errors.captcha2 && <p role="alert" className="text-sm text-ig-red mt-1.5">{errors.captcha2}</p>}
+              </div>
             </>
           )}
         </div>

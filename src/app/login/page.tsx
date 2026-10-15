@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
 import Input, { PasswordInput } from "@/components/ui/Input";
+import Captcha from "@/components/auth/Captcha";
 import { normalizeDigits } from "@/lib/format";
 import { requestPushPermission } from "@/lib/pushClient";
 
@@ -16,6 +17,9 @@ function LoginForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [captchaId, setCaptchaId] = useState("");
+  const [captchaText, setCaptchaText] = useState("");
+  const [captchaKey, setCaptchaKey] = useState(0);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -25,11 +29,12 @@ function LoginForm() {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone, password }),
+        body: JSON.stringify({ phone, password, captchaId, captchaText }),
       });
       const data = await res.json();
       if (!res.ok) {
         setError(data.error ?? "خطایی رخ داد");
+        setCaptchaKey((k) => k + 1); // کپچای یکبارمصرف — بعد از هر خطا تازه شود
         return;
       }
       const next = searchParams.get("next");
@@ -73,6 +78,10 @@ function LoginForm() {
             placeholder="رمز عبور"
             required
           />
+          <Captcha
+            onChange={(id, text) => { setCaptchaId(id); setCaptchaText(text); }}
+            refreshKey={captchaKey}
+          />
 
           {error && (
             <p role="alert" className="text-sm text-ig-red">
@@ -80,7 +89,7 @@ function LoginForm() {
             </p>
           )}
 
-          <Button type="submit" fullWidth loading={loading} disabled={!phone || !password}>
+          <Button type="submit" fullWidth loading={loading} disabled={!phone || !password || !captchaText}>
             ورود
           </Button>
         </form>

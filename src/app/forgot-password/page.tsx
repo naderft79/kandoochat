@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
 import Input, { PasswordInput } from "@/components/ui/Input";
+import Captcha from "@/components/auth/Captcha";
 import { normalizeDigits, toPersianDigits } from "@/lib/format";
 
 type Step = "phone" | "code" | "password" | "done";
@@ -20,6 +21,9 @@ export default function ForgotPasswordPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [cooldown, setCooldown] = useState(0);
+  const [captchaId, setCaptchaId] = useState("");
+  const [captchaText, setCaptchaText] = useState("");
+  const [captchaKey, setCaptchaKey] = useState(0);
 
   useEffect(() => {
     if (cooldown <= 0) return;
@@ -49,9 +53,13 @@ export default function ForgotPasswordPage() {
 
   async function sendCode() {
     if (!/^09\d{9}$/.test(phone)) return setError("شماره موبایل معتبر نیست (مثال: ۰۹۱۲۳۴۵۶۷۸۹)");
-    if (await post("/api/auth/otp/send", { phone, purpose: "RESET" })) {
+    if (!captchaText.trim()) return setError("کد امنیتی را وارد کنید");
+    const ok = await post("/api/auth/otp/send", { phone, purpose: "RESET", captchaId, captchaText });
+    if (ok) {
       setCooldown(60);
       setStep("code");
+    } else {
+      setCaptchaKey((k) => k + 1); // کپچای یکبارمصرف — تازه شود
     }
   }
 
@@ -92,6 +100,10 @@ export default function ForgotPasswordPage() {
               placeholder="09123456789"
               data-autofocus
             />
+            <Captcha
+              onChange={(id, text) => { setCaptchaId(id); setCaptchaText(text); }}
+              refreshKey={captchaKey}
+            />
             <Button fullWidth loading={loading} onClick={sendCode}>
               ارسال کد
             </Button>
@@ -119,7 +131,8 @@ export default function ForgotPasswordPage() {
             <button
               type="button"
               disabled={cooldown > 0 || loading}
-              onClick={sendCode}
+              // کپچا یکبارمصرف است — برای ارسال مجدد به مرحله شماره برمی گردیم
+              onClick={() => { setStep("phone"); setCaptchaKey((k) => k + 1); }}
               className="w-full text-sm font-semibold text-ig-blue disabled:text-ig-gray"
             >
               {cooldown > 0 ? `ارسال مجدد (${toPersianDigits(cooldown)})` : "ارسال مجدد کد"}

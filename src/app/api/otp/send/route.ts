@@ -6,6 +6,7 @@ import { requireUser, AuthError } from "@/lib/auth";
 import { getAllSettings } from "@/lib/settings";
 import { sendOtpSms } from "@/lib/sms";
 import { rateLimit, otpRateLimit, getClientIdentifier } from "@/lib/rate-limit";
+import { verifyCaptcha } from "@/lib/captcha";
 
 export async function POST(request: Request) {
   try {
@@ -19,6 +20,13 @@ export async function POST(request: Request) {
     }
 
     const user = await requireUser();
+
+    // کپچا — جلوی اسپم پیامک با نشست لاگین‌شده
+    const body = await request.json().catch(() => ({}));
+    if (!(await verifyCaptcha(body?.captchaId, body?.captchaText))) {
+      return NextResponse.json({ error: "کد امنیتی اشتباه است یا منقضی شده؛ دوباره تلاش کنید" }, { status: 400 });
+    }
+
     const settings = await getAllSettings();
 
     if (!settings.otpEnabled) {

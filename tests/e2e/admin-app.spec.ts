@@ -4,6 +4,7 @@ import { test, expect } from "@playwright/test";
 import bcrypt from "bcryptjs";
 import { loginAs } from "./helpers/auth";
 import { query } from "./helpers/db";
+import { captchaFields } from "./helpers/captcha";
 
 const WRONG_PASS_MSG = "شماره موبایل یا رمز عبور اشتباه است";
 const USER_UA = "KandooTest KandooApp/1.0";
@@ -39,7 +40,7 @@ test.describe("جداسازی ورود اپ کاربر و اپ مدیریت", ()
   test("مدیر در اپ کاربر با ارور رمز اشتباه رد می شود و در اپ مدیریت وارد می شود", async ({ request }) => {
     // مدیر + اپ کاربر → همان پاسخ رمز اشتباه
     const blocked = await request.post("/api/auth/login", {
-      data: creds("admin", "Admin-pass-9"),
+      data: { ...creds("admin", "Admin-pass-9"), ...(await captchaFields(request)) },
       headers: { "user-agent": USER_UA },
     });
     expect(blocked.status()).toBe(401);
@@ -48,28 +49,28 @@ test.describe("جداسازی ورود اپ کاربر و اپ مدیریت", ()
 
     // پاسخ باید عیناً با پاسخ رمز غلط یکسان باشد
     const wrong = await request.post("/api/auth/login", {
-      data: creds("admin", "wrong-password"),
+      data: { ...creds("admin", "wrong-password"), ...(await captchaFields(request)) },
       headers: { "user-agent": USER_UA },
     });
     expect(blockedBody).toEqual(await wrong.json());
 
     // مدیر + اپ مدیریت → ورود موفق
     const ok = await request.post("/api/auth/login", {
-      data: creds("admin", "Admin-pass-9"),
+      data: { ...creds("admin", "Admin-pass-9"), ...(await captchaFields(request)) },
       headers: { "user-agent": ADMIN_UA },
     });
     expect(ok.status()).toBe(200);
 
     // مدیر + مرورگر معمولی → ورود موفق (محدودیت فقط روی APK است)
     const browser = await request.post("/api/auth/login", {
-      data: creds("admin", "Admin-pass-9"),
+      data: { ...creds("admin", "Admin-pass-9"), ...(await captchaFields(request)) },
     });
     expect(browser.status()).toBe(200);
   });
 
   test("کاربر عادی در اپ مدیریت با ارور رمز اشتباه رد می شود", async ({ request }) => {
     const blocked = await request.post("/api/auth/login", {
-      data: creds("user", "User-pass-9"),
+      data: { ...creds("user", "User-pass-9"), ...(await captchaFields(request)) },
       headers: { "user-agent": ADMIN_UA },
     });
     expect(blocked.status()).toBe(401);
@@ -77,7 +78,7 @@ test.describe("جداسازی ورود اپ کاربر و اپ مدیریت", ()
 
     // همان کاربر در اپ کاربر وارد می شود
     const ok = await request.post("/api/auth/login", {
-      data: creds("user", "User-pass-9"),
+      data: { ...creds("user", "User-pass-9"), ...(await captchaFields(request)) },
       headers: { "user-agent": USER_UA },
     });
     expect(ok.status()).toBe(200);
