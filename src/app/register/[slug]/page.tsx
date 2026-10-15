@@ -15,5 +15,5 @@ export default async function SpecialRegisterSlugPage({
     redirect("/register");
   }
 
-  return <SpecialRegisterForm />;
+  return <SpecialRegisterForm slug={slug} />;
 }

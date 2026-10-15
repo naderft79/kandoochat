@@ -32,6 +32,7 @@ const registerSchema = z.object({
   phoneProof: z.string().optional(),
   termsAccepted: z.boolean().optional(),
   isSpecial: z.boolean().optional(),
+  specialSlug: z.string().max(100).optional(),
 });
 
 export async function POST(request: Request) {
@@ -55,15 +56,22 @@ export async function POST(request: Request) {
     }
     const data = parsed.data;
 
-    // تایید قوانین و ۱۸ سال تمام (ثبت نام معمولی)
-    if (!data.isSpecial && data.termsAccepted !== true) {
+    const settings0 = await getAllSettings();
+
+    // پرچم ویژه فقط با اسلاگ مخفی ثبت نام ویژه فعال می شود — خودکار قابل ادعا نیست
+    const isSpecial = !!data.isSpecial && data.specialSlug === settings0.specialRegisterSlug;
+    if (data.isSpecial && !isSpecial) {
+      return NextResponse.json({ error: "لینک ثبت نام ویژه معتبر نیست" }, { status: 400 });
+    }
+
+    // تایید قوانین و ۱۸ سال تمام — برای همه ثبت نام ها (عادی و ویژه)
+    if (data.termsAccepted !== true) {
       return NextResponse.json({ error: "پذیرش قوانین و تایید ۱۸ سال تمام الزامی است" }, { status: 400 });
     }
 
     // تایید موبایل اجباری (مگر اینکه مدیر تایید پیامکی را غیرفعال کرده باشد)
-    const settings0 = await getAllSettings();
     let phoneOk = false;
-    if (settings0.otpEnabled && !data.isSpecial) {
+    if (settings0.otpEnabled) {
       if (!(await verifyProof(data.phoneProof, data.phone, "REGISTER"))) {
         return NextResponse.json({ error: "ابتدا شماره موبایل خود را با کد پیامکی تایید کنید" }, { status: 400 });
       }
@@ -127,7 +135,7 @@ export async function POST(request: Request) {
         carModel: data.carModel || null,
         neighborhood: data.neighborhood || null,
         job: data.job || null,
-        isSpecial: data.isSpecial ?? false,
+        isSpecial,
         phoneVerified: phoneOk,
         termsAcceptedAt: data.termsAccepted ? new Date() : null,
         passwordChangedAt: new Date(),
