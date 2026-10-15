@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireUser, AuthError } from "@/lib/auth";
+import { rateLimitUser } from "@/lib/rate-limit";
 
 const blockSchema = z.object({
   blockedId: z.string().min(1),
@@ -12,6 +13,14 @@ const blockSchema = z.object({
 export async function POST(request: Request) {
   try {
     const user = await requireUser();
+    // سقف بلاک/آنبلاک: ۶۰ در ساعت
+    const limited = await rateLimitUser(
+      user.id,
+      "block",
+      { windowMs: 60 * 60 * 1000, maxRequests: 60 },
+      "تعداد درخواست های بلاک/رفع بلاک شما بیش از حد مجاز است؛ لطفا بعدا تلاش کنید"
+    );
+    if (limited) return limited;
     const body = await request.json();
     const parsed = blockSchema.safeParse(body);
     if (!parsed.success) {

@@ -8,6 +8,7 @@ import { getAllSettings } from "@/lib/settings";
 import { sanitizeString } from "@/lib/sanitize";
 import { isHaniUser } from "@/lib/aiCompanion";
 import { publishToConversation } from "@/lib/chatEvents";
+import { rateLimitUser } from "@/lib/rate-limit";
 
 const transferSchema = z.object({
   conversationId: z.string().min(1),
@@ -19,6 +20,14 @@ const transferSchema = z.object({
 export async function POST(request: Request) {
   try {
     const user = await requireUser();
+    // سقف انتقال/درخواست/هدیه سکه (سهمیه مشترک): ۱۰ در ساعت
+    const limited = await rateLimitUser(
+      user.id,
+      "coin-transfer",
+      { windowMs: 60 * 60 * 1000, maxRequests: 10 },
+      "به سقف انتقال سکه در هر ساعت رسیدید؛ لطفا بعدا تلاش کنید"
+    );
+    if (limited) return limited;
     const body = await request.json();
     const parsed = transferSchema.safeParse(body);
     if (!parsed.success) {

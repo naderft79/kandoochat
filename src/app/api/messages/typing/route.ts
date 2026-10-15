@@ -4,6 +4,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireUser, AuthError } from "@/lib/auth";
 import { publishToConversation } from "@/lib/chatEvents";
+import { rateLimitUser } from "@/lib/rate-limit";
 
 const typingSchema = z.object({
   conversationId: z.string().min(1),
@@ -14,6 +15,14 @@ const typingSchema = z.object({
 export async function POST(request: Request) {
   try {
     const user = await requireUser();
+    // سقف ثبت وضعیت تایپ: ۳۰ در دقیقه
+    const limited = await rateLimitUser(
+      user.id,
+      "chat-typing",
+      { windowMs: 60 * 1000, maxRequests: 30 },
+      "درخواست های شما بیش از حد مجاز است؛ کمی صبر کنید"
+    );
+    if (limited) return limited;
     const body = await request.json();
     const parsed = typingSchema.safeParse(body);
     if (!parsed.success) {

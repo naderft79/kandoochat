@@ -3,6 +3,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { readFile } from "fs/promises";
 import path from "path";
+import { rateLimit, getClientIdentifier, rateLimitError } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -24,6 +25,11 @@ const MIME: Record<string, string> = {
 };
 
 export async function GET(req: NextRequest) {
+  // سقف دریافت رسانه بر اساس IP: ۳۰۰ در دقیقه — جلوگیری از دانلود انبوه/اسکرپینگ
+  const rl = await rateLimit(`media:${getClientIdentifier(req)}`, { windowMs: 60 * 1000, maxRequests: 300 });
+  if (!rl.allowed) {
+    return rateLimitError("تعداد درخواست رسانه بیش از حد مجاز است؛ کمی صبر کنید", rl.retryAfterMs);
+  }
   const raw = req.nextUrl.searchParams.get("p") ?? "";
   // پاکسازی مسیر — جلوگیری از path traversal و کاراکترهای غیرمجاز
   const safe = raw.replace(/\\/g, "/").replace(/\.\./g, "").replace(/^\/+/, "");

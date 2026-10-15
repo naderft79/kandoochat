@@ -5,6 +5,7 @@ import { uploadFile, safeExtension } from "@/lib/storage";
 import { isMediaSignatureValid } from "@/lib/file-guard";
 import { optimizeImage } from "@/lib/image";
 import { detectNsfw } from "@/lib/face";
+import { rateLimitUser } from "@/lib/rate-limit";
 
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const ALLOWED_VIDEO_TYPES = ["video/mp4", "video/webm"];
@@ -14,6 +15,14 @@ const MAX_VIDEO_SIZE = 50 * 1024 * 1024; // ۵۰ مگابایت
 export async function POST(request: Request) {
   try {
     const user = await requireUser();
+    // سقف آپلود رسانه: ۱۰ فایل در دقیقه
+    const limited = await rateLimitUser(
+      user.id,
+      "upload",
+      { windowMs: 60 * 1000, maxRequests: 10 },
+      "به سقف آپلود فایل در هر دقیقه رسیدید؛ لطفا کمی صبر کنید"
+    );
+    if (limited) return limited;
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
 

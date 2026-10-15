@@ -6,6 +6,7 @@ import { requireUser, AuthError } from "@/lib/auth";
 import { getAllSettings } from "@/lib/settings";
 import { notifyUser } from "@/lib/notifications";
 import { incrementMissionProgress } from "@/lib/missions";
+import { rateLimitUser } from "@/lib/rate-limit";
 
 const likeSchema = z.object({
   receiverId: z.string().min(1),
@@ -16,6 +17,14 @@ const likeSchema = z.object({
 export async function POST(request: Request) {
   try {
     const user = await requireUser();
+    // سقف لایک/سوپرلایک ارسالی: ۱۰۰ در ساعت — جلوگیری از بات لایک
+    const limited = await rateLimitUser(
+      user.id,
+      "like-send",
+      { windowMs: 60 * 60 * 1000, maxRequests: 100 },
+      "به سقف ارسال لایک در هر ساعت رسیدید؛ لطفا بعدا تلاش کنید"
+    );
+    if (limited) return limited;
     const body = await request.json();
     const parsed = likeSchema.safeParse(body);
     if (!parsed.success) {

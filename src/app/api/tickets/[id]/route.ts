@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireUser, AuthError } from "@/lib/auth";
 import { sanitizeTicketContent } from "@/lib/sanitize";
+import { rateLimitUser } from "@/lib/rate-limit";
 
 export async function GET(
   _req: Request,
@@ -40,6 +41,14 @@ export async function POST(
 ) {
   try {
     const user = await requireUser();
+    // سقف ارسال پیام در تیکت: ۳۰ در ساعت
+    const limited = await rateLimitUser(
+      user.id,
+      "ticket-msg",
+      { windowMs: 60 * 60 * 1000, maxRequests: 30 },
+      "به سقف ارسال پیام در تیکت در هر ساعت رسیدید؛ لطفا بعدا تلاش کنید"
+    );
+    if (limited) return limited;
     const { id } = await params;
     const body = await req.json();
     const { content, attachments } = body;

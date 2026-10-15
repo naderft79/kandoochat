@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { requireUser, AuthError } from "@/lib/auth";
 import { hasActiveSubscription } from "@/lib/finance";
 import { incrementMissionProgress } from "@/lib/missions";
+import { rateLimitUser } from "@/lib/rate-limit";
 
 const startSchema = z.object({
   targetUserId: z.string().min(1),
@@ -36,13 +37,22 @@ export async function POST(request: Request) {
     // آی دی ها مرتب می شوند تا گفتگوی تکراری ساخته نشود
     const [userAId, userBId] = [user.id, target.id].sort();
 
-    // اگر گفتگو از قبل وجود دارد، همان برگردانده می شود
+    // اگر گفتگو از قبل وجود دارد، همان برگردانده می شود — بدون مصرف سهمیه محدودیت
     const existing = await prisma.conversation.findUnique({
       where: { userAId_userBId: { userAId, userBId } },
     });
     if (existing) {
       return NextResponse.json({ ok: true, conversationId: existing.id });
     }
+
+    // سقف ساخت گفتگوی جدید: ۱۰۰ در ساعت
+    const limited = await rateLimitUser(
+      user.id,
+      "conv-new",
+      { windowMs: 60 * 60 * 1000, maxRequests: 100 },
+      "به سقف ساخت گفتگوی جدید در هر ساعت رسیدید؛ لطفا بعدا تلاش کنید"
+    );
+    if (limited) return limited;
 
     // شرط تکمیل پروفایل حذف شد — گفتگو با هر پروفایلی آزاد است
     // فقط شروع کننده گفتگو باید اشتراک فعال داشته باشد

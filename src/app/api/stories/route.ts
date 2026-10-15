@@ -4,6 +4,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireUser, AuthError } from "@/lib/auth";
 import { sanitizeString } from "@/lib/sanitize";
+import { rateLimitUser } from "@/lib/rate-limit";
 
 // GET — لیست استوری های فعال (خود کاربر + پروفایل ها)
 export async function GET() {
@@ -112,6 +113,14 @@ const createSchema = z.object({
 export async function POST(request: Request) {
   try {
     const user = await requireUser();
+    // سقف انتشار استوری: ۱۰ در روز
+    const limited = await rateLimitUser(
+      user.id,
+      "story-create",
+      { windowMs: 24 * 60 * 60 * 1000, maxRequests: 10 },
+      "به سقف انتشار استوری در هر روز رسیدید؛ لطفا فردا تلاش کنید"
+    );
+    if (limited) return limited;
     const body = await request.json();
     const parsed = createSchema.safeParse(body);
     if (!parsed.success) {

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireUser, AuthError } from "@/lib/auth";
+import { rateLimitUser } from "@/lib/rate-limit";
 import { ensureWallet, InsufficientFundsError } from "@/lib/finance";
 import { getAllSettings } from "@/lib/settings";
 import { publishToConversation } from "@/lib/chatEvents";
@@ -16,6 +17,14 @@ const giftSchema = z.object({
 export async function POST(request: Request) {
   try {
     const user = await requireUser();
+    // سقف انتقال/درخواست/هدیه سکه (سهمیه مشترک): ۱۰ در ساعت
+    const limited = await rateLimitUser(
+      user.id,
+      "coin-transfer",
+      { windowMs: 60 * 60 * 1000, maxRequests: 10 },
+      "به سقف انتقال سکه در هر ساعت رسیدید؛ لطفا بعدا تلاش کنید"
+    );
+    if (limited) return limited;
     const body = await request.json();
     const parsed = giftSchema.safeParse(body);
     if (!parsed.success) {

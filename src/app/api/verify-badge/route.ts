@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireUser, AuthError } from "@/lib/auth";
+import { rateLimitUser } from "@/lib/rate-limit";
 import {
   IMAGE_TYPES,
   AUDIO_TYPES,
@@ -45,6 +46,15 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const user = await requireUser();
+
+    // سقف درخواست احراز (تیک آبی + کامل مشترک): ۳ در روز
+    const limited = await rateLimitUser(
+      user.id,
+      "verify-request",
+      { windowMs: 24 * 60 * 60 * 1000, maxRequests: 3 },
+      "به سقف ارسال درخواست احراز در هر روز رسیدید؛ لطفا فردا تلاش کنید"
+    );
+    if (limited) return limited;
 
     if (user.isVerified) {
       return NextResponse.json({ error: "تیک آبی شما فعال است" }, { status: 400 });

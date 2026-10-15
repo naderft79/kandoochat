@@ -11,6 +11,7 @@ import { sendPushToUser } from "@/lib/push";
 import { publishToConversation } from "@/lib/chatEvents";
 import { incrementMissionProgress } from "@/lib/missions";
 import { getTransferStatuses } from "@/lib/transferStatus";
+import { rateLimitUser } from "@/lib/rate-limit";
 
 // بررسی عضویت کاربر در گفتگو
 async function getConversationForUser(conversationId: string, userId: string) {
@@ -124,6 +125,14 @@ const sendSchema = z.object({
 export async function POST(request: Request) {
   try {
     const user = await requireUser();
+    // سقف ارسال پیام — مجموع همه گفتگوها: ۲۰ پیام در دقیقه
+    const limited = await rateLimitUser(
+      user.id,
+      "msg-send",
+      { windowMs: 60 * 1000, maxRequests: 20 },
+      "به سقف ارسال پیام رسیدید (۲۰ پیام در هر دقیقه)؛ لطفا یک دقیقه صبر کنید و دوباره تلاش کنید"
+    );
+    if (limited) return limited;
     const body = await request.json();
     const parsed = sendSchema.safeParse(body);
     if (!parsed.success) {

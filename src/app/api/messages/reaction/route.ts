@@ -4,6 +4,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireUser, AuthError } from "@/lib/auth";
 import { publishToConversation } from "@/lib/chatEvents";
+import { rateLimitUser } from "@/lib/rate-limit";
 
 const reactionSchema = z.object({
   messageId: z.string().min(1),
@@ -13,6 +14,14 @@ const reactionSchema = z.object({
 export async function PATCH(request: Request) {
   try {
     const user = await requireUser();
+    // سقف واکنش به پیام: ۶۰ در دقیقه
+    const limited = await rateLimitUser(
+      user.id,
+      "msg-reaction",
+      { windowMs: 60 * 1000, maxRequests: 60 },
+      "تعداد واکنش های شما بیش از حد مجاز است؛ کمی صبر کنید"
+    );
+    if (limited) return limited;
     const body = await request.json();
     const parsed = reactionSchema.safeParse(body);
     if (!parsed.success) {

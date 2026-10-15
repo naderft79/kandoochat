@@ -1,4 +1,5 @@
 // محدودسازی نرخ درخواست — Redis در production، حافظه محلی در توسعه
+import { NextResponse } from "next/server";
 import { getRedis } from "@/lib/redis";
 
 const redis = getRedis();
@@ -81,3 +82,22 @@ export const loginRateLimit = { windowMs: 15 * 60 * 1000, maxRequests: 10 };
 export const otpRateLimit = { windowMs: 15 * 60 * 1000, maxRequests: 5 };
 export const registerRateLimit = { windowMs: 60 * 60 * 1000, maxRequests: 5 };
 export const apiRateLimit = { windowMs: 60 * 1000, maxRequests: 120 };
+
+// پاسخ استاندارد 429 — پیام فارسی مشخص + کد RATE_LIMITED و هدر Retry-After برای کلاینت
+export function rateLimitError(message: string, retryAfterMs?: number) {
+  return NextResponse.json(
+    { error: message, code: "RATE_LIMITED" },
+    { status: 429, headers: { "Retry-After": String(Math.ceil((retryAfterMs ?? 60_000) / 1000)) } }
+  );
+}
+
+// محدودیت بر اساس کاربر لاگین شده — اگر بیش از سقف باشد پاسخ 429 برمی گرداند، وگرنه null
+export async function rateLimitUser(
+  userId: string,
+  action: string,
+  rules: LimitRule | LimitRule[],
+  message: string
+): Promise<NextResponse | null> {
+  const rl = await rateLimit(`${action}:u:${userId}`, rules);
+  return rl.allowed ? null : rateLimitError(message, rl.retryAfterMs);
+}

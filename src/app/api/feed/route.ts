@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireUser, AuthError } from "@/lib/auth";
+import { rateLimitUser } from "@/lib/rate-limit";
 import { buildDiscoveryWhere, buildDiscoveryOrderBy, discoverySelect } from "@/lib/discovery";
 
 const PAGE_SIZE = 10;
@@ -9,6 +10,14 @@ const PAGE_SIZE = 10;
 export async function GET(request: Request) {
   try {
     const user = await requireUser();
+    // سقف دریافت فید: ۶۰ در دقیقه
+    const limited = await rateLimitUser(
+      user.id,
+      "feed",
+      { windowMs: 60 * 1000, maxRequests: 60 },
+      "درخواست های شما بیش از حد مجاز است؛ کمی صبر کنید"
+    );
+    if (limited) return limited;
     const { searchParams } = new URL(request.url);
 
     const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10));

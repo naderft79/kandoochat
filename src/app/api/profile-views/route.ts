@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireUser, AuthError } from "@/lib/auth";
 import { incrementMissionProgress } from "@/lib/missions";
+import { rateLimitUser } from "@/lib/rate-limit";
 
 export async function GET() {
   try {
@@ -69,6 +70,14 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const user = await requireUser();
+    // سقف ثبت بازدید پروفایل: ۱۲۰ در ساعت
+    const limited = await rateLimitUser(
+      user.id,
+      "profile-view",
+      { windowMs: 60 * 60 * 1000, maxRequests: 120 },
+      "تعداد درخواست های شما بیش از حد مجاز است؛ کمی صبر کنید"
+    );
+    if (limited) return limited;
     const body = await request.json();
     const { viewedId } = body as { viewedId: string };
 

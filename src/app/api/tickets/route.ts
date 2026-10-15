@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireUser, AuthError } from "@/lib/auth";
 import { sanitizeSubject, sanitizeTicketContent } from "@/lib/sanitize";
+import { rateLimitUser } from "@/lib/rate-limit";
 
 const CATEGORIES = ["عمومی", "مالی", "فنی", "امنیت", "حساب کاربری"];
 
@@ -31,6 +32,14 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const user = await requireUser();
+    // سقف ساخت تیکت جدید: ۵ در روز
+    const limited = await rateLimitUser(
+      user.id,
+      "ticket-create",
+      { windowMs: 24 * 60 * 60 * 1000, maxRequests: 5 },
+      "به سقف ثبت تیکت در هر روز رسیدید (۵ تیکت)؛ لطفا فردا تلاش کنید"
+    );
+    if (limited) return limited;
     const body = await req.json();
     const { subject, category, content } = body;
 

@@ -6,6 +6,7 @@ import { requireUser, AuthError } from "@/lib/auth";
 import { getAllSettings } from "@/lib/settings";
 import { ensureWallet } from "@/lib/finance";
 import { checkWithdrawEligibility } from "@/lib/withdraw";
+import { rateLimitUser } from "@/lib/rate-limit";
 
 const withdrawSchema = z.object({
   coins: z.coerce.number().int().min(1).max(1_000_000),
@@ -36,6 +37,14 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const user = await requireUser();
+    // سقف درخواست برداشت: ۳ در روز
+    const limited = await rateLimitUser(
+      user.id,
+      "withdraw",
+      { windowMs: 24 * 60 * 60 * 1000, maxRequests: 3 },
+      "به سقف درخواست برداشت در هر روز رسیدید (۳ درخواست)؛ لطفا فردا تلاش کنید"
+    );
+    if (limited) return limited;
     const body = await request.json();
     const parsed = withdrawSchema.safeParse(body);
     if (!parsed.success) {

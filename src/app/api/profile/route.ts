@@ -7,6 +7,7 @@ import { PROVINCES } from "@/lib/iran";
 import { sanitizeName, sanitizeUsername, sanitizeJob, sanitizeString, sanitizeBio } from "@/lib/sanitize";
 import { checkProfileCompletion } from "@/lib/profileCheck";
 import { containsProfanity } from "@/lib/profanity";
+import { rateLimitUser } from "@/lib/rate-limit";
 import { incrementMissionProgress } from "@/lib/missions";
 
 const PERSIAN_NAME_RE = /^[آءأإابپتثجچحخدذرزژسشصضطظعغفقکگلمنوهیئؤ\s\u200C]+$/;
@@ -31,6 +32,14 @@ const profileSchema = z.object({
 export async function PUT(request: Request) {
   try {
     const user = await requireUser();
+    // سقف ویرایش پروفایل: ۱۰ بار در ساعت
+    const limited = await rateLimitUser(
+      user.id,
+      "profile-edit",
+      { windowMs: 60 * 60 * 1000, maxRequests: 10 },
+      "به سقف ویرایش پروفایل در هر ساعت رسیدید؛ لطفا بعدا تلاش کنید"
+    );
+    if (limited) return limited;
     const body = await request.json();
     const parsed = profileSchema.safeParse(body);
     if (!parsed.success) {

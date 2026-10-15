@@ -7,7 +7,7 @@ import { requireUser, AuthError } from "@/lib/auth";
 import { getSetting } from "@/lib/settings";
 import { signPaymentToken, sanitizeReturnPath } from "@/lib/payment";
 import { SITE_URL } from "@/lib/site";
-import { rateLimit, apiRateLimit, getClientIdentifier } from "@/lib/rate-limit";
+import { rateLimit, apiRateLimit, getClientIdentifier, rateLimitUser } from "@/lib/rate-limit";
 import { getPlan } from "@/lib/subscriptionPlans";
 
 const createSchema = z.object({
@@ -28,6 +28,15 @@ export async function POST(request: Request) {
         { status: 429, headers: { "Retry-After": String(Math.ceil((retryAfterMs ?? 60000) / 1000)) } }
       );
     }
+
+    // سقف ایجاد درخواست پرداخت برای هر کاربر: ۱۰ در ساعت
+    const limited = await rateLimitUser(
+      user.id,
+      "payment-create",
+      { windowMs: 60 * 60 * 1000, maxRequests: 10 },
+      "به سقف ایجاد درخواست پرداخت در هر ساعت رسیدید؛ لطفا بعدا تلاش کنید"
+    );
+    if (limited) return limited;
 
     const body = await request.json();
     const parsed = createSchema.safeParse(body);

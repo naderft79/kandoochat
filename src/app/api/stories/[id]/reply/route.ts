@@ -7,6 +7,7 @@ import { hasActiveSubscription } from "@/lib/finance";
 import { sanitizeString } from "@/lib/sanitize";
 import { publishToConversation } from "@/lib/chatEvents";
 import { notifyUser } from "@/lib/notifications";
+import { rateLimitUser } from "@/lib/rate-limit";
 
 const replySchema = z.object({
   content: z.string().min(1, "متن خالی است").max(500),
@@ -19,6 +20,14 @@ export async function POST(
 ) {
   try {
     const user = await requireUser();
+    // سقف پاسخ به استوری: ۲۰ در دقیقه
+    const limited = await rateLimitUser(
+      user.id,
+      "story-reply",
+      { windowMs: 60 * 1000, maxRequests: 20 },
+      "به سقف پاسخ به استوری در هر دقیقه رسیدید؛ لطفا کمی صبر کنید"
+    );
+    if (limited) return limited;
     const { id: storyId } = await params;
     const body = await request.json();
     const parsed = replySchema.safeParse(body);
