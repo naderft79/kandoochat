@@ -6,8 +6,8 @@ import { getRedis } from "@/lib/redis";
 
 const SECRET = () => process.env.JWT_SECRET ?? "kandoo-captcha-fallback";
 const TTL_MS = 10 * 60 * 1000; // ۱۰ دقیقه اعتبار
-// حروف بدون ابهام — بدون 0/O/1/I/L تا کاربر اشتباه نگیرد
-const CHARS = "23456789ABCDEFGHJKMNPQRSTUVWXYZ";
+// حروف بدون ابهام — بدون 0/O/1/I/L و همچنین V/W که در نقطه چین شبیه هم می شوند
+const CHARS = "23456789ABCDEFGHJKMNPQRSTUXYZ";
 
 // فونت نقطه ای ۵×۷ برای هر کاراکتر — هر رشته یک سطر، بیت چپ به راست
 const GLYPHS: Record<string, string[]> = {
