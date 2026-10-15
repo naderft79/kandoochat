@@ -139,6 +139,7 @@ export default function SummaryPane({ s }: { s: UserSummary }) {
           <Field label="شغل">{s.job ?? "—"}</Field>
           <Field label="خودرو">{s.carModel ?? "—"}</Field>
           <Field label="کد دعوت">{s.referralCode ? <span dir="ltr">{s.referralCode}</span> : "—"}</Field>
+          <Field label="دعوت شده توسط">{s.referredByPhone ? <span dir="ltr">{s.referredByPhone}</span> : "—"}</Field>
           <Field label="تاریخ عضویت">{formatDateTimeCustom(s.createdAt)}</Field>
           <Field label="آخرین بازدید">{formatDateTimeCustom(s.lastSeen)}</Field>
           <Field label="آخرین IP و کشور"><IpCountryBadge ip={s.lastIp} country={s.lastCountry} canSeeIp={s.permissions.ip} /></Field>

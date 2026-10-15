@@ -105,6 +105,7 @@ export type UserSummary = {
   messageLockReason: string | null;
   messageLocked: boolean;
   referralCode: string | null;
+  referredByPhone: string | null;
   createdAt: string;
   lastSeen: string;
   lastIp: string | null;
@@ -120,8 +121,12 @@ export type UserSummary = {
 
 export async function getUserSummary(userId: string, viewerRole: string): Promise<UserSummary | null> {
   const now = new Date();
-  const [user, subscription, stats, photos] = await Promise.all([
+  const [user, referral, subscription, stats, photos] = await Promise.all([
     prisma.user.findUnique({ where: { id: userId }, include: { wallet: true } }),
+    prisma.referral.findUnique({
+      where: { referredId: userId },
+      select: { referrer: { select: { phone: true } } },
+    }),
     prisma.subscription.findFirst({
       where: { userId, endsAt: { gt: now } },
       orderBy: { endsAt: "desc" },
@@ -165,6 +170,10 @@ export async function getUserSummary(userId: string, viewerRole: string): Promis
     messageLockReason: user.messageLockReason,
     messageLocked: !!user.messageLockUntil && user.messageLockUntil.getTime() > now.getTime(),
     referralCode: user.referralCode,
+    // شماره دعوت کننده — با همان سطح دسترسی شماره کاربر ماسک می شود
+    referredByPhone: referral?.referrer.phone
+      ? canViewFullPhone(viewerRole) ? referral.referrer.phone : maskPhone(referral.referrer.phone)
+      : null,
     createdAt: user.createdAt.toISOString(),
     lastSeen: user.lastSeen.toISOString(),
     lastIp: showIp ? user.lastIp : null,
