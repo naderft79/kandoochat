@@ -66,8 +66,8 @@ export async function POST(request: Request) {
     const faceResult = await detectFaces(buffer, file.type);
 
     if (faceResult === null) {
-      // در توسعه بدون سرویس چهره آپلود ادامه می یابد؛ در production آپلود نباید بدون بررسی انجام شود
-      if (process.env.NODE_ENV === "production") {
+      // هر وقت سرویس چهره پیکربندی شده (لوکال یا production) آپلود بدون بررسی انجام نمی شود
+      if (process.env.NODE_ENV === "production" || process.env.FACE_DETECTOR_URL) {
         return NextResponse.json(
           { error: "سرویس بررسی عکس موقتا در دسترس نیست؛ چند دقیقه بعد دوباره تلاش کنید" },
           { status: 503 }
