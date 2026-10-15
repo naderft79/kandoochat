@@ -1,13 +1,14 @@
 "use client";
 
-// بنر نصب PWA — از اولین بازدید نمایش داده می شود؛ بستن فقط چند روز آن را مخفی می کند
+// بنر نصب PWA — فقط موبایل (اندروید/iOS)، حداکثر یک بار در روز برای هر کاربر
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { X, Share, Plus } from "lucide-react";
+import { isNativeApp } from "@/lib/native";
 
 const DISMISS_KEY = "kandoo-install-dismissed";
-// بستن بنر به مدت ۳ روز آن را پنهان می کند و بعد دوباره تبلیغ می شود
-const DISMISS_MS = 3 * 24 * 60 * 60 * 1000;
+// بستن بنر تا فردا آن را پنهان می کند — هر کاربر روزی یک بار آن را می بیند
+const DISMISS_MS = 24 * 60 * 60 * 1000;
 
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>;
@@ -15,7 +16,16 @@ type BeforeInstallPromptEvent = Event & {
 };
 
 function isIos() {
-  return /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const ua = navigator.userAgent;
+  return (
+    /iphone|ipad|ipod/i.test(ua) ||
+    // آیپد های جدید خود را مک معرفی می کنند
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+  );
+}
+
+function isAndroid() {
+  return /android/i.test(navigator.userAgent);
 }
 
 function isStandalone() {
@@ -34,11 +44,15 @@ export default function InstallBanner() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    // هرگز روی دسکتاپ، اپ نیتیو یا حالت نصب شده نمایش داده نمی شود
     if (isStandalone()) return;
+    if (isNativeApp()) return;
+    const ios = isIos();
+    if (!ios && !isAndroid()) return;
     if (isDismissed()) return;
 
     // iOS رویداد installprompt ندارد — راهنمای دستی نمایش می دهیم
-    if (isIos()) {
+    if (ios) {
       queueMicrotask(() => {
         setIosMode(true);
         setShow(true);

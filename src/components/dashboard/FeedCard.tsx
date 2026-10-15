@@ -15,6 +15,7 @@ import {
   Briefcase,
   User,
   X,
+  Image as ImageIcon,
 } from "lucide-react";
 import VerifiedBadge from "@/components/dashboard/VerifiedBadge";
 import DefaultAvatar from "@/components/dashboard/DefaultAvatar";
@@ -249,8 +250,13 @@ export default function FeedCard({
               <div
                 key={i}
                 aria-hidden
-                className="relative flex-1 aspect-square rounded-lg bg-ig-btn2"
-              />
+                className="relative flex-1 aspect-square rounded-lg bg-ig-btn2 flex items-center justify-center"
+              >
+                <ImageIcon
+                  className="w-6 h-6 text-ig-gray/40"
+                  strokeWidth={1.5}
+                />
+              </div>
             );
           })}
         </div>
