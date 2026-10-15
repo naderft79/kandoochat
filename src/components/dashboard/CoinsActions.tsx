@@ -328,7 +328,8 @@ export default function CoinsActions({
   }
 
   function copyReferralCode() {
-    const link = `${window.location.origin}/register?ref=${referralCode}`;
+    // همان لینک صفحه دعوت دوستان — صفحه فرود /invite/[code]
+    const link = `${window.location.origin}/invite/${referralCode}`;
     navigator.clipboard.writeText(link);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
