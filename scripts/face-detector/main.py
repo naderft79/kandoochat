@@ -44,11 +44,25 @@ try:
 except Exception as _e:
     print(f"[face-detector] mediapipe unavailable ({_e}); falling back to opencv haar")
 
+# یافتن فایل Haar — در نصب pip در cv2.data است و در پکیج های دبیان/اوبونتو در مسیرهای سیستمی
+def _find_haarcascade() -> str:
+    candidates = []
+    if hasattr(cv2, "data") and getattr(cv2.data, "haarcascades", None):
+        candidates.append(Path(cv2.data.haarcascades) / "haarcascade_frontalface_default.xml")
+    candidates += [
+        Path("/usr/share/opencv4/haarcascades/haarcascade_frontalface_default.xml"),
+        Path("/usr/share/opencv/haarcascades/haarcascade_frontalface_default.xml"),
+        Path("/usr/local/share/opencv4/haarcascades/haarcascade_frontalface_default.xml"),
+    ]
+    for c in candidates:
+        if c.exists():
+            return str(c)
+    raise RuntimeError("haarcascade_frontalface_default.xml not found")
+
+
 _haar = None
 if _mp_detector is None:
-    _haar = cv2.CascadeClassifier(
-        str(Path(cv2.data.haarcascades) / "haarcascade_frontalface_default.xml")
-    )
+    _haar = cv2.CascadeClassifier(_find_haarcascade())
     print("[face-detector] engine: opencv haar")
 
 
