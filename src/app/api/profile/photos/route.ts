@@ -79,6 +79,12 @@ export async function POST(request: Request) {
         { error: "چهره ای در این عکس تشخیص داده نشد. لطفا عکسی آپلود کنید که چهره شما در آن مشخص باشد" },
         { status: 400 }
       );
+    } else if (faceResult.faces > 1) {
+      // عکس های پروفایل و گالری باید تکنفره باشند
+      return NextResponse.json(
+        { error: "عکس باید تکنفره باشد و فقط چهره خودتان در آن باشد" },
+        { status: 400 }
+      );
     } else if (faceResult.score < 0.6) {
       return NextResponse.json(
         { error: "کیفیت عکس برای تشخیص چهره کافی نیست. لطفا عکس واضح تری از چهره خودتان آپلود کنید" },
