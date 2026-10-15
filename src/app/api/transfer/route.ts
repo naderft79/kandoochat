@@ -7,6 +7,7 @@ import { ensureWallet, InsufficientFundsError } from "@/lib/finance";
 import { getAllSettings } from "@/lib/settings";
 import { sanitizeString } from "@/lib/sanitize";
 import { isHaniUser } from "@/lib/aiCompanion";
+import { publishToConversation } from "@/lib/chatEvents";
 
 const transferSchema = z.object({
   conversationId: z.string().min(1),
@@ -53,7 +54,7 @@ export async function POST(request: Request) {
     // بررسی ویژه بودن گیرنده برای 20% سکه اضافه
     const receiver = await prisma.user.findUnique({
       where: { id: receiverId },
-      select: { isSpecial: true },
+      select: { isSpecial: true, firstName: true },
     });
     const bonus = receiver?.isSpecial ? Math.ceil((coins * 20) / 100) : 0;
     const receiverCoins = coins + bonus;
@@ -62,6 +63,7 @@ export async function POST(request: Request) {
     await ensureWallet(receiverId);
 
     const coinValue = settings.coinValue;
+    let systemMessage: Awaited<ReturnType<typeof prisma.message.create>> | null = null;
 
     try {
       await prisma.$transaction(async (tx) => {
@@ -112,11 +114,19 @@ export async function POST(request: Request) {
           },
         });
         // پیام سیستمی در چت
-        await tx.message.create({
+        systemMessage = await tx.message.create({
           data: {
             conversationId,
             senderId: user.id,
-            content: JSON.stringify({ coins: receiverCoins, fee, bonus, message: message ?? "", type: "GIFT" }),
+            content: JSON.stringify({
+              coins: receiverCoins,
+              fee,
+              bonus,
+              message: message ?? "",
+              type: "GIFT",
+              senderName: user.firstName,
+              receiverName: receiver?.firstName ?? "",
+            }),
             type: "SYSTEM",
           },
         });
@@ -137,6 +147,9 @@ export async function POST(request: Request) {
       }
       throw err;
     }
+
+    // انتشار لحظه ای پیام انتقال به هر دو طرف گفتگو
+    if (systemMessage) publishToConversation(conversationId, "message", systemMessage);
 
     console.log(`[transfer] user ${user.id} sent ${coins} coins to ${receiverId}, receiver got ${receiverCoins}${bonus > 0 ? ` (+${bonus} special bonus)` : ""}`);
     return NextResponse.json({ ok: true, coins: receiverCoins, fee, bonus });

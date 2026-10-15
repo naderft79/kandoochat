@@ -1,7 +1,7 @@
 "use client";
 
 // اتاق گفتگو: بازطراحی کامل — سبک مدرن
-import { useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useLayoutEffect, useRef, useCallback, type ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -59,6 +59,7 @@ type Props = {
   aiGradient?: string;
   initialMessages: Message[];
   initialHasMore?: boolean;
+  initialTransferStatuses?: Record<string, string>;
 };
 
 function newTempId() {
@@ -86,6 +87,7 @@ export default function ChatRoom({
   aiGradient = "",
   initialMessages,
   initialHasMore = false,
+  initialTransferStatuses = {},
 }: Props) {
   const { toast } = useToast();
   const router = useRouter();
@@ -125,6 +127,8 @@ export default function ChatRoom({
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [loadingOlder, setLoadingOlder] = useState(false);
   const [showJump, setShowJump] = useState(false);
+  // وضعیت لحظه ای درخواست های سکه — از SSE و پاسخ PATCH به روز می شود
+  const [transferStatuses, setTransferStatuses] = useState<Record<string, string>>(initialTransferStatuses);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isTypingRef = useRef(false);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -276,6 +280,7 @@ export default function ChatRoom({
       const data = await res.json();
       if (res.ok && Array.isArray(data.messages)) {
         setHasMore(!!data.hasMore);
+        if (data.transferStatuses) setTransferStatuses((prev) => ({ ...prev, ...data.transferStatuses }));
         if (data.messages.length === 0) pendingRestoreRef.current = null;
         setMessages((prev) => {
           const ids = new Set(prev.map((m) => m.id));
@@ -307,6 +312,7 @@ export default function ChatRoom({
         .then((r) => (r.ok ? r.json() : null))
         .then((d) => {
           if (d?.messages) (d.messages as Message[]).forEach((m) => addMessage(m));
+          if (d?.transferStatuses) setTransferStatuses((prev) => ({ ...prev, ...d.transferStatuses }));
         })
         .catch(() => {});
     };
@@ -358,6 +364,16 @@ export default function ChatRoom({
       try {
         const data = JSON.parse(event.data) as { userId: string; isTyping: boolean };
         if (data.userId !== currentUserId) setOtherTyping(data.isTyping);
+      } catch {
+        // داده نامعتبر
+      }
+    });
+
+    // به روز شدن لحظه ای وضعیت درخواست سکه (تایید/رد)
+    es.addEventListener("transfer-status", (event) => {
+      try {
+        const data = JSON.parse(event.data) as { transferId: string; status: string };
+        setTransferStatuses((prev) => ({ ...prev, [data.transferId]: data.status }));
       } catch {
         // داده نامعتبر
       }
@@ -615,12 +631,22 @@ export default function ChatRoom({
     }
   }
 
-  // تایید/رد درخواست سکه
+  // تایید/رد درخواست سکه — وضعیت بلافاصله روی کارت به روز می شود
   async function handleRequestAction(transferId: string, action: "APPROVE" | "REJECT") {
-    await fetch("/api/transfer/request", {
-      method: "PATCH", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ transferId, action }),
-    });
+    try {
+      const res = await fetch("/api/transfer/request", {
+        method: "PATCH", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ transferId, action }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setTransferStatuses((prev) => ({ ...prev, [transferId]: action === "APPROVE" ? "COMPLETED" : "REJECTED" }));
+      } else {
+        toast(data.error ?? "خطایی رخ داد", "error");
+      }
+    } catch {
+      toast("خطا در ارتباط با سرور", "error");
+    }
   }
 
   // کپی متن — در اپ از پلاگین نیتوو، در مرورگر clipboard یا fallback
@@ -659,63 +685,127 @@ export default function ChatRoom({
     } catch { /* */ }
   }
 
-  // رندر پیام سیستمی
+  // رندر پیام سیستمی انتقال سکه — کارت طلایی هماهنگ با استایل سایت
   function renderSystemMessage(m: Message) {
     let parsed: { coins?: number; fee?: number; bonus?: number; message?: string; type?: string; transferId?: string; senderName?: string; receiverName?: string } = {};
     try { parsed = JSON.parse(m.content); } catch { return null; }
     const mine = m.senderId === currentUserId;
+    const coinsFa = toPersianDigits(parsed.coins || 0);
+    const sender = parsed.senderName || otherName;
+    const receiver = parsed.receiverName || otherName;
+
+    // قالب مشترک کارت انتقال
+    const card = (opts: {
+      icon: ReactNode;
+      iconBg: string;
+      title: string;
+      sub?: string;
+      amount: string;
+      message?: string;
+      footer?: ReactNode;
+    }) => (
+      <div className="flex justify-center my-3 px-2">
+        <div className="w-full max-w-[280px] rounded-2xl border border-ig-border bg-surface overflow-hidden ig-shadow-sm ig-fade-in">
+          <div className="flex items-center gap-3 p-3.5">
+            <div className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 ${opts.iconBg}`}>
+              {opts.icon}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[13px] font-bold text-foreground leading-5">{opts.title}</p>
+              {opts.sub && <p className="text-[11px] text-ig-gray mt-0.5 leading-4">{opts.sub}</p>}
+            </div>
+            <div className="text-center shrink-0">
+              <p className="text-lg font-black text-ig-gold leading-5 flex items-center gap-1">
+                <Coins className="w-4 h-4" />
+                {opts.amount}
+              </p>
+              <p className="text-[10px] text-ig-gray">سکه</p>
+            </div>
+          </div>
+          {opts.message && (
+            <div className="px-3.5 pb-3 -mt-0.5">
+              <p className="text-[11px] text-ig-gray bg-ig-gray-bg rounded-xl px-3 py-2 leading-5">{opts.message}</p>
+            </div>
+          )}
+          {opts.footer}
+        </div>
+      </div>
+    );
+
+    // چیپ وضعیت پایین کارت
+    const statusChip = (ok: boolean, label: string) => (
+      <div className={`flex items-center justify-center gap-1.5 py-2 border-t border-ig-border text-[11px] font-bold ${ok ? "text-ig-online" : "text-ig-red"}`}>
+        {ok ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
+        {label}
+      </div>
+    );
+
     if (parsed.type === "GIFT") {
-      const giftText = mine
-        ? `شما ${toPersianDigits(parsed.coins || 0)} سکه به ${parsed.receiverName || otherName} هدیه دادید`
-        : `${parsed.senderName || otherName} ${toPersianDigits(parsed.coins || 0)} سکه به شما هدیه داد`;
-      return (
-        <div className="flex justify-center my-2">
-          <div className="bg-ig-gray-bg border border-ig-border rounded-2xl px-4 py-3 max-w-[80%] text-center">
-            <Gift className="w-5 h-5 text-ig-gold mx-auto mb-1" />
-            <p className="text-xs text-foreground font-bold">{giftText}</p>
-            {parsed.bonus ? <p className="text-xs text-ig-gold mt-0.5">شامل {toPersianDigits(parsed.bonus)} سکه پاداش</p> : null}
-            {parsed.message && <p className="text-xs text-ig-gray mt-1">{parsed.message}</p>}
-            {parsed.fee ? <p className="text-xs text-ig-gray mt-1">کارمزد: {toPersianDigits(parsed.fee)} سکه</p> : null}
-          </div>
-        </div>
-      );
+      return card({
+        icon: <Gift className="w-5 h-5 text-white" />,
+        iconBg: "bg-gradient-to-br from-ig-gold to-amber-600",
+        title: mine ? `شما ${coinsFa} سکه هدیه دادید` : `${sender} به شما ${coinsFa} سکه هدیه داد`,
+        sub: parsed.bonus ? `شامل ${toPersianDigits(parsed.bonus)} سکه پاداش ویژه` : "انتقال انجام شد",
+        amount: coinsFa,
+        message: parsed.message,
+        footer: statusChip(true, "انجام شد"),
+      });
     }
+
     if (parsed.type === "REQUEST") {
-      return (
-        <div className="flex justify-center my-2">
-          <div className="bg-ig-gray-bg border border-ig-border rounded-2xl px-4 py-3 max-w-[80%] text-center">
-            <ArrowDownLeft className="w-5 h-5 text-ig-blue mx-auto mb-1" />
-            <p className="text-xs text-foreground font-bold">{mine ? "شما" : otherName} {toPersianDigits(parsed.coins || 0)} سکه درخواست کرد</p>
-            {parsed.message && <p className="text-xs text-ig-gray mt-1">{parsed.message}</p>}
-            {!mine && (
-              <div className="flex gap-2 mt-2 justify-center">
-                <button onClick={() => handleRequestAction(parsed.transferId || "", "APPROVE")} className="px-3 py-1 rounded-lg bg-ig-blue text-white text-xs font-bold hover:bg-ig-blue-hover transition-colors">تایید</button>
-                <button onClick={() => handleRequestAction(parsed.transferId || "", "REJECT")} className="px-3 py-1 rounded-lg bg-ig-red text-white text-xs font-bold hover:bg-ig-red/90 transition-colors">رد</button>
-              </div>
-            )}
+      const status = parsed.transferId ? transferStatuses[parsed.transferId] : undefined;
+      const decided = status === "COMPLETED" || status === "REJECTED" || status === "APPROVED";
+      return card({
+        icon: <ArrowDownLeft className="w-5 h-5 text-white" />,
+        iconBg: "bg-gradient-to-br from-ig-blue-bright to-ig-blue",
+        title: mine ? `شما ${coinsFa} سکه درخواست کردید` : `${sender} از شما ${coinsFa} سکه درخواست کرد`,
+        amount: coinsFa,
+        message: parsed.message,
+        footer: decided ? (
+          statusChip(status !== "REJECTED", status === "REJECTED" ? "رد شد" : "تایید شد")
+        ) : !mine ? (
+          <div className="flex gap-2 p-3 pt-1">
+            <button
+              onClick={() => handleRequestAction(parsed.transferId || "", "APPROVE")}
+              className="flex-1 py-2 rounded-xl bg-ig-blue text-white text-xs font-bold hover:bg-ig-blue-hover active:scale-95 transition-all"
+            >
+              تایید و ارسال
+            </button>
+            <button
+              onClick={() => handleRequestAction(parsed.transferId || "", "REJECT")}
+              className="flex-1 py-2 rounded-xl bg-ig-btn2 text-foreground text-xs font-bold hover:bg-ig-btn2-hover active:scale-95 transition-all"
+            >
+              رد کردن
+            </button>
           </div>
-        </div>
-      );
+        ) : (
+          <div className="py-2 border-t border-ig-border text-center text-[11px] text-ig-gray font-bold">در انتظار تایید {receiver}</div>
+        ),
+      });
     }
+
     if (parsed.type === "REQUEST_APPROVED") {
-      return (
-        <div className="flex justify-center my-2">
-          <div className="bg-ig-gray-bg border border-ig-border rounded-2xl px-4 py-2 max-w-[80%] text-center">
-            <Check className="w-4 h-4 text-ig-gray mx-auto mb-1" />
-            <p className="text-xs text-foreground font-bold">درخواست {toPersianDigits(parsed.coins || 0)} سکه تایید شد</p>
-          </div>
-        </div>
-      );
+      return card({
+        icon: <Check className="w-5 h-5 text-white" />,
+        iconBg: "bg-gradient-to-br from-emerald-400 to-emerald-600",
+        title: mine ? "شما درخواست را تایید کردید" : `${sender} درخواست ${coinsFa} سکه را تایید کرد`,
+        sub: "سکه ها منتقل شد",
+        amount: coinsFa,
+        footer: statusChip(true, "تایید شد"),
+      });
     }
+
     if (parsed.type === "REQUEST_REJECTED") {
-      return (
-        <div className="flex justify-center my-2">
-          <div className="bg-ig-gray-bg border border-ig-border rounded-2xl px-4 py-2 max-w-[80%] text-center">
-            <p className="text-xs text-foreground font-bold">درخواست {toPersianDigits(parsed.coins || 0)} سکه رد شد</p>
-          </div>
-        </div>
-      );
+      return card({
+        icon: <X className="w-5 h-5 text-white" />,
+        iconBg: "bg-gradient-to-br from-ig-red to-rose-700",
+        title: mine ? "شما درخواست را رد کردید" : `${sender} درخواست ${coinsFa} سکه را رد کرد`,
+        sub: "سکه ای منتقل نشد",
+        amount: coinsFa,
+        footer: statusChip(false, "رد شد"),
+      });
     }
+
     return null;
   }
 

@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { hasActiveSubscription } from "@/lib/finance";
 import ChatRoom from "@/components/dashboard/ChatRoom";
 import { getCompanionConfigByCompanionId } from "@/lib/aiCompanion";
+import { getTransferStatuses } from "@/lib/transferStatus";
 
 export default async function ChatRoomPage({
   params,
@@ -93,6 +94,9 @@ export default async function ChatRoomPage({
     data: { isRead: true },
   });
 
+  // وضعیت فعلی درخواست های سکه برای نمایش درست کارت ها
+  const initialTransferStatuses = await getTransferStatuses(initialMessages);
+
   return (
     <ChatRoom
       conversationId={conversation.id}
@@ -113,6 +117,7 @@ export default async function ChatRoomPage({
       isAIChat={isAIChat}
       aiGradient={aiGradient}
       initialHasMore={hasMoreMessages}
+      initialTransferStatuses={initialTransferStatuses}
       initialMessages={initialMessages.map((m) => ({
         id: m.id,
         senderId: m.senderId,

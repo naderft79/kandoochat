@@ -6,6 +6,7 @@ import { requireUser, AuthError } from "@/lib/auth";
 import { ensureWallet, InsufficientFundsError } from "@/lib/finance";
 import { getAllSettings } from "@/lib/settings";
 import { isHaniUser } from "@/lib/aiCompanion";
+import { publishToConversation } from "@/lib/chatEvents";
 
 const requestSchema = z.object({
   conversationId: z.string().min(1),
@@ -41,6 +42,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "امکان درخواست سکه از هانی وجود ندارد" }, { status: 400 });
     }
 
+    // نام گیرنده برای نمایش درست در پیام
+    const receiverUser = await prisma.user.findUnique({
+      where: { id: receiverId },
+      select: { firstName: true },
+    });
+
     // ثبت درخواست
     const transfer = await prisma.coinTransfer.create({
       data: {
@@ -56,14 +63,22 @@ export async function POST(request: Request) {
     });
 
     // پیام سیستمی در چت
-    await prisma.message.create({
+    const systemMessage = await prisma.message.create({
       data: {
         conversationId,
         senderId: user.id,
-        content: JSON.stringify({ coins, message: message ?? "", type: "REQUEST", transferId: transfer.id }),
+        content: JSON.stringify({
+          coins,
+          message: message ?? "",
+          type: "REQUEST",
+          transferId: transfer.id,
+          senderName: user.firstName,
+          receiverName: receiverUser?.firstName ?? "",
+        }),
         type: "SYSTEM",
       },
     });
+    publishToConversation(conversationId, "message", systemMessage);
 
     // نوتیفیکیشن برای گیرنده درخواست
     await prisma.notification.create({
@@ -113,8 +128,14 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: "اجازه انجام این عمل را ندارید" }, { status: 403 });
     }
 
+    // نام درخواست کننده برای نمایش در پیام
+    const requester = await prisma.user.findUnique({
+      where: { id: transfer.senderId },
+      select: { firstName: true },
+    });
+
     if (action === "REJECT") {
-      await prisma.$transaction([
+      const [, rejectMsg] = await prisma.$transaction([
         prisma.coinTransfer.update({
           where: { id: transferId },
           data: { status: "REJECTED", type: "REQUEST_REJECTED" },
@@ -123,7 +144,7 @@ export async function PATCH(request: Request) {
           data: {
             conversationId: transfer.conversationId,
             senderId: user.id,
-            content: JSON.stringify({ coins: transfer.coins, type: "REQUEST_REJECTED", transferId }),
+            content: JSON.stringify({ coins: transfer.coins, type: "REQUEST_REJECTED", transferId, senderName: user.firstName, receiverName: requester?.firstName ?? "" }),
             type: "SYSTEM",
           },
         }),
@@ -137,6 +158,9 @@ export async function PATCH(request: Request) {
           },
         }),
       ]);
+      // اطلاع لحظه ای به هر دو طرف: پیام جدید + به روز شدن کارت درخواست
+      publishToConversation(transfer.conversationId, "message", rejectMsg);
+      publishToConversation(transfer.conversationId, "transfer-status", { transferId, status: "REJECTED" });
       return NextResponse.json({ ok: true, status: "REJECTED" });
     }
 
@@ -149,6 +173,7 @@ export async function PATCH(request: Request) {
     await ensureWallet(user.id);
     await ensureWallet(transfer.senderId);
 
+    let approveMsg: Awaited<ReturnType<typeof prisma.message.create>> | null = null;
     try {
       await prisma.$transaction(async (tx) => {
         // کسر اتمیک از تایید کننده — کمبود موجودی کل تراکنش را برمی گرداند
@@ -185,11 +210,11 @@ export async function PATCH(request: Request) {
             description: `دریافت ${transfer.coins} سکه (درخواست تایید شد)`,
           },
         });
-        await tx.message.create({
+        approveMsg = await tx.message.create({
           data: {
             conversationId: transfer.conversationId,
             senderId: user.id,
-            content: JSON.stringify({ coins: transfer.coins, fee, type: "REQUEST_APPROVED", transferId }),
+            content: JSON.stringify({ coins: transfer.coins, fee, type: "REQUEST_APPROVED", transferId, senderName: user.firstName, receiverName: requester?.firstName ?? "" }),
             type: "SYSTEM",
           },
         });
@@ -209,6 +234,10 @@ export async function PATCH(request: Request) {
       }
       throw err;
     }
+
+    // اطلاع لحظه ای به هر دو طرف گفتگو
+    if (approveMsg) publishToConversation(transfer.conversationId, "message", approveMsg);
+    publishToConversation(transfer.conversationId, "transfer-status", { transferId, status: "COMPLETED" });
 
     console.log(`[transfer/request] user ${user.id} approved transfer ${transferId}`);
     return NextResponse.json({ ok: true, status: "COMPLETED", fee });

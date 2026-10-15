@@ -10,6 +10,7 @@ import { isHaniUser, generateHaniReply } from "@/lib/aiCompanion";
 import { sendPushToUser } from "@/lib/push";
 import { publishToConversation } from "@/lib/chatEvents";
 import { incrementMissionProgress } from "@/lib/missions";
+import { getTransferStatuses } from "@/lib/transferStatus";
 
 // بررسی عضویت کاربر در گفتگو
 async function getConversationForUser(conversationId: string, userId: string) {
@@ -96,8 +97,10 @@ export async function GET(request: Request) {
     const messages = before ? rawMessages.slice(0, 50).reverse() : rawMessages;
     const readMessageIds = readMessages.map((m) => m.id);
     const otherTyping = !!(otherUser?.isTyping && otherUser?.typingConversationId === conversationId);
+    // وضعیت فعلی درخواست های سکه — تا کارت های درخواست بعد از لود درست نمایش داده شوند
+    const transferStatuses = await getTransferStatuses(messages);
 
-    return NextResponse.json({ messages, hasMore, readMessageIds, otherTyping });
+    return NextResponse.json({ messages, hasMore, readMessageIds, otherTyping, transferStatuses });
   } catch (err) {
     if (err instanceof AuthError)
       return NextResponse.json({ error: "دسترسی غیرمجاز" }, { status: 401 });

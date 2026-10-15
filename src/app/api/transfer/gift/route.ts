@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { requireUser, AuthError } from "@/lib/auth";
 import { ensureWallet, InsufficientFundsError } from "@/lib/finance";
 import { getAllSettings } from "@/lib/settings";
+import { publishToConversation } from "@/lib/chatEvents";
 
 const giftSchema = z.object({
   receiverId: z.string().min(1),
@@ -60,6 +61,7 @@ export async function POST(request: Request) {
     const senderName = user.firstName;
     const receiverName = receiver.firstName;
 
+    let giftMsg: Awaited<ReturnType<typeof prisma.message.create>> | null = null;
     try {
       await prisma.$transaction(async (tx) => {
         // کسر اتمیک از فرستنده — کمبود موجودی کل تراکنش را برمی گرداند
@@ -109,7 +111,7 @@ export async function POST(request: Request) {
           },
         });
         // پیام سیستمی در چت — نمایش هدیه برای هر دو طرف
-        await tx.message.create({
+        giftMsg = await tx.message.create({
           data: {
             conversationId: conversation.id,
             senderId: user.id,
@@ -142,6 +144,9 @@ export async function POST(request: Request) {
       }
       throw err;
     }
+
+    // انتشار لحظه ای پیام هدیه به گفتگو
+    if (giftMsg) publishToConversation(conversation.id, "message", giftMsg);
 
     console.log(`[transfer/gift] user ${user.id} sent ${coins} coins to ${receiverId}, receiver got ${receiverCoins}`);
     return NextResponse.json({ ok: true, coins: receiverCoins, fee, bonus, conversationId: conversation.id });
