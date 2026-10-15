@@ -85,3 +85,6 @@ android/app/src/admin/assets/capacitor.config.json
 
 # بکاپ های محلی دیتابیس و آپلودها (حاوی داده شخصی — هرگز کامیت نشود)
 backups/
+
+# فایل های آپلودی کاربران (حاوی داده شخصی — هرگز کامیت نشود)
+public/uploads/
