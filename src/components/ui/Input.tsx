@@ -74,11 +74,12 @@ export const PasswordInput = forwardRef<HTMLInputElement, Omit<InputProps, "type
         <input
           ref={ref}
           id={fid}
-          type={numeric ? "tel" : show ? "text" : "password"}
+          type={numeric ? (show ? "text" : "tel") : show ? "text" : "password"}
           dir="ltr"
           inputMode={numeric ? "numeric" : undefined}
           pattern={numeric ? "[0-9]*" : undefined}
-          style={numeric ? ({ WebkitTextSecurity: show ? "none" : "disc" } as React.CSSProperties) : undefined}
+          // ماسک فقط وقتی رمز پنهان است — با چشم، کل رمز به صورت متن ساده نمایش داده می شود
+          style={numeric && !show ? ({ WebkitTextSecurity: "disc" } as React.CSSProperties) : undefined}
           aria-invalid={!!error || undefined}
           aria-describedby={error ? `${fid}-err` : undefined}
           className={cn(field, "h-11 pl-11 text-left", error ? "border-ig-red" : "border-ig-border", className)}

@@ -57,6 +57,15 @@ export default function RegisterPage() {
 // رمز عبور کاربر فقط عددی است — بین ۵ تا ۷ رقم
 const PASSWORD_RE = /^\d{5,7}$/;
 
+// نام و نام خانوادگی فقط حروف فارسی + فاصله و نیم فاصله
+const PERSIAN_NAME_RE = /^[آءأإابپتثجچحخدذرزژسشصضطظعغفقکگلمنوهیئؤ\s\u200C]+$/;
+// کاراکترهای عربی پرکاربرد کیبورد به معادل فارسی تبدیل می شوند؛ بقیه حذف و خطا می گیرند
+function persianOnly(v: string): { value: string; blocked: boolean } {
+  const normalized = v.replace(/ي/g, "ی").replace(/ك/g, "ک");
+  const value = normalized.replace(/[^آءأإابپتثجچحخدذرزژسشصضطظعغفقکگلمنوهیئؤ\s\u200C]/g, "");
+  return { value, blocked: value !== normalized };
+}
+
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -114,13 +123,13 @@ function RegisterForm() {
     };
   }, [form.username]);
 
-  // بررسی کد دعوت — فقط با کلیک روی دکمه بررسی
-  const checkReferral = useCallback(async (value?: string) => {
+  // بررسی کد دعوت — هنگام زدن دکمه بعدی خودکار انجام می شود؛ true یعنی معتبر
+  const checkReferral = useCallback(async (value?: string): Promise<boolean> => {
     const c = (value ?? referralCode).trim();
     if (!c) {
       setRefState("idle");
       setRefName("");
-      return;
+      return true;
     }
     setRefState("checking");
     setErrors((e) => ({ ...e, referral: undefined }));
@@ -130,13 +139,15 @@ function RegisterForm() {
       if (d.valid) {
         setRefState("ok");
         setRefName(d.name ?? "");
-      } else {
-        setRefState("invalid");
-        setRefName("");
+        return true;
       }
+      setRefState("invalid");
+      setRefName("");
+      return false;
     } catch {
       setRefState("idle");
       setRefName("");
+      return false;
     }
   }, [referralCode]);
 
@@ -213,9 +224,7 @@ function RegisterForm() {
       if (!/^09\d{9}$/.test(form.phone)) e.phone = "شماره موبایل معتبر نیست (مثال: ۰۹۱۲۳۴۵۶۷۸۹)";
       if (!PASSWORD_RE.test(form.password)) e.password = "رمز عبور باید ۵ تا ۷ رقم باشد";
       if (!form.gender) e.gender = "جنسیت را انتخاب کنید";
-      // اگر کد دعوت تایپ شده ولی بررسی نشده، باید دکمه بررسی زده شود
-      if (referralCode.trim() && refState === "idle") e.referral = "برای کد دعوت روی «بررسی» بزنید";
-      if (referralCode.trim() && refState === "checking") e.referral = "در حال بررسی کد دعوت...";
+      if (referralCode.trim() && refState === "invalid") e.referral = "کد دعوت معتبر نیست — آن را پاک یا اصلاح کنید";
       if (!terms) e.terms = "پذیرش قوانین و تایید ۱۸ سال تمام الزامی است";
     }
     if (s === 2) {
@@ -223,7 +232,9 @@ function RegisterForm() {
       else if (!/^[a-zA-Z0-9_]+$/.test(form.username)) e.username = "فقط حروف انگلیسی، عدد و زیرخط";
       else if (usernameState === "taken") e.username = "این یوزرنیم قبلا انتخاب شده است";
       if (form.firstName.trim().length < 2) e.firstName = "نام را وارد کنید";
+      else if (!PERSIAN_NAME_RE.test(form.firstName.trim())) e.firstName = "فقط اسم فارسی پشتیبانی می شود";
       if (form.lastName.trim().length < 2) e.lastName = "نام خانوادگی را وارد کنید";
+      else if (!PERSIAN_NAME_RE.test(form.lastName.trim())) e.lastName = "فقط اسم فارسی پشتیبانی می شود";
       if (!form.province) e.province = "استان را انتخاب کنید";
       if (!form.city) e.city = "شهر را انتخاب کنید";
       if (!form.birthYear) e.birthYear = "سال تولد را انتخاب کنید";
@@ -243,6 +254,16 @@ function RegisterForm() {
       return;
     }
     if (step === 0) {
+      // کد دعوت اگر وارد شده باید معتبر باشد — نامعتبر یعنی پاک یا اصلاح شود، بدون آن به مرحله بعد نمی رویم
+      if (referralCode.trim() && refState !== "ok") {
+        setLoading(true);
+        const refOk = await checkReferral();
+        setLoading(false);
+        if (!refOk) {
+          setErrors({ referral: "کد دعوت معتبر نیست — آن را پاک یا اصلاح کنید" });
+          return;
+        }
+      }
       // کد فقط برای این شماره ارسال می شود؛ اگر قبلا برای همین شماره فرستاده شده دوباره نمی فرستیم
       if (sentTo !== form.phone) {
         setCode("");
@@ -371,42 +392,39 @@ function RegisterForm() {
                 {errors.gender && <p role="alert" className="text-sm text-ig-red mt-1.5">{errors.gender}</p>}
               </fieldset>
 
-              {/* کد دعوت — اختیاری، باید با دکمه بررسی تایید شود */}
+              {/* کد دعوت — اختیاری؛ هنگام زدن «بعدی» خودکار بررسی می شود */}
               <div className="space-y-1.5">
                 <span className="block text-sm font-semibold">کد دعوت (اختیاری)</span>
-                <div className="flex gap-2">
-                  <input
-                    dir="ltr"
-                    autoCapitalize="characters"
-                    aria-invalid={!!errors.referral || undefined}
-                    className={cn(
-                      "flex-1 h-11 px-3 rounded-lg border bg-ig-gray-bg text-base text-left outline-none transition-colors",
-                      "focus:bg-surface focus:border-ig-gray",
-                      errors.referral || refState === "invalid" ? "border-ig-red" : refState === "ok" ? "border-ig-online" : "border-ig-border"
-                    )}
-                    value={referralCode}
-                    onChange={(e) => {
-                      setReferralCode(e.target.value);
-                      setRefState("idle");
-                      setRefName("");
-                      setErrors((x) => ({ ...x, referral: undefined }));
-                    }}
-                    placeholder="KANDOO1"
-                  />
-                  <Button type="button" variant="secondary" onClick={() => void checkReferral()} loading={refState === "checking"} className="shrink-0 h-11">
-                    بررسی
-                  </Button>
-                </div>
+                <input
+                  dir="ltr"
+                  autoCapitalize="characters"
+                  aria-invalid={!!errors.referral || undefined}
+                  className={cn(
+                    "w-full h-11 px-3 rounded-lg border bg-ig-gray-bg text-base text-left outline-none transition-colors",
+                    "focus:bg-surface focus:border-ig-gray",
+                    errors.referral || refState === "invalid" ? "border-ig-red" : refState === "ok" ? "border-ig-online" : "border-ig-border"
+                  )}
+                  value={referralCode}
+                  onChange={(e) => {
+                    setReferralCode(e.target.value);
+                    setRefState("idle");
+                    setRefName("");
+                    setErrors((x) => ({ ...x, referral: undefined }));
+                  }}
+                  placeholder="KANDOO1"
+                />
                 {refState === "ok" && (
                   <p className="text-sm text-ig-online flex items-center gap-1" role="status">
                     <BadgeCheck className="w-4 h-4" aria-hidden />
                     کد دعوت {refName ? `«${refName}»` : ""} معتبر است
                   </p>
                 )}
-                {refState === "invalid" && (
-                  <p className="text-sm text-ig-red" role="alert">کد دعوت معتبر نیست — بدون کد ادامه می دهید</p>
+                {refState === "checking" && (
+                  <p className="text-sm text-ig-gray" role="status">در حال بررسی کد دعوت...</p>
                 )}
-                {errors.referral && <p role="alert" className="text-sm text-ig-red">{errors.referral}</p>}
+                {(errors.referral || (refState === "invalid" && !errors.referral)) && (
+                  <p className="text-sm text-ig-red" role="alert">{errors.referral ?? "کد دعوت معتبر نیست — آن را پاک یا اصلاح کنید"}</p>
+                )}
               </div>
 
               <div>
@@ -491,8 +509,28 @@ function RegisterForm() {
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <Input label="نام" autoComplete="given-name" value={form.firstName} onChange={(e) => set("firstName", e.target.value)} error={errors.firstName} />
-                <Input label="نام خانوادگی" autoComplete="family-name" value={form.lastName} onChange={(e) => set("lastName", e.target.value)} error={errors.lastName} />
+                <Input
+                  label="نام"
+                  autoComplete="given-name"
+                  value={form.firstName}
+                  onChange={(e) => {
+                    const r = persianOnly(e.target.value);
+                    set("firstName", r.value);
+                    if (r.blocked) setErrors((x) => ({ ...x, firstName: "فقط اسم فارسی پشتیبانی می شود" }));
+                  }}
+                  error={errors.firstName}
+                />
+                <Input
+                  label="نام خانوادگی"
+                  autoComplete="family-name"
+                  value={form.lastName}
+                  onChange={(e) => {
+                    const r = persianOnly(e.target.value);
+                    set("lastName", r.value);
+                    if (r.blocked) setErrors((x) => ({ ...x, lastName: "فقط اسم فارسی پشتیبانی می شود" }));
+                  }}
+                  error={errors.lastName}
+                />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <SelectMenu
@@ -503,6 +541,7 @@ function RegisterForm() {
                     set("province", v);
                     set("city", "");
                   }}
+                  searchable={false}
                   error={errors.province}
                 />
                 <SelectMenu
@@ -511,6 +550,7 @@ function RegisterForm() {
                   options={(PROVINCES[form.province] ?? []).map((c) => ({ value: c, label: c }))}
                   onChange={(v) => set("city", v)}
                   disabled={!form.province}
+                  searchable={false}
                   error={errors.city}
                 />
               </div>
@@ -519,6 +559,7 @@ function RegisterForm() {
                 value={form.birthYear}
                 options={BIRTH_YEAR_OPTIONS}
                 onChange={(v) => set("birthYear", v)}
+                searchable={false}
                 error={errors.birthYear}
               />
               <div className="grid grid-cols-2 gap-3">
@@ -527,6 +568,7 @@ function RegisterForm() {
                   value={form.height}
                   options={HEIGHT_OPTIONS}
                   onChange={(v) => set("height", v)}
+                  searchable={false}
                   error={errors.height}
                 />
                 <SelectMenu
@@ -534,6 +576,7 @@ function RegisterForm() {
                   value={form.weight}
                   options={WEIGHT_OPTIONS}
                   onChange={(v) => set("weight", v)}
+                  searchable={false}
                   error={errors.weight}
                 />
               </div>
@@ -542,6 +585,7 @@ function RegisterForm() {
                 value={form.income}
                 options={INCOME_OPTIONS}
                 onChange={(v) => set("income", v)}
+                searchable={false}
                 error={errors.income}
               />
             </>

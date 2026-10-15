@@ -16,9 +16,11 @@ type Props = {
   placeholder?: string;
   error?: string;
   disabled?: boolean;
+  // اگر false باشد اینپوت جستجو حذف می شود و کیبورد موبایل هرگز باز نمی شود
+  searchable?: boolean;
 };
 
-export default function SelectMenu({ label, value, options, onChange, placeholder = "انتخاب کنید", error, disabled }: Props) {
+export default function SelectMenu({ label, value, options, onChange, placeholder = "انتخاب کنید", error, disabled, searchable = true }: Props) {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const ref = useRef<HTMLDivElement>(null);
@@ -76,7 +78,7 @@ export default function SelectMenu({ label, value, options, onChange, placeholde
 
         {open && (
           <div className="absolute z-40 top-full mt-1 inset-x-0 bg-surface border border-ig-border rounded-xl shadow-lg overflow-hidden">
-            {options.length > 15 && (
+            {searchable && options.length > 15 && (
               <div className="sticky top-0 bg-surface p-2 border-b border-ig-border">
                 <input
                   value={q}
