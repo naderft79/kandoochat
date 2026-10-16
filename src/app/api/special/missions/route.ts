@@ -100,10 +100,10 @@ export async function GET() {
 
   const onceMissions = [
     {
-      key: "profile_complete", title: "تکمیل پروفایل", desc: "عکس پروفایل + ۳ عکس گالری + بیو + شغل + محله",
-      current: [hasProfilePhoto, galleryPhotoCount >= 3, !!user.bio, !!user.job, !!user.neighborhood].filter(Boolean).length,
-      target: 5, unit: "گام", icon: "Check",
-      details: { hasProfilePhoto, galleryPhotos: galleryPhotoCount, hasBio: !!user.bio, hasJob: !!user.job, hasNeighborhood: !!user.neighborhood },
+      key: "profile_complete", title: "تکمیل پروفایل", desc: "عکس پروفایل + ۳ عکس گالری + بیو + شغل",
+      current: [hasProfilePhoto, galleryPhotoCount >= 3, !!user.bio, !!user.job].filter(Boolean).length,
+      target: 4, unit: "گام", icon: "Check",
+      details: { hasProfilePhoto, galleryPhotos: galleryPhotoCount, hasBio: !!user.bio, hasJob: !!user.job },
     },
   ];
 
@@ -141,7 +141,7 @@ export async function POST(request: Request) {
     const photos = await prisma.profilePhoto.findMany({ where: { userId: user.id, isDeletedByUser: false, isRejected: false }, select: { isProfile: true } });
     const hasProfilePhoto = photos.some((p) => p.isProfile);
     const galleryPhotoCount = photos.filter((p) => !p.isProfile).length;
-    allDone = hasProfilePhoto && galleryPhotoCount >= 3 && !!user.bio && !!user.job && !!user.neighborhood;
+    allDone = hasProfilePhoto && galleryPhotoCount >= 3 && !!user.bio && !!user.job;
   } else if (tab === "daily") {
     const conversations = await prisma.conversation.findMany({
       where: { OR: [{ userAId: user.id }, { userBId: user.id }] },

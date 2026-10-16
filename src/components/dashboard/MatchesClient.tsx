@@ -4,7 +4,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { MapPin, Ruler, Briefcase, Car, Heart, X, MessageCircle, Coins, User, ChevronRight, ChevronLeft } from "lucide-react";
+import { MapPin, Ruler, Briefcase, Heart, X, MessageCircle, Coins, User, ChevronRight, ChevronLeft } from "lucide-react";
 import VerifiedBadge from "@/components/dashboard/VerifiedBadge";
 import DefaultAvatar from "@/components/dashboard/DefaultAvatar";
 import Portal from "@/components/ui/Portal";
@@ -26,9 +26,7 @@ export type Match = {
   weight: number;
   province: string;
   city: string;
-  neighborhood: string | null;
   job: string | null;
-  carModel: string | null;
   income: number;
   isVerified: boolean;
   phoneVerified: boolean;
@@ -491,15 +489,9 @@ export default function MatchesClient({ currentCity, currentProvince, initialMat
                     {profileModal.job}
                   </div>
                 )}
-                {profileModal.carModel && (
-                  <div className="flex items-center gap-2 text-xs text-ig-gray bg-ig-gray-bg rounded-lg px-3 py-2">
-                    <Car className="w-4 h-4 shrink-0" />
-                    {profileModal.carModel}
-                  </div>
-                )}
                 <div className="flex items-center gap-2 text-xs text-ig-gray bg-ig-gray-bg rounded-lg px-3 py-2">
                   <MapPin className="w-4 h-4 shrink-0" />
-                  {profileModal.neighborhood ? profileModal.neighborhood : profileModal.city}
+                  {profileModal.city}
                 </div>
               </div>
 

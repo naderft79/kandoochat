@@ -20,9 +20,7 @@ type Props = {
     income: number;
     province: string;
     city: string;
-    neighborhood: string | null;
     job: string | null;
-    carModel: string | null;
     bio: string | null;
   };
   onClose: () => void;
@@ -46,9 +44,7 @@ export default function UserEditModal({ user, onClose, onSuccess }: Props) {
     income: String(user.income),
     province: user.province,
     city: user.city,
-    neighborhood: user.neighborhood ?? "",
     job: user.job ?? "",
-    carModel: user.carModel ?? "",
     bio: user.bio ?? "",
   });
 
@@ -81,9 +77,7 @@ export default function UserEditModal({ user, onClose, onSuccess }: Props) {
             income: parseInt(form.income, 10) || 0,
             province: form.province.trim(),
             city: form.city.trim(),
-            neighborhood: form.neighborhood.trim() || null,
             job: form.job.trim() || null,
-            carModel: form.carModel.trim() || null,
             bio: form.bio.trim() || null,
           },
         }),
@@ -250,31 +244,12 @@ export default function UserEditModal({ user, onClose, onSuccess }: Props) {
             </div>
           </div>
 
-          {/* محله، شغل، خودرو */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className={labelClass}>محله</label>
-              <input
-                value={form.neighborhood}
-                onChange={(e) => update("neighborhood", e.target.value)}
-                className={inputClass}
-              />
-            </div>
-            <div>
-              <label className={labelClass}>شغل</label>
-              <input
-                value={form.job}
-                onChange={(e) => update("job", e.target.value)}
-                className={inputClass}
-              />
-            </div>
-          </div>
-
+          {/* شغل */}
           <div>
-            <label className={labelClass}>مدل خودرو</label>
+            <label className={labelClass}>شغل</label>
             <input
-              value={form.carModel}
-              onChange={(e) => update("carModel", e.target.value)}
+              value={form.job}
+              onChange={(e) => update("job", e.target.value)}
               className={inputClass}
             />
           </div>

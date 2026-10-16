@@ -246,8 +246,8 @@ function ModalBody({ userId, depth, onBack, onClose }: Props) {
           user={{
             id: s.id, firstName: s.firstName, lastName: s.lastName, username: s.username, phone: s.phone,
             gender: s.gender, age: s.age, height: s.height, weight: s.weight, income: s.income,
-            province: s.province, city: s.city, neighborhood: s.neighborhood, job: s.job,
-            carModel: s.carModel, bio: s.bio,
+            province: s.province, city: s.city, job: s.job,
+            bio: s.bio,
           }}
           onClose={() => setActiveModal(null)}
           onSuccess={() => { setActiveModal(null); summary.reload(); }}

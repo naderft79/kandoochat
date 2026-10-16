@@ -2,7 +2,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { MapPin, Ruler, Weight, Briefcase, Car, Wallet, Sparkles, ShieldCheck, Phone, ArrowRight, Star } from "lucide-react";
+import { MapPin, Ruler, Weight, Briefcase, Wallet, Sparkles, ShieldCheck, Phone, ArrowRight, Star } from "lucide-react";
 import VerifiedBadge from "@/components/dashboard/VerifiedBadge";
 import { prisma } from "@/lib/prisma";
 import { toPersianDigits, formatToman, formatLastSeen } from "@/lib/format";
@@ -69,9 +69,7 @@ export default async function PublicProfilePage({
       weight: true,
       city: true,
       province: true,
-      neighborhood: true,
       job: true,
-      carModel: true,
       income: true,
       bio: true,
       isVerified: true,
@@ -108,9 +106,7 @@ export default async function PublicProfilePage({
     { icon: Ruler, label: "قد", value: `${toPersianDigits(user.height)} سانتی متر` },
     { icon: Weight, label: "وزن", value: `${toPersianDigits(user.weight)} کیلوگرم` },
     { icon: Briefcase, label: "شغل", value: user.job || "—" },
-    { icon: Car, label: "ماشین", value: user.carModel || "—" },
     { icon: Wallet, label: "درآمد", value: user.income ? formatToman(user.income) : "—" },
-    { icon: MapPin, label: "محله", value: user.neighborhood || "—" },
   ];
 
   return (

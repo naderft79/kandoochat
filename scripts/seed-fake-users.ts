@@ -180,8 +180,6 @@ async function main() {
       const income = randInt(5, 40) * 1000000;
       const job = rand(JOBS);
       const bio = rand(BIO_TEMPLATES);
-      const carModel = rand(CAR_MODELS);
-      const neighborhood = rand(NEIGHBORHOODS);
       const coins = randInt(200, 1000);
       const phone = generatePhone(i + 1);
       const username = generateUsername(firstName, i + 1);
@@ -211,8 +209,6 @@ async function main() {
           height,
           weight,
           income,
-          carModel: carModel || null,
-          neighborhood: neighborhood || null,
           job: job || null,
           bio,
           isVerified: true,

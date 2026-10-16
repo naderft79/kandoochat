@@ -254,8 +254,6 @@ async function main() {
       const income = randInt(8, 120) * 1000000; // ۸ تا ۱۲۰ میلیون تومان
       const job = rand(JOBS);
       const bio = rand(BIO_TEMPLATES);
-      const carModel = rand(CAR_MODELS);
-      const neighborhood = location.city === "تهران" ? rand(NEIGHBORHOODS_TEHRAN) : null;
       const phone = generatePhone(i + existingCount + 1000);
       const username = generateUsername(firstName, i + existingCount + 1000);
 
@@ -286,8 +284,6 @@ async function main() {
           height,
           weight,
           income,
-          carModel: carModel || null,
-          neighborhood: neighborhood || null,
           job: job || null,
           bio,
           isVerified: Math.random() < 0.12,

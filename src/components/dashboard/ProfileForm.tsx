@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { Save, Check, X } from "lucide-react";
 // آیکن X برای وضعیت ناموفق یوزرنیم استفاده می شود
 import { PROVINCES, PROVINCE_NAMES } from "@/lib/iran";
+import SelectMenu from "@/components/ui/SelectMenu";
+import { HEIGHT_OPTIONS, WEIGHT_OPTIONS, INCOME_OPTIONS } from "@/lib/profile-options";
 
 const inputClass =
   "w-full px-3 py-2.5 rounded-lg border border-neutral-200 focus:border-neutral-500 focus:ring-2 focus:ring-neutral-100 outline-none transition-all text-sm";
@@ -20,8 +22,6 @@ type ProfileData = {
   height: number;
   weight: number;
   income: number;
-  carModel: string | null;
-  neighborhood: string | null;
   job: string | null;
   bio: string | null;
 };
@@ -38,8 +38,6 @@ export default function ProfileForm({ initial, onClose }: { initial: ProfileData
     height: String(initial.height),
     weight: String(initial.weight),
     income: String(initial.income),
-    carModel: initial.carModel ?? "",
-    neighborhood: initial.neighborhood ?? "",
     job: initial.job ?? "",
     bio: initial.bio ?? "",
   });
@@ -195,32 +193,29 @@ export default function ProfileForm({ initial, onClose }: { initial: ProfileData
           </div>
           <div>
             <label className="block text-xs font-bold text-ig-gray mb-1">قد (سانتی متر)</label>
-            <input
-              type="number"
-              dir="ltr"
+            <SelectMenu
               value={form.height}
-              onChange={(e) => set("height", e.target.value)}
-              className={`${inputClass} text-left`}
+              options={HEIGHT_OPTIONS}
+              onChange={(v) => set("height", v)}
+              searchable={false}
             />
           </div>
           <div>
             <label className="block text-xs font-bold text-ig-gray mb-1">وزن (کیلوگرم)</label>
-            <input
-              type="number"
-              dir="ltr"
+            <SelectMenu
               value={form.weight}
-              onChange={(e) => set("weight", e.target.value)}
-              className={`${inputClass} text-left`}
+              options={WEIGHT_OPTIONS}
+              onChange={(v) => set("weight", v)}
+              searchable={false}
             />
           </div>
           <div>
-            <label className="block text-xs font-bold text-ig-gray mb-1">درآمد ماهانه (تومان)</label>
-            <input
-              type="number"
-              dir="ltr"
+            <label className="block text-xs font-bold text-ig-gray mb-1">درآمد ماهانه</label>
+            <SelectMenu
               value={form.income}
-              onChange={(e) => set("income", e.target.value)}
-              className={`${inputClass} text-left`}
+              options={INCOME_OPTIONS}
+              onChange={(v) => set("income", v)}
+              searchable={false}
             />
           </div>
           <div>
@@ -228,22 +223,6 @@ export default function ProfileForm({ initial, onClose }: { initial: ProfileData
             <input
               value={form.job}
               onChange={(e) => set("job", e.target.value)}
-              className={inputClass}
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-bold text-ig-gray mb-1">مدل ماشین</label>
-            <input
-              value={form.carModel}
-              onChange={(e) => set("carModel", e.target.value)}
-              className={inputClass}
-            />
-          </div>
-          <div className="sm:col-span-2">
-            <label className="block text-xs font-bold text-ig-gray mb-1">محله خانه</label>
-            <input
-              value={form.neighborhood}
-              onChange={(e) => set("neighborhood", e.target.value)}
               className={inputClass}
             />
           </div>

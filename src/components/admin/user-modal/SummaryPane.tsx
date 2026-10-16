@@ -135,9 +135,7 @@ export default function SummaryPane({ s }: { s: UserSummary }) {
           <Field label="قد / وزن">{fa(s.height)} سانتی‌متر · {fa(s.weight)} کیلوگرم</Field>
           <Field label="درآمد ماهانه">{toman(s.income)}</Field>
           <Field label="استان / شهر">{s.province}، {s.city}</Field>
-          <Field label="محله">{s.neighborhood ?? "—"}</Field>
           <Field label="شغل">{s.job ?? "—"}</Field>
-          <Field label="خودرو">{s.carModel ?? "—"}</Field>
           <Field label="کد دعوت">{s.referralCode ? <span dir="ltr">{s.referralCode}</span> : "—"}</Field>
           <Field label="دعوت شده توسط">{s.referredByPhone ? <span dir="ltr">{s.referredByPhone}</span> : "—"}</Field>
           <Field label="تاریخ عضویت">{formatDateTimeCustom(s.createdAt)}</Field>

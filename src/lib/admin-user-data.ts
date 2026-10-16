@@ -86,9 +86,7 @@ export type UserSummary = {
   income: number;
   province: string;
   city: string;
-  neighborhood: string | null;
   job: string | null;
-  carModel: string | null;
   bio: string | null;
   isActive: boolean;
   deletedAt: string | null;
@@ -151,9 +149,7 @@ export async function getUserSummary(userId: string, viewerRole: string): Promis
     income: user.income,
     province: user.province,
     city: user.city,
-    neighborhood: user.neighborhood,
     job: user.job,
-    carModel: user.carModel,
     bio: user.bio,
     isActive: user.isActive,
     deletedAt: user.deletedAt ? user.deletedAt.toISOString() : null,

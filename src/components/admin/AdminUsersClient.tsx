@@ -33,9 +33,7 @@ type UserItem = {
   income: number;
   province: string;
   city: string;
-  neighborhood: string | null;
   job: string | null;
-  carModel: string | null;
   bio: string | null;
   messageLockUntil: string | null;
   messageLockReason: string | null;

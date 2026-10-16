@@ -43,7 +43,6 @@ export type FeedMatch = {
   height: number;
   isVerified: boolean;
   bio: string | null;
-  neighborhood: string | null;
   income: number;
   hasStory: boolean;
   liked?: boolean;
@@ -367,7 +366,7 @@ export default function FeedCard({
             )}
             <li className="flex items-center gap-2 bg-ig-gray-bg rounded-lg px-3 py-2">
               <MapPin className="w-4 h-4 shrink-0" aria-hidden />{" "}
-              {match.neighborhood ?? match.city}
+              {match.city}
             </li>
             {match.income > 0 && (
               <li className="bg-ig-gray-bg rounded-lg px-3 py-2">

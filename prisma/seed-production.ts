@@ -28,8 +28,6 @@ type DefaultUser = {
   height: number;
   weight: number;
   income: number;
-  carModel: string | null;
-  neighborhood: string | null;
   job: string | null;
   bio: string | null;
   isVerified: boolean;
@@ -113,8 +111,6 @@ async function ensureDefaultUsers() {
         height: u.height,
         weight: u.weight,
         income: u.income,
-        carModel: u.carModel,
-        neighborhood: u.neighborhood,
         job: u.job,
         bio: u.bio,
         isVerified: u.isVerified,

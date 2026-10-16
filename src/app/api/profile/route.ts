@@ -4,7 +4,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireUser, AuthError, isProtectedRoot, ROOT_LOCKED_MESSAGE } from "@/lib/auth";
 import { PROVINCES } from "@/lib/iran";
-import { sanitizeName, sanitizeUsername, sanitizeJob, sanitizeString, sanitizeBio } from "@/lib/sanitize";
+import { sanitizeName, sanitizeUsername, sanitizeJob, sanitizeBio } from "@/lib/sanitize";
 import { checkProfileCompletion } from "@/lib/profileCheck";
 import { containsProfanity } from "@/lib/profanity";
 import { rateLimitUser } from "@/lib/rate-limit";
@@ -23,8 +23,6 @@ const profileSchema = z.object({
   height: z.coerce.number("قد را وارد کنید").int("قد معتبر نیست").min(120, "قد حداقل ۱۲۰ سانتی متر است").max(230, "قد حداکثر ۲۳۰ سانتی متر است"),
   weight: z.coerce.number("وزن را وارد کنید").int("وزن معتبر نیست").min(35, "وزن حداقل ۳۵ کیلوگرم است").max(250, "وزن حداکثر ۲۵۰ کیلوگرم است"),
   income: z.coerce.number("درآمد ماهانه را وارد کنید").int("درآمد معتبر نیست").min(0, "درآمد معتبر نیست").max(10_000_000_000, "درآمد معتبر نیست"),
-  carModel: z.string().max(100, "مدل ماشین طولانی است").optional().or(z.literal("")),
-  neighborhood: z.string().max(100, "نام محله طولانی است").optional().or(z.literal("")),
   job: z.string().max(100, "نام شغل طولانی است").optional().or(z.literal("")),
   bio: z.string().max(500, "درباره من نباید بیش از ۵۰۰ حرف باشد").optional().or(z.literal("")),
 });
@@ -69,8 +67,6 @@ export async function PUT(request: Request) {
     }
     if (data.bio) data.bio = sanitizeBio(data.bio);
     if (data.job) data.job = sanitizeJob(data.job);
-    if (data.carModel) data.carModel = sanitizeString(data.carModel, 100);
-    if (data.neighborhood) data.neighborhood = sanitizeString(data.neighborhood, 100);
 
     if (!PROVINCES[data.province]?.includes(data.city)) {
       return NextResponse.json(
@@ -107,8 +103,6 @@ export async function PUT(request: Request) {
         height: data.height,
         weight: data.weight,
         income: data.income,
-        carModel: data.carModel || null,
-        neighborhood: data.neighborhood || null,
         job: data.job || null,
         bio: data.bio || null,
       },

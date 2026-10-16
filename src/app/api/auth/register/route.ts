@@ -5,7 +5,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { createSession } from "@/lib/auth";
 import { PROVINCES } from "@/lib/iran";
-import { sanitizeName, sanitizeUsername, sanitizeJob, sanitizeString } from "@/lib/sanitize";
+import { sanitizeName, sanitizeUsername, sanitizeJob } from "@/lib/sanitize";
 import { rateLimit, registerRateLimit, getClientIdentifier } from "@/lib/rate-limit";
 import { getRequestIp } from "@/lib/client-ip";
 import { recordLoginEvent } from "@/lib/login-events";
@@ -30,8 +30,6 @@ const registerSchema = z.object({
   height: z.coerce.number("قد را انتخاب کنید").int("قد معتبر نیست").min(120, "قد حداقل ۱۲۰ سانتی متر است").max(230, "قد حداکثر ۲۳۰ سانتی متر است"),
   weight: z.coerce.number("وزن را انتخاب کنید").int("وزن معتبر نیست").min(35, "وزن حداقل ۳۵ کیلوگرم است").max(250, "وزن حداکثر ۲۵۰ کیلوگرم است"),
   income: z.coerce.number("درآمد ماهانه را انتخاب کنید").int("درآمد معتبر نیست").min(0, "درآمد معتبر نیست").max(10_000_000_000, "درآمد معتبر نیست"),
-  carModel: z.string().max(100).optional().or(z.literal("")),
-  neighborhood: z.string().max(100).optional().or(z.literal("")),
   job: z.string().max(100).optional().or(z.literal("")),
   referralCode: z.string().optional(),
   phoneProof: z.string().optional(),
@@ -110,8 +108,6 @@ export async function POST(request: Request) {
     if (containsProfanity(data.username)) {
       return NextResponse.json({ error: "این یوزرنیم مجاز نیست" }, { status: 400 });
     }
-    if (data.carModel) data.carModel = sanitizeString(data.carModel, 100);
-    if (data.neighborhood) data.neighborhood = sanitizeString(data.neighborhood, 100);
     if (data.job) data.job = sanitizeJob(data.job);
 
     // اعتبارسنجی استان و شهر
@@ -160,8 +156,6 @@ export async function POST(request: Request) {
         height: data.height,
         weight: data.weight,
         income: data.income,
-        carModel: data.carModel || null,
-        neighborhood: data.neighborhood || null,
         job: data.job || null,
         isSpecial,
         phoneVerified: phoneOk,

@@ -9,19 +9,19 @@ const adapter = new PrismaBetterSqlite3({
 const prisma = new PrismaClient({ adapter });
 
 const boys = [
-  { firstName: "علی", lastName: "محمدی", username: "ali_tehran", age: 28, height: 180, weight: 78, job: "مهندس نرم افزار", bio: "عاشق فوتبال و سفر", neighborhood: "الهیه" },
-  { firstName: "رضا", lastName: "احمدی", username: "reza_tehran", age: 32, height: 175, weight: 72, job: "پزشک", bio: "ورزشکار و کتاب خوان", neighborhood: "نیاوران" },
-  { firstName: "امیر", lastName: "رضایی", username: "amir_tehran", age: 26, height: 185, weight: 82, job: "معماران", bio: "عکاسی و موسیقی", neighborhood: "جردن" },
-  { firstName: "محمد", lastName: "کریمی", username: "mohammad_tehran", age: 30, height: 178, weight: 75, job: "مدیر فروش", bio: "عاشق آشپزی", neighborhood: "فرشته" },
-  { firstName: "سینا", lastName: "موسوی", username: "sina_tehran", age: 29, height: 172, weight: 70, job: "گرافیست", bio: "هنر و طراحی", neighborhood: "ونک" },
+  { firstName: "علی", lastName: "محمدی", username: "ali_tehran", age: 28, height: 180, weight: 78, job: "مهندس نرم افزار", bio: "عاشق فوتبال و سفر"  },
+  { firstName: "رضا", lastName: "احمدی", username: "reza_tehran", age: 32, height: 175, weight: 72, job: "پزشک", bio: "ورزشکار و کتاب خوان"  },
+  { firstName: "امیر", lastName: "رضایی", username: "amir_tehran", age: 26, height: 185, weight: 82, job: "معماران", bio: "عکاسی و موسیقی"  },
+  { firstName: "محمد", lastName: "کریمی", username: "mohammad_tehran", age: 30, height: 178, weight: 75, job: "مدیر فروش", bio: "عاشق آشپزی"  },
+  { firstName: "سینا", lastName: "موسوی", username: "sina_tehran", age: 29, height: 172, weight: 70, job: "گرافیست", bio: "هنر و طراحی"  },
 ];
 
 const girls = [
-  { firstName: "نگار", lastName: "حسینی", username: "negar_tehran", age: 27, height: 165, weight: 55, job: "طراح داخال", bio: "عاشق هنر و سفر", neighborhood: "الهیه" },
-  { firstName: "سارا", lastName: "عباسی", username: "sara_tehran", age: 25, height: 168, weight: 58, job: "پزشک دندانپزشک", bio: "ورزش و موسیقی", neighborhood: "نیاوران" },
-  { firstName: "مریم", lastName: "صادقی", username: "maryam_tehran", age: 29, height: 162, weight: 52, job: "وکیل", bio: "عاشق کتاب و قهوه", neighborhood: "جردن" },
-  { firstName: "زهرا", lastName: "نوری", username: "zahra_tehran", age: 31, height: 170, weight: 60, job: "داروساز", bio: "سفر و عکاسی", neighborhood: "فرشته" },
-  { firstName: "پریسا", lastName: "جعفری", username: "parisa_tehran", age: 26, height: 160, weight: 50, job: "استاد دانشگاه", bio: "علم و هنر", neighborhood: "ونک" },
+  { firstName: "نگار", lastName: "حسینی", username: "negar_tehran", age: 27, height: 165, weight: 55, job: "طراح داخال", bio: "عاشق هنر و سفر"  },
+  { firstName: "سارا", lastName: "عباسی", username: "sara_tehran", age: 25, height: 168, weight: 58, job: "پزشک دندانپزشک", bio: "ورزش و موسیقی"  },
+  { firstName: "مریم", lastName: "صادقی", username: "maryam_tehran", age: 29, height: 162, weight: 52, job: "وکیل", bio: "عاشق کتاب و قهوه"  },
+  { firstName: "زهرا", lastName: "نوری", username: "zahra_tehran", age: 31, height: 170, weight: 60, job: "داروساز", bio: "سفر و عکاسی"  },
+  { firstName: "پریسا", lastName: "جعفری", username: "parisa_tehran", age: 26, height: 160, weight: 50, job: "استاد دانشگاه", bio: "علم و هنر"  },
 ];
 
 async function main() {
@@ -45,7 +45,6 @@ async function main() {
         income: 30000000 + Math.floor(Math.random() * 50000000),
         city: "تهران",
         province: "تهران",
-        neighborhood: u.neighborhood,
         job: u.job,
         bio: u.bio,
         phoneVerified: true,
@@ -78,7 +77,6 @@ async function main() {
         income: 20000000 + Math.floor(Math.random() * 40000000),
         city: "تهران",
         province: "تهران",
-        neighborhood: u.neighborhood,
         job: u.job,
         bio: u.bio,
         phoneVerified: true,

@@ -106,7 +106,7 @@ async function checkReferralConditions(referredId: string): Promise<boolean> {
   if (!claimedMission) return false;
   const user = await prisma.user.findUnique({
     where: { id: referredId },
-    select: { bio: true, job: true, carModel: true, neighborhood: true, phoneVerified: true },
+    select: { bio: true, job: true, phoneVerified: true },
   });
   if (!user) return false;
   return calculateProfileCompletion(user) >= PROFILE_COMPLETION_THRESHOLD;

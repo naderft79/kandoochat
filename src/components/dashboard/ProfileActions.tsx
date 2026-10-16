@@ -1,11 +1,12 @@
 "use client";
 
 // دکمه های اکشن پروفایل: ویرایش در شیت، اشتراک گذاری، نمایش به چشم دیگران
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Settings, Share2, Eye } from "lucide-react";
 import { BottomSheet } from "@/components/ui/Modal";
 import ProfileForm from "@/components/dashboard/ProfileForm";
+import { OPEN_PROFILE_EDIT_EVENT } from "@/components/dashboard/ProfileCompletionCard";
 import { useToast } from "@/components/ToastProvider";
 import { nativeShare as capShare, nativeCopy } from "@/lib/native";
 
@@ -20,8 +21,6 @@ type ProfileData = {
   height: number;
   weight: number;
   income: number;
-  carModel: string | null;
-  neighborhood: string | null;
   job: string | null;
   bio: string | null;
 };
@@ -30,6 +29,13 @@ export default function ProfileActions({ initial }: { initial: ProfileData }) {
   const [editOpen, setEditOpen] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+
+  // کلیک روی نوار تکمیل پروفایل این رویداد را می فرستد و شیت ویرایش باز می شود
+  useEffect(() => {
+    const open = () => setEditOpen(true);
+    window.addEventListener(OPEN_PROFILE_EDIT_EVENT, open);
+    return () => window.removeEventListener(OPEN_PROFILE_EDIT_EVENT, open);
+  }, []);
 
   async function share() {
     const url = `${window.location.origin}/profile/${initial.id}`;

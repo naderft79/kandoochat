@@ -9,6 +9,7 @@ import { PROVINCES, PROVINCE_NAMES } from "@/lib/iran";
 import { toPersianDigits, normalizeDigits } from "@/lib/format";
 import { currentJalaliYear } from "@/lib/jalali";
 import { cleanupPushSubscriptions } from "@/lib/pushClient";
+import { HEIGHT_OPTIONS as PROFILE_HEIGHT_OPTIONS, WEIGHT_OPTIONS as PROFILE_WEIGHT_OPTIONS, INCOME_OPTIONS as PROFILE_INCOME_OPTIONS } from "@/lib/profile-options";
 import Button from "@/components/ui/Button";
 import Input, { PasswordInput } from "@/components/ui/Input";
 import SelectMenu, { type SelectOption } from "@/components/ui/SelectMenu";
@@ -23,22 +24,9 @@ const BIRTH_YEAR_OPTIONS: SelectOption[] = Array.from({ length: 63 }, (_, i) => 
   const y = CURRENT_JY - 18 - i;
   return { value: String(y), label: `${toPersianDigits(y)} (${toPersianDigits(CURRENT_JY - y)} سال)` };
 });
-const HEIGHT_OPTIONS: SelectOption[] = Array.from({ length: 111 }, (_, i) => {
-  const v = 120 + i;
-  return { value: String(v), label: `${toPersianDigits(v)} سانتی متر` };
-});
-const WEIGHT_OPTIONS: SelectOption[] = Array.from({ length: 216 }, (_, i) => {
-  const v = 35 + i;
-  return { value: String(v), label: `${toPersianDigits(v)} کیلوگرم` };
-});
-const INCOME_OPTIONS: SelectOption[] = [
-  { value: "0", label: "بدون درآمد" },
-  { value: "20000000", label: "۱۰ تا ۳۰ میلیون تومان" },
-  { value: "40000000", label: "۳۰ تا ۵۰ میلیون تومان" },
-  { value: "75000000", label: "۵۰ تا ۱۰۰ میلیون تومان" },
-  { value: "200000000", label: "۱۰۰ تا ۳۰۰ میلیون تومان" },
-  { value: "400000000", label: "بیش از ۳۰۰ میلیون تومان" },
-];
+const HEIGHT_OPTIONS = PROFILE_HEIGHT_OPTIONS;
+const WEIGHT_OPTIONS = PROFILE_WEIGHT_OPTIONS;
+const INCOME_OPTIONS = PROFILE_INCOME_OPTIONS;
 const PROVINCE_OPTIONS: SelectOption[] = PROVINCE_NAMES.map((p) => ({ value: p, label: p }));
 
 type Form = {

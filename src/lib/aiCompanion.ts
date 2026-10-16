@@ -201,7 +201,7 @@ async function buildUserProfileSection(userId: string): Promise<string> {
     select: {
       firstName: true, lastName: true, gender: true, age: true,
       height: true, weight: true, province: true, city: true,
-      neighborhood: true, job: true, bio: true, carModel: true,
+      job: true, bio: true,
       income: true, isVerified: true, isSpecial: true,
     },
   });
@@ -217,9 +217,7 @@ async function buildUserProfileSection(userId: string): Promise<string> {
     `- وزن: ${toPersianNum(user.weight)} کیلوگرم`,
     `- شهر: ${user.city}، استان ${user.province}`,
   ];
-  if (user.neighborhood) lines.push(`- محله: ${user.neighborhood}`);
   if (user.job) lines.push(`- شغل: ${user.job}`);
-  if (user.carModel) lines.push(`- ماشین: ${user.carModel}`);
   if (user.bio) lines.push(`- بیوگرافی: ${user.bio}`);
   if (user.isVerified) lines.push(`- تایید شده: بله`);
   if (user.isSpecial) lines.push(`- کاربر ویژه: بله`);

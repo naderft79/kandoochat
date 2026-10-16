@@ -14,8 +14,6 @@ type Snapshot = {
   username: string;
   phone: string;
   bio: string | null;
-  carModel: string | null;
-  neighborhood: string | null;
   job: string | null;
 };
 
@@ -32,7 +30,7 @@ export async function softDeleteUser(adminId: string, userId: string, reason: st
     select: {
       id: true, role: true, deletedAt: true,
       firstName: true, lastName: true, username: true, phone: true,
-      bio: true, carModel: true, neighborhood: true, job: true,
+      bio: true, job: true,
     },
   });
   if (!user) throw new DeleteUserError("NOT_FOUND");
@@ -47,8 +45,6 @@ export async function softDeleteUser(adminId: string, userId: string, reason: st
     username: user.username,
     phone: user.phone,
     bio: user.bio,
-    carModel: user.carModel,
-    neighborhood: user.neighborhood,
     job: user.job,
   };
 
@@ -71,8 +67,6 @@ export async function softDeleteUser(adminId: string, userId: string, reason: st
       username: `del_${userId}`,
       phone: `del_${userId}`,
       bio: null,
-      carModel: null,
-      neighborhood: null,
       job: null,
       lastIp: null,
       lastIpAt: null,
@@ -110,8 +104,6 @@ export async function restoreUser(userId: string): Promise<void> {
       username: snap.username,
       phone: snap.phone,
       bio: snap.bio,
-      carModel: snap.carModel,
-      neighborhood: snap.neighborhood,
       job: snap.job,
     },
   });

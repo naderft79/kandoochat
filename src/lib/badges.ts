@@ -72,17 +72,26 @@ export async function getUserBadges(userId: string): Promise<Badge[]> {
 export function calculateProfileCompletion(user: {
   bio: string | null;
   job: string | null;
-  carModel: string | null;
-  neighborhood: string | null;
   phoneVerified: boolean;
 }): number {
   const fields = [
     !!user.bio,
     !!user.job,
-    !!user.carModel,
-    !!user.neighborhood,
     user.phoneVerified,
   ];
   const filled = fields.filter(Boolean).length;
   return Math.round((filled / fields.length) * 100);
+}
+
+// برچسب فارسی بخش هایی که هنوز تکمیل نشده اند — زیر نوار تکمیل پروفایل نمایش داده می شود
+export function missingProfileItems(user: {
+  bio: string | null;
+  job: string | null;
+  phoneVerified: boolean;
+}): string[] {
+  const missing: string[] = [];
+  if (!user.bio) missing.push("درباره من");
+  if (!user.job) missing.push("شغل");
+  if (!user.phoneVerified) missing.push("تایید شماره موبایل");
+  return missing;
 }

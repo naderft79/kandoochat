@@ -5,7 +5,6 @@ import {
   Ruler,
   Weight,
   Briefcase,
-  Car,
   Wallet,
   Star,
 } from "lucide-react";
@@ -13,7 +12,8 @@ import VerifiedBadge from "@/components/dashboard/VerifiedBadge";
 import { getCurrentUser } from "@/lib/auth";
 import { hasActiveSubscription } from "@/lib/finance";
 import { prisma } from "@/lib/prisma";
-import { calculateProfileCompletion } from "@/lib/badges";
+import { calculateProfileCompletion, missingProfileItems } from "@/lib/badges";
+import ProfileCompletionCard from "@/components/dashboard/ProfileCompletionCard";
 import { toPersianDigits, formatToman } from "@/lib/format";
 import ProfileHeader from "@/components/dashboard/ProfileHeader";
 import ProfileActions from "@/components/dashboard/ProfileActions";
@@ -57,6 +57,7 @@ export default async function ProfilePage() {
     }));
 
   const completion = calculateProfileCompletion(user);
+  const missing = missingProfileItems(user);
 
   const infoItems = [
     { icon: MapPin, label: "شهر", value: user.city },
@@ -72,13 +73,11 @@ export default async function ProfilePage() {
       value: `${toPersianDigits(user.weight)} کیلوگرم`,
     },
     { icon: Briefcase, label: "شغل", value: user.job || "—" },
-    { icon: Car, label: "ماشین", value: user.carModel || "—" },
     {
       icon: Wallet,
       label: "درآمد",
       value: user.income ? formatToman(user.income) : "—",
     },
-    { icon: MapPin, label: "محله", value: user.neighborhood || "—" },
   ];
 
   return (
@@ -177,8 +176,6 @@ export default async function ProfilePage() {
                 height: user.height,
                 weight: user.weight,
                 income: user.income,
-                carModel: user.carModel,
-                neighborhood: user.neighborhood,
                 job: user.job,
                 bio: user.bio,
               }}
@@ -186,27 +183,9 @@ export default async function ProfilePage() {
           </div>
         </div>
 
-        {/* === تکمیل پروفایل — فقط در حالت ناقص === */}
+        {/* === تکمیل پروفایل — فقط در حالت ناقص؛ کلیک شیت ویرایش را باز می کند === */}
         {completion < 100 && (
-          <div className="mt-4 rounded-2xl border border-ig-border bg-surface p-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-bold text-foreground">
-                تکمیل پروفایل
-              </span>
-              <span className="text-sm font-black text-foreground">
-                {toPersianDigits(completion)}٪
-              </span>
-            </div>
-            <div className="h-1.5 bg-ig-divider rounded-full overflow-hidden">
-              <div
-                className="h-full bg-ig-blue rounded-full transition-all duration-500"
-                style={{ width: `${completion}%` }}
-              />
-            </div>
-            <p className="text-xs text-ig-gray mt-2">
-              با تکمیل پروفایل، دیده شدن شما بیشتر می شود
-            </p>
-          </div>
+          <ProfileCompletionCard completion={completion} missing={missing} />
         )}
 
         {/* OTP اگر موبایل تایید نشده */}

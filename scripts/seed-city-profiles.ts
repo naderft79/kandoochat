@@ -167,7 +167,7 @@ async function main() {
     phone: string; username: string; password: string; role: string; gender: string;
     firstName: string; lastName: string; province: string; city: string;
     age: number; height: number; weight: number; income: number;
-    carModel: string | null; neighborhood: string | null; job: string; bio: string;
+    job: string; bio: string;
     isVerified: boolean; isActive: boolean; phoneVerified: boolean; isFake: boolean;
     termsAcceptedAt: Date; passwordChangedAt: Date; referralCode: null;
     _photo: string | null;
@@ -214,8 +214,6 @@ async function main() {
         const income = gender === "FEMALE"
           ? Math.floor(rng() * 9) * 10_000_000
           : 20_000_000 + Math.floor(rng() * 28) * 10_000_000;
-        const carModel = rng() < 0.4 ? CARS[Math.floor(rng() * CARS.length)] : null;
-        const neighborhood = rng() < 0.55 ? HOODS[Math.floor(rng() * HOODS.length)] : null;
         const job = jobs[Math.floor(rng() * jobs.length)];
         const bio = bios[Math.floor(rng() * bios.length)];
 
@@ -234,8 +232,6 @@ async function main() {
           height,
           weight,
           income,
-          carModel,
-          neighborhood,
           job,
           bio,
           isVerified: false,
