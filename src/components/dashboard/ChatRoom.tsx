@@ -9,6 +9,7 @@ import {
   Mic, Check, CheckCheck, Gift, ArrowDownLeft,
   Send, Smile, X, Play, Pause, Video as VideoIcon,
   MoreVertical, Reply, Heart, Paperclip, Copy, Flag, Ban, AlertCircle, Lock, Sparkles, Trash2,
+  UserX,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import VerifiedBadge from "@/components/dashboard/VerifiedBadge";
@@ -57,6 +58,7 @@ type Props = {
   messageLockInfo?: { until: string; reason: string } | null;
   isAdminChat?: boolean;
   isAIChat?: boolean;
+  otherDeleted?: boolean;
   aiGradient?: string;
   initialMessages: Message[];
   initialHasMore?: boolean;
@@ -85,6 +87,7 @@ export default function ChatRoom({
   messageLockInfo = null,
   isAdminChat = false,
   isAIChat = false,
+  otherDeleted = false,
   aiGradient = "",
   initialMessages,
   initialHasMore = false,
@@ -1286,6 +1289,29 @@ export default function ChatRoom({
           >
             ارسال پیام به پشتیبانی
           </button>
+        </div>
+      ) : otherDeleted ? (
+        <div className="px-4 py-6 border-t border-ig-border bg-surface text-center shrink-0 pb-[max(1rem,env(safe-area-inset-bottom))]">
+          <div className="w-14 h-14 rounded-full bg-ig-btn2 mx-auto flex items-center justify-center mb-3">
+            <UserX className="w-7 h-7 text-foreground" />
+          </div>
+          <p className="text-sm font-bold text-foreground mb-1">کاربر اکانت خود را حذف کرده است</p>
+          <p className="text-xs text-ig-gray mb-4 leading-5">کاربر اکانت خود را حذف کرده و امکان گفتگو نیست</p>
+          <div className="flex gap-2 max-w-xs mx-auto">
+            <button
+              onClick={() => router.push("/dashboard/chat")}
+              className="flex-1 py-2.5 rounded-lg bg-ig-btn2 text-foreground text-sm font-bold hover:bg-neutral-200 transition-colors"
+            >
+              بازگشت
+            </button>
+            <button
+              onClick={() => setShowDeleteConv(true)}
+              disabled={deletingConv}
+              className="flex-1 py-2.5 rounded-lg bg-ig-red text-white text-sm font-bold disabled:opacity-40 transition-colors"
+            >
+              {deletingConv ? "در حال حذف..." : "حذف گفتگو"}
+            </button>
+          </div>
         </div>
       ) : isBlocked ? (
         <div className="px-4 py-6 border-t border-ig-border bg-surface text-center shrink-0 pb-[max(1rem,env(safe-area-inset-bottom))]">

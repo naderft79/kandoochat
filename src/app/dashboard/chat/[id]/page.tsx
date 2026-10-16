@@ -18,10 +18,10 @@ export default async function ChatRoomPage({
     where: { id },
     include: {
       userA: {
-        select: { id: true, firstName: true, username: true, gender: true, isVerified: true, isOnline: true, lastSeen: true, isAdminProfile: true, isAICompanion: true, photos: { select: { url: true, order: true }, where: { isVerified: true, isRejected: false, isDeletedByUser: false, isProfile: true }, take: 1 } },
+        select: { id: true, firstName: true, username: true, gender: true, isVerified: true, isOnline: true, lastSeen: true, isAdminProfile: true, isAICompanion: true, deletedAt: true, photos: { select: { url: true, order: true }, where: { isVerified: true, isRejected: false, isDeletedByUser: false, isProfile: true }, take: 1 } },
       },
       userB: {
-        select: { id: true, firstName: true, username: true, gender: true, isVerified: true, isOnline: true, lastSeen: true, isAdminProfile: true, isAICompanion: true, photos: { select: { url: true, order: true }, where: { isVerified: true, isRejected: false, isDeletedByUser: false, isProfile: true }, take: 1 } },
+        select: { id: true, firstName: true, username: true, gender: true, isVerified: true, isOnline: true, lastSeen: true, isAdminProfile: true, isAICompanion: true, deletedAt: true, photos: { select: { url: true, order: true }, where: { isVerified: true, isRejected: false, isDeletedByUser: false, isProfile: true }, take: 1 } },
       },
       messages: {
         // آخرین پیام ها؛ صفحه بندی پیام های قدیمی تر در کلاینت انجام می شود
@@ -105,7 +105,8 @@ export default async function ChatRoomPage({
       conversationId={conversation.id}
       currentUserId={user.id}
       otherUserId={other.id}
-      otherName={other.firstName}
+      otherName={other.deletedAt ? "کاربر حذف شده" : other.firstName}
+      otherDeleted={!!other.deletedAt}
       otherUsername={other.username}
       otherVerified={other.isVerified}
       otherOnline={other.isOnline}

@@ -44,6 +44,7 @@ export default function ConversationActionsMenu({
   targetPhoto,
   targetVerified,
   isAdminProfile,
+  isDeletedAccount = false,
   children,
 }: {
   conversationId: string;
@@ -53,6 +54,7 @@ export default function ConversationActionsMenu({
   targetPhoto: string | null;
   targetVerified: boolean;
   isAdminProfile: boolean;
+  isDeletedAccount?: boolean;
   children: ReactNode;
 }) {
   const router = useRouter();
@@ -291,6 +293,11 @@ export default function ConversationActionsMenu({
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-foreground flex items-center gap-1.5">
                     {targetName}
+                    {isDeletedAccount && (
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full bg-ig-gray-bg text-ig-gray text-[10px] font-bold">
+                        حذف شده
+                      </span>
+                    )}
                     {isAdminProfile && (
                       <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-ig-gray-bg text-foreground text-[10px] font-bold">
                         <Shield className="w-3 h-3" />
@@ -310,7 +317,15 @@ export default function ConversationActionsMenu({
               </div>
 
               <div className="pt-3 space-y-1">
-                {targetUsername && (
+                {isDeletedAccount && (
+                  <div className="flex items-start gap-2 p-3 rounded-lg bg-ig-gray-bg border border-ig-border mb-1">
+                    <AlertCircle className="w-4 h-4 text-ig-gold shrink-0 mt-0.5" />
+                    <p className="text-xs text-foreground leading-5">
+                      این کاربر اکانت خود را حذف کرده و امکان گفتگو با او وجود ندارد.
+                    </p>
+                  </div>
+                )}
+                {targetUsername && !isDeletedAccount && (
                   <button
                     type="button"
                     onClick={() => {
@@ -325,7 +340,7 @@ export default function ConversationActionsMenu({
                     مشاهده پروفایل
                   </button>
                 )}
-                {!isAdminProfile && (
+                {!isAdminProfile && !isDeletedAccount && (
                   <>
                     <button type="button" onClick={() => void like()} disabled={loading} className={rowCls}>
                       <span className={rowIconCls}>

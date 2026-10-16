@@ -54,6 +54,7 @@ export default async function ChatList() {
           lastSeen: true,
           isAdminProfile: true,
           isAICompanion: true,
+          deletedAt: true,
           photos: {
             select: { url: true, order: true },
             where: {
@@ -77,6 +78,7 @@ export default async function ChatList() {
           lastSeen: true,
           isAdminProfile: true,
           isAICompanion: true,
+          deletedAt: true,
           photos: {
             select: { url: true, order: true },
             where: {
@@ -217,6 +219,7 @@ export default async function ChatList() {
         {/* سایر گفتگوها */}
         {otherConversations.map((c) => {
           const other = c.userAId === user.id ? c.userB : c.userA;
+          const otherDeleted = !!other.deletedAt;
           const lastMessage = c.messages[0];
           const unread = c._count.messages;
           return (
@@ -224,11 +227,12 @@ export default async function ChatList() {
               key={c.id}
               conversationId={c.id}
               targetId={other.id}
-              targetName={other.firstName}
+              targetName={otherDeleted ? "کاربر حذف شده" : other.firstName}
               targetUsername={other.username}
               targetPhoto={other.photos?.[0]?.url ?? null}
               targetVerified={other.isVerified}
               isAdminProfile={other.isAdminProfile}
+              isDeletedAccount={otherDeleted}
             >
             <Link
               href={`/dashboard/chat/${c.id}`}
@@ -236,11 +240,11 @@ export default async function ChatList() {
             >
               {/* آواتار */}
               <div className="relative shrink-0">
-                {other.photos?.[0]?.url ? (
+                {other.photos?.[0]?.url && !otherDeleted ? (
                   <div className="relative w-14 h-14 rounded-full overflow-hidden">
                     <Image
                       src={other.photos[0].url}
-                      alt={other.firstName}
+                      alt={otherDeleted ? "کاربر حذف شده" : other.firstName}
                       fill
                       className="object-cover"
                       sizes="56px"
@@ -249,7 +253,9 @@ export default async function ChatList() {
                 ) : (
                   <DefaultAvatar size={56} />
                 )}
-                <PresenceDot userId={other.id} initialOnline={other.isOnline} />
+                {!otherDeleted && (
+                  <PresenceDot userId={other.id} initialOnline={other.isOnline} />
+                )}
                 {unread > 0 && (
                   <span className="absolute -top-0.5 -right-0.5 min-w-[20px] h-5 bg-ig-red rounded-full flex items-center justify-center text-xs font-bold text-white px-1.5">
                     {toPersianDigits(unread)}
@@ -259,15 +265,15 @@ export default async function ChatList() {
 
               {/* نام + آخرین پیام */}
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold flex items-center gap-1">
-                  {other.firstName}
+                <p className={`text-sm font-bold flex items-center gap-1 ${otherDeleted ? "text-ig-gray" : ""}`}>
+                  {otherDeleted ? "کاربر حذف شده" : other.firstName}
                   {other.isAdminProfile && (
                     <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-ig-gray-bg text-foreground text-xs font-bold">
                       <Shield className="w-3 h-3" />
                       مدیریتی
                     </span>
                   )}
-                  {other.isVerified && !other.isAdminProfile && (
+                  {other.isVerified && !other.isAdminProfile && !otherDeleted && (
                     <VerifiedBadge className="w-3.5 h-3.5" />
                   )}
                 </p>
@@ -296,13 +302,13 @@ export default async function ChatList() {
                   >
                     {formatTime(lastMessage.createdAt)}
                   </span>
-                ) : (
+                ) : !otherDeleted ? (
                   <PresenceLastSeen
                     userId={other.id}
                     initialOnline={other.isOnline}
                     initialLastSeen={other.lastSeen?.toISOString() ?? null}
                   />
-                )}
+                ) : null}
               </div>
             </Link>
             </ConversationActionsMenu>

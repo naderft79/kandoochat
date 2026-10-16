@@ -172,8 +172,15 @@ export async function POST(request: Request) {
     if (!otherIsHani) {
       const otherUser = await prisma.user.findUnique({
         where: { id: otherUserId },
-        select: { isAdminProfile: true },
+        select: { isAdminProfile: true, deletedAt: true },
       });
+      // کاربر حذف شده — امکان ارسال پیام نیست
+      if (otherUser?.deletedAt) {
+        return NextResponse.json(
+          { error: "کاربر اکانت خود را حذف کرده و امکان گفتگو نیست" },
+          { status: 403 }
+        );
+      }
       if (otherUser?.isAdminProfile) {
         return NextResponse.json(
           { error: "این گفتگو مدیریتی است و غیرقابل پاسخ است" },
