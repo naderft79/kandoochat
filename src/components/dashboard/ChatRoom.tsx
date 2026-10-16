@@ -138,6 +138,7 @@ export default function ChatRoom({
   const isTypingRef = useRef(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const roomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   // آیا کاربر نزدیک انتهای لیست است — برای اسکرول هوشمند
   const nearBottomRef = useRef(true);
@@ -161,6 +162,36 @@ export default function ChatRoom({
   const addMessage = useCallback((msg: Message) => {
     setMessages((prev) => (prev.some((m) => m.id === msg.id) ? prev : [...prev, msg]));
     lastDateRef.current = msg.createdAt;
+  }, []);
+
+  // ارتفاع اتاق = فاصله واقعی از موقعیت ریشه تا بالای منوی پایین گوشی —
+  // در هر حالت (بنر ورود مدیر، بنر اطلاعیه، باز شدن کیبورد) باکس تایپ زیر منو نمی رود
+  useEffect(() => {
+    const el = roomRef.current;
+    if (!el) return;
+    const vv = window.visualViewport;
+    let raf = 0;
+    const apply = () => {
+      raf = 0;
+      const viewportBottom = vv ? vv.height + vv.offsetTop : window.innerHeight;
+      const nav = document.querySelector<HTMLElement>("[data-bottom-nav]");
+      const navH = nav ? nav.offsetHeight : 0;
+      const top = el.getBoundingClientRect().top;
+      el.style.height = `${Math.max(120, viewportBottom - top - navH)}px`;
+    };
+    const schedule = () => { if (!raf) raf = requestAnimationFrame(apply); };
+    apply();
+    window.addEventListener("resize", schedule);
+    vv?.addEventListener("resize", schedule);
+    vv?.addEventListener("scroll", schedule);
+    document.addEventListener("scroll", schedule, true);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", schedule);
+      vv?.removeEventListener("resize", schedule);
+      vv?.removeEventListener("scroll", schedule);
+      document.removeEventListener("scroll", schedule, true);
+    };
   }, []);
 
   // ارسال وضعیت تایپ به سرور
@@ -787,7 +818,7 @@ export default function ChatRoom({
   const REACTIONS = ["❤️", "😂", "😍", "🔥", "👏", "😮"];
 
   return (
-    <div data-no-pull className={`flex flex-col h-[calc(100dvh-3.75rem-env(safe-area-inset-bottom))] lg:h-[100dvh] lg:mx-auto relative bg-surface overflow-hidden ${(contextMessage || reactionFor || showTransfer || showMenu) ? "select-none" : ""}`}>
+    <div ref={roomRef} data-no-pull className={`flex flex-col h-[calc(100dvh-3.75rem-env(safe-area-inset-bottom))] lg:h-[100dvh] lg:mx-auto relative bg-surface overflow-hidden ${(contextMessage || reactionFor || showTransfer || showMenu) ? "select-none" : ""}`}>
       {/* هدر مدرن */}
       <div className="flex items-center gap-3 px-3 py-2.5 border-b border-ig-border bg-surface shrink-0 z-30 pt-[max(0.625rem,env(safe-area-inset-top))]">
         <Link href="/dashboard/chat" aria-label="بازگشت به لیست گفتگوها" className="p-1.5 shrink-0 active:scale-90 transition-transform lg:hidden">

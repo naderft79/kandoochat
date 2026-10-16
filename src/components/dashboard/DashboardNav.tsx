@@ -200,7 +200,7 @@ export default function DashboardNav({
       )}
 
       {/* نوار پایین موبایل — ۵ آیکن مثل اینستاگرام */}
-      <nav className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-surface border-t border-ig-border flex items-center justify-around px-2 py-1 pb-[env(safe-area-inset-bottom)]">
+      <nav data-bottom-nav className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-surface border-t border-ig-border flex items-center justify-around px-2 py-1 pb-[env(safe-area-inset-bottom)]">
         {mainItems.map((item) => {
           const active = isActive(item.href);
           return (
