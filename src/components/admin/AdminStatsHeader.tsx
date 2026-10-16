@@ -52,7 +52,7 @@ export default function AdminStatsHeader() {
 
   if (!stats) {
     return (
-      <div className="flex flex-wrap gap-2 mb-4">
+      <div className="grid grid-cols-2 gap-2 mb-4 lg:flex lg:flex-wrap">
         {Array.from({ length: 9 }).map((_, i) => (
           <div key={i} className="lux-card rounded-xl p-3 flex items-center gap-2 animate-pulse">
             <div className="h-4 w-4 lux-shimmer rounded" />
@@ -77,7 +77,8 @@ export default function AdminStatsHeader() {
 
   return (
     <div className="mb-4">
-      <div className="flex flex-wrap gap-2 mb-8">
+      {/* موبایل: دقیقا ۲ کارت ۵۰درصدی در هر ردیف — دسکتاپ: همان flex قبلی */}
+      <div className="grid grid-cols-2 gap-2 mb-8 lg:flex lg:flex-wrap">
         {items.map((item) => (
           <div
             key={item.label}
