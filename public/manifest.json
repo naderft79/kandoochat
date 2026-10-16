@@ -15,6 +15,13 @@
   "categories": ["social", "lifestyle"],
   "handle_links": "preferred",
   "launch_handler": { "client_mode": "focus-existing" },
+  "related_applications": [
+    {
+      "platform": "webapp",
+      "url": "https://kandoochat.top/manifest.json"
+    }
+  ],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/icons/icon-192.png",

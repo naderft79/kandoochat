@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { X, Share, Plus, Menu } from "lucide-react";
 import { isNativeApp } from "@/lib/native";
+import { USER_APP_UA, ADMIN_APP_UA } from "@/lib/app-ua";
 
 // کلید v2 — بنر برای همه کاربران از الان نمایش داده می شود حتی اگر قبلا بسته اند
 const DISMISS_KEY = "kandoo-install-dismissed-v2";
@@ -47,51 +48,75 @@ export default function InstallBanner() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    // هرگز روی دسکتاپ، اپ نیتیو یا حالت نصب شده نمایش داده نمی شود
-    if (isStandalone()) return;
-    if (isNativeApp()) return;
-    const ios = isIos();
-    if (!ios && !isAndroid()) return;
-    if (isDismissed()) return;
+    let disposed = false;
+    let cleanup: (() => void) | undefined;
 
-    // iOS رویداد installprompt ندارد — راهنمای دستی نمایش می دهیم
-    if (ios) {
-      queueMicrotask(() => {
+    async function setup() {
+      const ua = navigator.userAgent;
+      // اپ نیتیو کندو (کاربر یا مدیر) — هیچ وقت بنر نصب نشان نمی گیرد
+      if (isNativeApp() || ua.includes(USER_APP_UA) || ua.includes(ADMIN_APP_UA)) return;
+      // PWA نصب شده و باز شده — standalone است
+      if (isStandalone()) return;
+      // فقط موبایل — روی دسکتاپ هرگز نمایش نمی گیرد
+      if (!isIos() && !isAndroid()) return;
+      // اگر PWA روی این دستگاه نصب است (حتی داخل مرورگر عادی) بنر نیاید
+      try {
+        const nav = navigator as Navigator & {
+          getInstalledRelatedApps?: () => Promise<{ platform?: string }[]>;
+        };
+        if (nav.getInstalledRelatedApps) {
+          const apps = await nav.getInstalledRelatedApps();
+          if (apps.length > 0) return;
+        }
+      } catch {
+        // ignore
+      }
+      if (disposed || isDismissed()) return;
+
+      const ios = isIos();
+      // iOS رویداد installprompt ندارد — راهنمای دستی نمایش می دهیم
+      if (ios) {
         setIosMode(true);
         setShow(true);
-      });
-      return;
+        return;
+      }
+
+      const handler = (e: Event) => {
+        e.preventDefault();
+        const evt = e as BeforeInstallPromptEvent;
+        deferredRef.current = evt;
+        setDeferred(evt);
+        setShow(true);
+      };
+      window.addEventListener("beforeinstallprompt", handler);
+
+      // اگر مرورگر رویداد نصب نداد (معیارها هنوز کامل نیست)، بعد از چند ثانیه
+      // راهنمای دستی اندروید نشان داده می شود تا نصب PWA همیشه ممکن باشد
+      const fallback = setTimeout(() => {
+        if (!deferredRef.current) {
+          setManualAndroid(true);
+          setShow(true);
+        }
+      }, 3000);
+
+      // اگر کاربر PWA را نصب کرد، بنر برای همیشه محو می شود
+      const onInstalled = () => {
+        localStorage.setItem(DISMISS_KEY, String(Date.now()));
+        setShow(false);
+      };
+      window.addEventListener("appinstalled", onInstalled);
+
+      cleanup = () => {
+        window.removeEventListener("beforeinstallprompt", handler);
+        window.removeEventListener("appinstalled", onInstalled);
+        clearTimeout(fallback);
+      };
     }
 
-    const handler = (e: Event) => {
-      e.preventDefault();
-      const evt = e as BeforeInstallPromptEvent;
-      deferredRef.current = evt;
-      setDeferred(evt);
-      setShow(true);
-    };
-    window.addEventListener("beforeinstallprompt", handler);
-
-    // اگر مرورگر رویداد نصب نداد (معیارها هنوز کامل نیست)، بعد از چند ثانیه
-    // راهنمای دستی اندروید نشان داده می شود تا نصب PWA همیشه ممکن باشد
-    const fallback = setTimeout(() => {
-      if (!deferredRef.current) {
-        setManualAndroid(true);
-        setShow(true);
-      }
-    }, 3000);
-
-    // اگر کاربر PWA را نصب کرد، بنر برای همیشه محو می شود
-    const onInstalled = () => {
-      localStorage.setItem(DISMISS_KEY, String(Date.now()));
-      setShow(false);
-    };
-    window.addEventListener("appinstalled", onInstalled);
-
+    void setup();
     return () => {
-      window.removeEventListener("beforeinstallprompt", handler);
-      window.removeEventListener("appinstalled", onInstalled);
-      clearTimeout(fallback);
+      disposed = true;
+      cleanup?.();
     };
   }, []);
 
