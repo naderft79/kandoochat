@@ -1,4 +1,4 @@
-package com.kandoo.app;
+package com.kandoochats.app;
 
 import com.getcapacitor.BridgeActivity;
 

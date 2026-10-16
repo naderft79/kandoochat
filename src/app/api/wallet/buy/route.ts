@@ -8,6 +8,7 @@ import { getSetting } from "@/lib/settings";
 import { signPaymentToken, sanitizeReturnPath } from "@/lib/payment";
 import { SITE_URL } from "@/lib/site";
 import { rateLimit, apiRateLimit, getClientIdentifier } from "@/lib/rate-limit";
+import { isUserAppRequest } from "@/lib/app-ua";
 
 const buySchema = z.object({
   coins: z.coerce.number().int().min(1).max(100_000),
@@ -15,6 +16,14 @@ const buySchema = z.object({
 
 export async function POST(request: Request) {
   try {
+    // سیاست گوگل پلی: پرداخت ریالی داخل اپ اندروید غیرفعال است — فقط نسخه وب
+    if (isUserAppRequest(request)) {
+      return NextResponse.json(
+        { error: "پرداخت در نسخه اپلیکیشن در دسترس نیست" },
+        { status: 403 }
+      );
+    }
+
     const user = await requireUser();
 
     const ip = getClientIdentifier(request);

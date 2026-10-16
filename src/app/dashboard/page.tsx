@@ -148,6 +148,8 @@ export default async function DashboardPage() {
           <Link href="/privacy" className="hover:text-foreground transition-colors">حریم خصوصی</Link>
           <span>·</span>
           <Link href="/terms" className="hover:text-foreground transition-colors">قوانین</Link>
+          <span>·</span>
+          <Link href="/delete-account" className="hover:text-foreground transition-colors">حذف حساب</Link>
         </div>
         <p className="text-xs text-ig-gray mt-4">
           © {toPersianDigits(new Date().getFullYear())} KanDoo

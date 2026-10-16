@@ -1,7 +1,9 @@
 // صفحه اشتراک: پلن های زمانی (۱ماهه تا مادام العمر)، روزهای باقی مانده، تایید قبل از خرید
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { Crown, Check } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
+import { isUserApp } from "@/lib/app-ua";
 import { ensureWallet, getActiveSubscription } from "@/lib/finance";
 import { formatDate, toPersianDigits } from "@/lib/format";
 import { SUBSCRIPTION_PLANS } from "@/lib/subscriptionPlans";
@@ -22,10 +24,13 @@ export default async function SubscriptionPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
 
-  const [wallet, active] = await Promise.all([
+  const [wallet, active, h] = await Promise.all([
     ensureWallet(user.id),
     getActiveSubscription(user.id),
+    headers(),
   ]);
+  // در اپ اندروید (سیاست گوگل پلی) خرید اشتراک نمایش داده نمی شود — فقط وضعیت فعلی
+  const inApp = isUserApp(h.get("user-agent"));
 
   const daysLeft = active ? calcDaysLeft(active.endsAt) : 0;
   // اشتراک مادام العمر — تاریخ پایان خیلی دور است
@@ -57,11 +62,23 @@ export default async function SubscriptionPage() {
           </div>
         )}
 
-        <SubscriptionPlans
-          plans={SUBSCRIPTION_PLANS}
-          balance={wallet.balance}
-          isRenewal={!!active}
-        />
+        {inApp ? (
+          <div className="rounded-xl border border-ig-border bg-surface p-5 text-center">
+            <Crown className="w-8 h-8 text-ig-gray mx-auto mb-2" strokeWidth={1.5} />
+            <p className="text-sm font-bold text-foreground">
+              {active ? "اشتراک شما فعال است" : "اشتراک فعالی ندارید"}
+            </p>
+            <p className="text-xs text-ig-gray mt-1">
+              برای مشاهده جزئیات و مدیریت اشتراک به نسخه وب مراجعه کنید
+            </p>
+          </div>
+        ) : (
+          <SubscriptionPlans
+            plans={SUBSCRIPTION_PLANS}
+            balance={wallet.balance}
+            isRenewal={!!active}
+          />
+        )}
       </div>
       <PaymentResultModal />
     </div>

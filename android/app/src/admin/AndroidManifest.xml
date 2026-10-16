@@ -12,15 +12,6 @@
             android:screenOrientation="unspecified"
             tools:replace="android:screenOrientation" />
 
-        <!-- اپ مدیریت بدون FCM — سرویس و متادیتای پوش حذف می شود -->
-        <service
-            android:name="com.capacitorjs.plugins.pushnotifications.MessagingService"
-            tools:node="remove" />
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_icon"
-            tools:node="remove" />
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_channel_id"
-            tools:node="remove" />
+        <!-- FCM در مانیفست اصلی حذف شد — فلیور مدیریت هم بدون پوش است -->
     </application>
 </manifest>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!-- فایل آفلاین اپ — فقط وقتی دیده می شود که سرور در دسترس نباشد -->
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>کندو</title>
+<style>
+  * { margin: 0; box-sizing: border-box; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Tahoma, sans-serif;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #fafafa;
+    color: #262626;
+    padding: 24px;
+    text-align: center;
+  }
+  .logo { font-size: 56px; font-weight: 800; letter-spacing: -1px; margin-bottom: 12px; }
+  p { color: #737373; font-size: 14px; line-height: 2; margin-bottom: 24px; }
+  button {
+    background: #0095f6;
+    color: #fff;
+    border: 0;
+    border-radius: 12px;
+    padding: 12px 32px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+  }
+</style>
+</head>
+<body>
+  <div class="logo">کندو</div>
+  <p>اتصال به سرور برقرار نشد.<br />اتصال اینترنت خود را بررسی کنید و دوباره تلاش کنید.</p>
+  <button onclick="location.reload()">تلاش مجدد</button>
+</body>
+</html>

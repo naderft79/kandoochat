@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Crown, CreditCard, Loader2 } from "lucide-react";
+import { isAppShellClient } from "@/lib/app-ua";
 
 export default function BuySubscriptionButton({
   hasEnoughCoins,
@@ -17,6 +18,9 @@ export default function BuySubscriptionButton({
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [redirecting, setRedirecting] = useState(false);
+
+  // سیاست گوگل پلی: خرید اشتراک در اپ اندروید نمایش داده نمی شود
+  if (isAppShellClient()) return null;
 
   async function buyWithCoins() {
     setError("");

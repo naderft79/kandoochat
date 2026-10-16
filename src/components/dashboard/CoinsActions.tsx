@@ -31,6 +31,7 @@ import {
 import { detectBank, formatCardNumber } from "@/lib/iranianBanks";
 import { MISSION_ICONS } from "@/lib/mission-icons";
 import Button from "@/components/ui/Button";
+import { isAppShellClient } from "@/lib/app-ua";
 import SubscriptionPlans from "@/components/dashboard/SubscriptionPlans";
 import type { SubscriptionPlan } from "@/lib/subscriptionPlans";
 import { BottomSheet } from "@/components/ui/Modal";
@@ -355,12 +356,15 @@ export default function CoinsActions({
   const withdrawNet = withdrawAmount - withdrawFee;
   const hasMinBalance = balance >= MIN_BALANCE_FOR_WITHDRAW;
 
+  // در اپ اندروید (سیاست گوگل پلی) خرید سکه و اشتراک نمایش داده نمی شود — فقط برداشت و تاریخچه
+  const inApp = isAppShellClient();
   const tabs: { key: Tab; label: string; icon: typeof Coins }[] = [
     { key: "buy" as Tab, label: "خرید سکه", icon: ArrowDown },
     { key: "sell" as Tab, label: "برداشت سکه", icon: ArrowUp },
     { key: "sub" as Tab, label: "اشتراک", icon: Crown },
     { key: "history" as Tab, label: "تاریخچه", icon: Clock },
   ].filter((t) => {
+    if (inApp && (t.key === "buy" || t.key === "sub")) return false;
     if (t.key === "buy") return buyCoinsEnabled;
     if (t.key === "sell") return withdrawCoinsEnabled;
     return true;
@@ -1115,20 +1119,22 @@ export default function CoinsActions({
                 است.
               </p>
               <div className="mt-4">
-                <Button
-                  type="button"
-                  size="lg"
-                  fullWidth
-                  onClick={() => {
-                    setRuleModal(null);
-                    setTab("buy");
-                  }}
-                >
-                  خرید سکه
-                </Button>
+                {!inApp && (
+                  <Button
+                    type="button"
+                    size="lg"
+                    fullWidth
+                    onClick={() => {
+                      setRuleModal(null);
+                      setTab("buy");
+                    }}
+                  >
+                    خرید سکه
+                  </Button>
+                )}
                 <p className="text-xs text-ig-gray mt-3 flex items-center justify-center gap-1.5">
                   <MessageCircle className="w-3.5 h-3.5" />
-                  یا در چت ها از کاربران درخواست سکه کنید
+                  در چت ها از کاربران درخواست سکه کنید
                 </p>
               </div>
             </div>
@@ -1146,14 +1152,16 @@ export default function CoinsActions({
               <p className="text-xs text-ig-gray mt-1.5 leading-5">
                 برای برداشت سکه باید اشتراک ویژه فعال داشته باشید
               </p>
-              <div className="mt-4">
-                <Link
-                  href="/dashboard/subscription"
-                  className="w-full h-11 rounded-lg bg-ig-blue text-white text-sm font-bold flex items-center justify-center gap-2 hover:bg-ig-blue-hover active:scale-[0.98] transition-all"
-                >
-                  خرید اشتراک ویژه
-                </Link>
-              </div>
+              {!inApp && (
+                <div className="mt-4">
+                  <Link
+                    href="/dashboard/subscription"
+                    className="w-full h-11 rounded-lg bg-ig-blue text-white text-sm font-bold flex items-center justify-center gap-2 hover:bg-ig-blue-hover active:scale-[0.98] transition-all"
+                  >
+                    خرید اشتراک ویژه
+                  </Link>
+                </div>
+              )}
             </div>
           )}
 

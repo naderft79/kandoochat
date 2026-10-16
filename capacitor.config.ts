@@ -11,9 +11,11 @@ const serverUrl =
 const isHttp = serverUrl.startsWith("http:");
 
 const config: CapacitorConfig = {
-  appId: "com.kandoo.app",
+  appId: "com.kandoochats.app",
   appName: "کندو",
-  webDir: "public",
+  // webDir مینیمال — محتوای اصلی از server.url ریموت لود می شود؛
+  // این فقط صفحه آفلاین است تا public/uploads (صدها مگ) داخل اپ کپی نشود
+  webDir: "app-web",
   server: {
     url: serverUrl,
     cleartext: isHttp,

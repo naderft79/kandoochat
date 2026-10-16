@@ -10,7 +10,7 @@ import { writeAdminFlavorConfig } from "./lib/admin-flavor-config";
 
 const isWin = process.platform === "win32";
 const root = process.cwd();
-const PACKAGE = "com.kandoo.app";
+const PACKAGE = "com.kandoochats.app";
 const ADMIN_PACKAGE = "com.kandoo.admin";
 const launchAdmin = process.argv.includes("--admin");
 const ADB_PORT = 5555;

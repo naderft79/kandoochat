@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.kandoochats.app",
+      "sha256_cert_fingerprints": [
+        "F2:BA:93:5A:64:01:F6:75:F2:6F:41:3E:88:72:C9:CA:A2:8F:4B:41:C6:57:45:B4:1A:E9:16:B0:EA:BB:72:FF"
+      ]
+    }
+  }
+]

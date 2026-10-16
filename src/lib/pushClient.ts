@@ -1,8 +1,9 @@
 "use client";
 
 // درخواست مجوز اعلان و اشتراک Push — بعد از ثبت نام و ورود صدا زده می شود
-// وب/ PWA: Web Push با VAPID — اپ اندروید (Capacitor): FCM + Local Notifications
-// FCM زمانی کار می کند که اپ بسته یا در پس زمینه است (تنها راه واقعی در اندروید)
+// وب/ PWA: Web Push با VAPID — اپ اندروید (Capacitor): Local Notifications
+// FCM در نسخه اول گوگل پلی وجود ندارد؛ برای برگرداندن آن @capacitor/push-notifications
+// را نصب و initNativePush را فعال کنید
 
 function urlBase64ToUint8Array(base64String: string) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -27,48 +28,11 @@ async function subscribeWebPush(): Promise<void> {
   });
 }
 
-// آپلود توکن FCM به سرور — ممکن است دوره ای رفرش شود
-async function uploadFcmToken(token: string): Promise<void> {
-  await fetch("/api/push/subscribe", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ fcmToken: token, platform: "android" }),
-  });
-}
-
-let nativePushReady = false;
-
-// راه اندازی FCM — لیسنرها فقط یک بار ثبت می شوند
-async function initNativePush(): Promise<void> {
-  const { PushNotifications } = await import("@capacitor/push-notifications");
-
-  if (!nativePushReady) {
-    nativePushReady = true;
-    await PushNotifications.addListener("registration", (t) => {
-      void uploadFcmToken(t.value).catch((e) => console.error("[FCM] token upload failed:", e));
-    });
-    await PushNotifications.addListener("registrationError", (e) => {
-      console.error("[FCM] registration error:", e.error);
-    });
-    // کلیک روی نوتیف — باز کردن لینک مربوطه
-    await PushNotifications.addListener("pushNotificationActionPerformed", (action) => {
-      const url = action.notification?.data?.url;
-      if (typeof url === "string" && url.startsWith("/")) window.location.href = url;
-    });
-    // نوتیف موقع باز بودن اپ — SSE خودش بنر و نوتیف محلی را هندل می کند
-    // پس اینجا کاری نمی کنیم تا تکراری نشود
-  }
-
-  let perm = await PushNotifications.checkPermissions();
-  if (perm.receive !== "granted") perm = await PushNotifications.requestPermissions();
-  if (perm.receive === "granted") await PushNotifications.register();
-}
-
 // مجوز + اشتراک اعلان — بعد از ثبت نام/ورود صدا زده می شود (بدون بلاک کردن جریان)
 export async function requestPushPermission(): Promise<void> {
   if (typeof window === "undefined") return;
 
-  // داخل اپ اندروید — FCM برای پس زمینه + کانال محلی برای فورگراند
+  // داخل اپ اندروید — فقط کانال محلی برای نوتیف های فورگراند (بدون FCM)
   try {
     const { Capacitor } = await import("@capacitor/core");
     if (Capacitor.isNativePlatform()) {
@@ -85,15 +49,6 @@ export async function requestPushPermission(): Promise<void> {
         vibration: true,
         lights: true,
       });
-      // FCM — فقط وقتی google-services.json به APK اضافه شده باشد فعال می شود
-      // بدون آن Firebase کرش ناتیو می دهد که قابل catch نیست و اپ می بندد
-      if (process.env.NEXT_PUBLIC_FCM_ENABLED === "true") {
-        try {
-          await initNativePush();
-        } catch (e) {
-          console.error("[FCM] init failed:", e);
-        }
-      }
       return;
     }
   } catch {

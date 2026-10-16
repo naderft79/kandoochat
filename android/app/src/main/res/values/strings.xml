@@ -2,6 +2,6 @@
 <resources>
     <string name="app_name">کندو</string>
     <string name="title_activity_main">کندو</string>
-    <string name="package_name">com.kandoo.app</string>
-    <string name="custom_url_scheme">com.kandoo.app</string>
+    <string name="package_name">com.kandoochats.app</string>
+    <string name="custom_url_scheme">com.kandoochats.app</string>
 </resources>

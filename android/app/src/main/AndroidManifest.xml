@@ -22,22 +22,16 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
 
-        <!-- FCM — پوش نوتیفیکیشن وقتی اپ بسته است -->
-        <service android:name="com.capacitorjs.plugins.pushnotifications.MessagingService" android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            <!-- Android App Links — لینک های دامنه کندو مستقیم در اپ باز می شوند -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="kandoochat.top" />
+                <data android:scheme="https" android:host="www.kandoochat.top" />
             </intent-filter>
-        </service>
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@drawable/ic_stat_kandoo"
-        />
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="kandoo_alerts"
-        />
+        </activity>
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -52,6 +46,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- اعلان های محلی (LocalNotifications) — لایک و پیام وقتی اپ در پس زمینه است؛ FCM در نسخه اول نیست -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- اعلان های کندو زمان بندی دقیق ندارند؛ مجوز الارم دقیق حذف شد (حذف از مجوز کتابخانه هم) -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" tools:node="remove" />

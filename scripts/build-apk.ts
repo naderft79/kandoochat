@@ -1,5 +1,6 @@
-// بیلد APK اندروید با یک دستور — sync + آیکون + gradle
-// خروجی: دو APK (فلیور user و admin) در android/app/build/outputs/apk/
+// بیلد APK/AAB اندروید با یک دستور — sync + آیکون + gradle
+// خروجی APK: دو فلیور (user و admin) در android/app/build/outputs/apk/
+// خروجی AAB (فقط فلیور user — برای گوگل پلی): android/app/build/outputs/bundle/userRelease/
 // پیش نیاز: JDK 17+ و Android SDK (ANDROID_HOME)
 import { execFileSync, execSync } from "child_process";
 import path from "path";
@@ -9,15 +10,24 @@ import { writeAdminFlavorConfig } from "./lib/admin-flavor-config";
 const isWin = process.platform === "win32";
 const root = process.cwd();
 const release = process.argv.includes("--release");
+const aab = process.argv.includes("--aab");
+
+// شماره نسخه از آرگومان — مثال: --versionCode=2 --versionName=1.1
+function argValue(name: string, fallback: string): string {
+  const arg = process.argv.find((a) => a.startsWith(`--${name}=`));
+  return arg ? arg.split("=")[1] : fallback;
+}
+const versionCode = argValue("versionCode", "1");
+const versionName = argValue("versionName", "1.0");
 
 const serverUrl =
   process.env.CAPACITOR_SERVER_URL ||
   process.env.NEXT_PUBLIC_SITE_URL ||
   "https://kandoochat.top";
 
-// نسخه ریلیز فقط با آدرس https ساخته می شود — جلوگیری از جاسازی آدرس HTTP در APK عمومی
-if (release && !/^https:\/\//.test(serverUrl)) {
-  console.error("[build-apk] --release needs an https CAPACITOR_SERVER_URL (or NEXT_PUBLIC_SITE_URL)");
+// نسخه ریلیز فقط با آدرس https ساخته می شود — جلوگیری از جاسازی آدرس HTTP در APK/AAB عمومی
+if ((release || aab) && !/^https:\/\//.test(serverUrl)) {
+  console.error("[build-apk] --release/--aab needs an https CAPACITOR_SERVER_URL (or NEXT_PUBLIC_SITE_URL)");
   process.exit(1);
 }
 
@@ -49,12 +59,26 @@ if (!fs.existsSync(androidDir)) {
 const gradlew = isWin
   ? path.join(androidDir, "gradlew.bat")
   : path.join(androidDir, "gradlew");
-const task = release ? "assembleRelease" : "assembleDebug";
-run(gradlew, [task], androidDir);
+const versionArgs = [
+  `-PkandooVersionCode=${versionCode}`,
+  `-PkandooVersionName=${versionName}`,
+];
 
-const variant = release ? "release" : "debug";
-for (const flavor of ["user", "admin"]) {
+if (aab) {
+  // AAB فقط برای فلیور user — فایل انتشار گوگل پلی
+  run(gradlew, ["bundleUserRelease", ...versionArgs], androidDir);
   console.log(
-    `[build-apk] APK ready: ${path.join(androidDir, "app", "build", "outputs", "apk", flavor, variant, `app-${flavor}-${variant}.apk`)}`
+    `[build-apk] AAB ready: ${path.join(androidDir, "app", "build", "outputs", "bundle", "userRelease", "app-user-release.aab")}`
   );
+  console.log(`[build-apk] version: ${versionName} (${versionCode}) — upload to Play Console closed testing`);
+} else {
+  const task = release ? "assembleRelease" : "assembleDebug";
+  run(gradlew, [task, ...versionArgs], androidDir);
+
+  const variant = release ? "release" : "debug";
+  for (const flavor of ["user", "admin"]) {
+    console.log(
+      `[build-apk] APK ready: ${path.join(androidDir, "app", "build", "outputs", "apk", flavor, variant, `app-${flavor}-${variant}.apk`)}`
+    );
+  }
 }

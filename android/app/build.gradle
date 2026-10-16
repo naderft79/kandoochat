@@ -8,14 +8,14 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace = "com.kandoo.app"
+    namespace = "com.kandoochats.app"
     compileSdk = rootProject.ext.compileSdkVersion
 
     // دو خروجی APK در هر بیلد: اپ کاربر + اپ «مدیریت کندو»
     flavorDimensions "app"
     productFlavors {
         user {
-            applicationId "com.kandoo.app"
+            applicationId "com.kandoochats.app"
         }
         admin {
             applicationId "com.kandoo.admin"
