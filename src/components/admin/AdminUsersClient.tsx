@@ -571,9 +571,11 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
                   </span>
                 )}
                 {u.referredBy && (
-                  <p className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-purple-50 border border-purple-200 text-[9px] font-bold text-purple-700 xl:justify-center">
-                    <Gift className="w-2.5 h-2.5" />
-                    دعوت شده توسط:
+                  <p className="mt-1 flex flex-col items-start xl:items-center gap-0.5 px-2 py-1 rounded-lg bg-purple-50 border border-purple-200 text-[9px] font-bold text-purple-700 w-fit">
+                    <span className="inline-flex items-center gap-1">
+                      <Gift className="w-2.5 h-2.5" />
+                      دعوت شده:
+                    </span>
                     <span dir="ltr">{u.referredBy.phone}</span>
                     <span dir="ltr">@{u.referredBy.username}</span>
                   </p>
