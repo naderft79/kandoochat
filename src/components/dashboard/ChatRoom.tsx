@@ -180,17 +180,25 @@ export default function ChatRoom({
       el.style.height = `${Math.max(120, viewportBottom - top - navH)}px`;
     };
     const schedule = () => { if (!raf) raf = requestAnimationFrame(apply); };
+    // حین اسکرول کاربر ارتفاع را تغییر نده — فقط بعد از توقف اسکرول محاسبه شود
+    // تا کل پیام ها وسط ژست نپرند (بنر ورود مدیر وقتی بالا/پایین می رود)
+    let settle: ReturnType<typeof setTimeout> | undefined;
+    const scheduleSettled = () => {
+      clearTimeout(settle);
+      settle = setTimeout(apply, 120);
+    };
     apply();
     window.addEventListener("resize", schedule);
     vv?.addEventListener("resize", schedule);
     vv?.addEventListener("scroll", schedule);
-    document.addEventListener("scroll", schedule, true);
+    document.addEventListener("scroll", scheduleSettled, true);
     return () => {
       cancelAnimationFrame(raf);
+      clearTimeout(settle);
       window.removeEventListener("resize", schedule);
       vv?.removeEventListener("resize", schedule);
       vv?.removeEventListener("scroll", schedule);
-      document.removeEventListener("scroll", schedule, true);
+      document.removeEventListener("scroll", scheduleSettled, true);
     };
   }, []);
 
@@ -269,7 +277,10 @@ export default function ChatRoom({
     const isNewLast = !!last && last.id !== lastMsgIdRef.current;
     if (isNewLast) lastMsgIdRef.current = last!.id;
     if (pendingRestoreRef.current != null && el) {
-      el.scrollTop = el.scrollHeight - pendingRestoreRef.current;
+      // anchoring مرورگر خاموش است؛ دید کاربر با افزودن اختلاف ارتفاع حفظ می شود —
+      // حتی اگر حین فچ اسکرول کرده باشد به موقعیت کهنه پرتاب نمی شود
+      const added = el.scrollHeight - pendingRestoreRef.current;
+      if (added > 0) el.scrollTop += added;
       pendingRestoreRef.current = null;
       // اگر همزمان با لود تاریخچه پیام جدیدی از طرف مقابل رسید، دکمه پرش نشان بده
       if (isNewLast && last!.senderId !== currentUserId) setShowJump(true);
@@ -310,7 +321,7 @@ export default function ChatRoom({
     if (!first || loadingOlder) return;
     setLoadingOlder(true);
     const el = listRef.current;
-    if (el) pendingRestoreRef.current = el.scrollHeight - el.scrollTop;
+    if (el) pendingRestoreRef.current = el.scrollHeight;
     try {
       const res = await fetch(`/api/messages?conversationId=${conversationId}&before=${encodeURIComponent(first.createdAt)}`);
       const data = await res.json();
@@ -944,7 +955,7 @@ export default function ChatRoom({
       )}
 
       {/* پیام ها */}
-      <div ref={listRef} onScroll={handleScroll} data-testid="message-list" className="flex-1 overflow-y-auto overflow-x-hidden thin-scroll px-3 py-4 space-y-1 min-h-0">
+      <div ref={listRef} onScroll={handleScroll} data-testid="message-list" style={{ overflowAnchor: "none" }} className="flex-1 overflow-y-auto overflow-x-hidden thin-scroll px-3 py-4 space-y-1 min-h-0">
         {loadingOlder && (
           <p className="text-center text-xs text-ig-gray py-2" role="status">در حال بارگذاری پیام های قدیمی تر...</p>
         )}
