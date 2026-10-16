@@ -47,7 +47,7 @@ export default function PinPad({
       {/* صفحه کلید عددی — دکمه ها با aspect-square همیشه دایره کامل می مانند */}
       <div
         dir="ltr"
-        className={`grid grid-cols-3 mx-auto w-full ${compact ? "max-w-[240px] gap-3" : "max-w-[290px] gap-4"}`}
+        className={`grid grid-cols-3 mx-auto w-full ${compact ? "max-w-[200px] gap-2.5" : "max-w-[240px] gap-3"}`}
       >
         {PAD.map((k, i) =>
           k === "" ? (
@@ -60,7 +60,7 @@ export default function PinPad({
               aria-label="حذف"
               className="aspect-square rounded-full flex items-center justify-center text-foreground active:bg-ig-btn2 active:scale-90 transition-all duration-100"
             >
-              <Delete className={compact ? "w-5 h-5" : "w-6 h-6"} />
+              <Delete className={compact ? "w-4.5 h-4.5" : "w-5 h-5"} />
             </button>
           ) : (
             <button
@@ -68,7 +68,7 @@ export default function PinPad({
               type="button"
               onClick={() => onDigit(k)}
               className={`aspect-square rounded-full flex items-center justify-center bg-ig-gray-bg border border-ig-divider font-black text-foreground ig-shadow-sm active:bg-ig-btn2 active:scale-90 transition-all duration-100 ${
-                compact ? "text-xl" : "text-2xl"
+                compact ? "text-lg" : "text-xl"
               }`}
             >
               {toPersianDigits(k)}
