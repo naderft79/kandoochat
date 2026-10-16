@@ -21,6 +21,7 @@ import { formatTime, toPersianDigits } from "@/lib/format";
 import PageHeader from "@/components/dashboard/PageHeader";
 import CoinBadge from "@/components/dashboard/CoinBadge";
 import ChatListLive from "@/components/dashboard/ChatListLive";
+import ConversationActionsMenu from "@/components/dashboard/ConversationActionsMenu";
 import { getOrCreateAIConversation } from "@/lib/aiCompanion";
 
 export default async function ChatList() {
@@ -46,6 +47,7 @@ export default async function ChatList() {
         select: {
           id: true,
           firstName: true,
+          username: true,
           gender: true,
           isVerified: true,
           isOnline: true,
@@ -68,6 +70,7 @@ export default async function ChatList() {
         select: {
           id: true,
           firstName: true,
+          username: true,
           gender: true,
           isVerified: true,
           isOnline: true,
@@ -217,8 +220,17 @@ export default async function ChatList() {
           const lastMessage = c.messages[0];
           const unread = c._count.messages;
           return (
-            <Link
+            <ConversationActionsMenu
               key={c.id}
+              conversationId={c.id}
+              targetId={other.id}
+              targetName={other.firstName}
+              targetUsername={other.username}
+              targetPhoto={other.photos?.[0]?.url ?? null}
+              targetVerified={other.isVerified}
+              isAdminProfile={other.isAdminProfile}
+            >
+            <Link
               href={`/dashboard/chat/${c.id}`}
               className="flex items-center gap-3 px-4 py-3 hover:bg-ig-gray-bg transition-colors border-b border-ig-border/50"
             >
@@ -293,6 +305,7 @@ export default async function ChatList() {
                 )}
               </div>
             </Link>
+            </ConversationActionsMenu>
           );
         })}
         {otherConversations.length === 0 && (
