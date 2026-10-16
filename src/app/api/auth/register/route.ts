@@ -226,6 +226,11 @@ export async function POST(request: Request) {
       }
     }
 
+    // اطلاع پیامکی به مدیران — ثبت نام کاربر جدید
+    void import("@/lib/sms").then(({ notifyAdminsSms }) =>
+      notifyAdminsSms("کاربر جدیدی ثبت نام کرد")
+    );
+
     return NextResponse.json({ ok: true, freeWeekSub, referrerName });
   } catch (err) {
     console.error("[register] error:", err);

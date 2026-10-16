@@ -116,6 +116,10 @@ export async function POST(request: Request) {
     ]);
 
     console.log(`[wallet] user ${user.id} requested withdraw of ${coins} coins`);
+    // اطلاع پیامکی به مدیران — درخواست برداشت جدید
+    void import("@/lib/sms").then(({ notifyAdminsSms }) =>
+      notifyAdminsSms("درخواست برداشت جدیدی ثبت شد")
+    );
     return NextResponse.json({ ok: true });
   } catch (err) {
     if (err instanceof AuthError)

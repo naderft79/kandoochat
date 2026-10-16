@@ -105,6 +105,10 @@ export async function fulfillPayment(paymentId: string, refId?: string | null) {
     ]);
 
     console.log(`[payment] user ${payment.userId} subscription activated until ${endsAt.toISOString()}, refId=${refId ?? "-"}`);
+    // اطلاع پیامکی به مدیران — خرید اشتراک
+    void import("@/lib/sms").then(({ notifyAdminsSms }) =>
+      notifyAdminsSms("اشتراک جدیدی خریداری شد")
+    );
     return { alreadyPaid: false, endsAt };
   }
 
@@ -142,6 +146,10 @@ export async function fulfillPayment(paymentId: string, refId?: string | null) {
   ]);
 
   console.log(`[payment] user ${payment.userId} received ${payment.coins} coins, refId=${refId ?? "-"}`);
+  // اطلاع پیامکی به مدیران — خرید سکه
+  void import("@/lib/sms").then(({ notifyAdminsSms }) =>
+    notifyAdminsSms("سکه جدیدی خریداری شد")
+  );
   return { alreadyPaid: false };
 }
 

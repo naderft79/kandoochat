@@ -62,6 +62,10 @@ export async function POST(request: Request) {
     ]);
 
     console.log(`[subscription] user ${user.id} purchased plan ${plan.key} until ${endsAt.toISOString()}`);
+    // اطلاع پیامکی به مدیران — خرید اشتراک با سکه
+    void import("@/lib/sms").then(({ notifyAdminsSms }) =>
+      notifyAdminsSms("اشتراک جدیدی خریداری شد")
+    );
     return NextResponse.json({ ok: true, endsAt });
   } catch (err) {
     if (err instanceof AuthError)
