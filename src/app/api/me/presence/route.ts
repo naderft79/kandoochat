@@ -9,10 +9,10 @@ import { publishPresence } from "@/lib/presenceEvents";
 export async function POST(request: Request) {
   try {
     const user = await requireUser();
+    // در جلسه impersonate هیچ تغییری روی حضور کاربر نمی آید — آنلاین بودن فقط با ورود خود کاربر ثبت می شود
+    if (await isImpersonating()) return NextResponse.json({ ok: true });
     const body = await request.json().catch(() => ({}));
     const isOnline = body.isOnline !== false;
-    // در جلسه impersonate، IP و فعالیت ادمین نباید روی حساب کاربر ثبت شود
-    const trackIp = !(await isImpersonating());
     const ip = getRequestIp(request);
 
     await prisma.user.update({
@@ -20,10 +20,11 @@ export async function POST(request: Request) {
       data: {
         lastSeen: new Date(),
         isOnline,
-        ...(trackIp ? { lastIp: ip, lastIpAt: new Date() } : {}),
+        lastIp: ip,
+        lastIpAt: new Date(),
       },
     });
-    if (trackIp) await recordHeartbeatIfDue(user.id, ip, request.headers.get("user-agent"));
+    await recordHeartbeatIfDue(user.id, ip, request.headers.get("user-agent"));
     // اطلاع لحظه ای تغییر وضعیت آنلاین/آفلاین به شنوندگان SSE
     publishPresence({ userId: user.id, isOnline, lastSeen: new Date().toISOString() });
     return NextResponse.json({ ok: true });

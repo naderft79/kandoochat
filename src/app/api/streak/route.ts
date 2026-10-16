@@ -1,13 +1,18 @@
 // API استریک روزانه — بروزرسانی و دریافت وضعیت
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { requireUser, AuthError } from "@/lib/auth";
+import { requireUser, isImpersonating, AuthError } from "@/lib/auth";
 import { getAllSettings } from "@/lib/settings";
 import { incrementMissionProgress } from "@/lib/missions";
 
 export async function GET() {
   try {
     const user = await requireUser();
+    // در جلسه impersonate هیچ تغییری نمی آید — نه استریک و نه وضعیت آنلاین کاربر
+    if (await isImpersonating()) {
+      const s = await prisma.streak.findUnique({ where: { userId: user.id } });
+      return NextResponse.json({ streak: s?.count ?? 0 });
+    }
     const now = new Date();
     const today = now.toDateString();
 
