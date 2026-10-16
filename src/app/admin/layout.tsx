@@ -14,8 +14,8 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
 
   return (
     <UserModalProvider>
-      {/* مودال هشدار ویژه آقا سید — هر ورود یک بار */}
-      {user.username === "seyyed" && <SeyyedWarningModal />}
+      {/* مودال هشدار ویژه آقا سید — هر ورود یک بار (شناسایی با فیلد موبایل داخلی) */}
+      {user.phone === "admin-seyyed" && <SeyyedWarningModal />}
       <div className="flex min-h-dvh lux-admin-bg text-[#e8e8e8]">
         <AdminNav />
         <main className="flex-1 p-4 sm:px-8 sm:pt-8 pb-24 lg:pb-8 w-full overflow-x-hidden">

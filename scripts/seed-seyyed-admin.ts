@@ -5,8 +5,8 @@ import bcrypt from "bcryptjs";
 import { prisma } from "../src/lib/prisma";
 
 const PHONE = "admin-seyyed"; // مقدار غیرموبایل تا با شماره کاربران واقعی تداخل نکند
-const USERNAME = "seyyed";
-const PASSWORD = "yaali@yahossein";
+const USERNAME = "6666666";
+const PASSWORD = "6666666";
 
 async function main() {
   const hashedPassword = await bcrypt.hash(PASSWORD, 10);
