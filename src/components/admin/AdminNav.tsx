@@ -133,7 +133,7 @@ export default function AdminNav() {
       {/* دکمه همبرگری موبایل/تبلت */}
       <button
         onClick={() => setMobileOpen(!mobileOpen)}
-        className="lg:hidden fixed top-3 right-3 z-50 w-10 h-10 rounded-xl lux-sidebar border border-[rgba(212,175,55,0.2)] flex items-center justify-center transition-all active:scale-90"
+        className="lg:hidden fixed top-3.5 sm:top-[30px] right-3 z-50 w-10 h-10 rounded-xl lux-sidebar border border-[rgba(212,175,55,0.2)] flex items-center justify-center transition-all active:scale-90"
         aria-label="منو"
       >
         <div className="relative w-5 h-5 flex flex-col justify-center items-center">
