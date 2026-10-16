@@ -8,7 +8,7 @@ import Button from "@/components/ui/Button";
 import Input, { PasswordInput } from "@/components/ui/Input";
 import Captcha from "@/components/auth/Captcha";
 import { normalizeDigits } from "@/lib/format";
-import { requestPushPermission } from "@/lib/pushClient";
+import { cleanupPushSubscriptions } from "@/lib/pushClient";
 
 function LoginForm() {
   const router = useRouter();
@@ -39,8 +39,8 @@ function LoginForm() {
       }
       const next = searchParams.get("next");
       const isAdminRole = ["ADMIN", "SUPER_ADMIN", "CONTENT_ADMIN", "SUPPORT_ADMIN"].includes(data.role);
-      // مجوز اعلان بعد از ورود — بدون بلاک کردن
-      void requestPushPermission();
+      // پاک سازی اشتراک پوش قدیمی — بدون بلاک کردن
+      void cleanupPushSubscriptions();
       router.push(isAdminRole ? "/admin" : next && next.startsWith("/") && !next.startsWith("//") ? next : "/dashboard");
       router.refresh();
     } catch {

@@ -7,7 +7,6 @@ import DashboardNav from "@/components/dashboard/DashboardNav";
 import ImpersonateBanner from "@/components/dashboard/ImpersonateBanner";
 import AnnouncementBanner from "@/components/dashboard/AnnouncementBanner";
 import PullToRefresh from "@/components/dashboard/PullToRefresh";
-import PushConsentSheet from "@/components/pwa/PushConsentSheet";
 import AppLockGate from "@/components/dashboard/AppLockGate";
 
 export default async function DashboardLayout({
@@ -48,7 +47,6 @@ export default async function DashboardLayout({
         {announcements.length > 0 && <AnnouncementBanner items={announcements} />}
         <PullToRefresh>{children}</PullToRefresh>
       </main>
-      <PushConsentSheet />
       <AppLockGate />
     </div>
   );

@@ -46,8 +46,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <!-- اعلان های محلی (LocalNotifications) — لایک و پیام وقتی اپ در پس زمینه است؛ FCM در نسخه اول نیست -->
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- اعلان ها فقط داخل برنامه هستند — اعلان سیستمی/پوش غیرفعال است -->
     <!-- اعلان های کندو زمان بندی دقیق ندارند؛ مجوز الارم دقیق حذف شد (حذف از مجوز کتابخانه هم) -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" tools:node="remove" />
     <!-- ضبط ویس در چت و احراز هویت -->

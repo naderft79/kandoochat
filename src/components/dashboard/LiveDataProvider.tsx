@@ -3,7 +3,7 @@
 // Provider داده های زنده داشبورد — یک اتصال SSE مشترک برای بج ها و موجودی
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import LiveNotifBanner, { type LiveToast } from "@/components/dashboard/LiveNotifBanner";
-import { fireSystemNotification } from "@/lib/pushClient";
+
 import { getNotifHref } from "@/components/dashboard/notifConfig";
 
 // حداقل فاصله بین دو توست اعلان — در این بازه اعلان ها فقط روی بج عددی حساب می شوند
@@ -114,10 +114,8 @@ export default function LiveDataProvider({ children, enabled = true }: { childre
                 href: getNotifHref(n.type, n.data),
               });
             }
-            // نوتیف سیستمی — فقط وقتی اپ/تب در پس زمینه است
-            void fireSystemNotification(d.notification.title, d.notification.body, getNotifHref(d.notification.type, d.notification.data), d.notification.id);
           }
-          // پیام جدید — توست داخلی «شما پیام جدیدی دارید» + نوتیف پس زمینه
+          // پیام جدید — توست داخلی «شما پیام جدیدی دارید»
           const msg = d.message as LiveMessage | undefined;
           if (d.scope === "messages" && msg?.id) {
             const chatUrl = `/dashboard/chat/${msg.conversationId}`;
@@ -136,7 +134,6 @@ export default function LiveDataProvider({ children, enabled = true }: { childre
                   href: chatUrl,
                 });
               }
-              void fireSystemNotification(msg.senderName, msg.preview, chatUrl, `msg-${msg.id}`);
             }
           }
         } catch {}

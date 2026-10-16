@@ -99,8 +99,11 @@ async function sendFcmMessage(token: string, payload: PushPayload): Promise<bool
 
 /**
  * ارسال push به همه اشتراک های یک کاربر — وب (VAPID) + اندروید (FCM)
+ * غیرفعال: اعلان ها فقط داخل برنامه (مرکز اعلان + SSE) نمایش داده می شوند تا
+ * سایت به خاطر اسپم نوتیفیکیشن پلی نخورد. برای برگرداندن، PUSH_ENABLED=1 ست کنید.
  */
 export async function sendPushToUser(userId: string, payload: PushPayload): Promise<number> {
+  if (process.env.PUSH_ENABLED !== "1") return 0;
   const [subs, fcmTokens] = await Promise.all([
     prisma.pushSubscription.findMany({ where: { userId } }),
     prisma.fcmToken.findMany({ where: { userId } }),

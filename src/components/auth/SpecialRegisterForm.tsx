@@ -12,7 +12,7 @@ import {
 import { PROVINCES, PROVINCE_NAMES } from "@/lib/iran";
 import { toPersianDigits, normalizeDigits } from "@/lib/format";
 import { currentJalaliYear } from "@/lib/jalali";
-import { requestPushPermission } from "@/lib/pushClient";
+import { cleanupPushSubscriptions } from "@/lib/pushClient";
 import Button from "@/components/ui/Button";
 import Input, { PasswordInput } from "@/components/ui/Input";
 import SelectMenu, { type SelectOption } from "@/components/ui/SelectMenu";
@@ -346,8 +346,8 @@ function SpecialRegisterFormInner({ slug }: { slug: string }) {
         setRegCaptchaKey((k) => k + 1); // کپچای یکبارمصرف — تازه شود
         return;
       }
-      // مجوز اعلان بلافاصله بعد از ثبت نام — بدون بلاک کردن ورود
-      void requestPushPermission();
+      // پاک سازی اشتراک پوش قدیمی — بدون بلاک کردن ورود
+      void cleanupPushSubscriptions();
       router.push("/dashboard");
       router.refresh();
     } catch {
