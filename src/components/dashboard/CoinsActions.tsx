@@ -26,12 +26,11 @@ import {
   formatCoins,
   formatDateTime,
   toPersianDigits,
-  normalizeDigits,
 } from "@/lib/format";
 import { detectBank, formatCardNumber } from "@/lib/iranianBanks";
 import { MISSION_ICONS } from "@/lib/mission-icons";
 import Button from "@/components/ui/Button";
-import { isAppShellClient } from "@/lib/app-ua";
+import { isMarketBillingAvailable, purchaseProduct, consumePurchase } from "@/lib/marketBilling";
 import SubscriptionPlans from "@/components/dashboard/SubscriptionPlans";
 import type { SubscriptionPlan } from "@/lib/subscriptionPlans";
 import { BottomSheet } from "@/components/ui/Modal";
@@ -79,12 +78,12 @@ type Tab = "buy" | "sell" | "history" | "sub";
 const inputClass =
   "w-full px-4 py-3 rounded-lg border border-ig-border focus:border-neutral-400 outline-none transition-colors text-left";
 
-// پکیج های پیشنهادی سکه — بدون تخفیف
+// پکیج های ثابت سکه — در همه برندها و مارکت ها یکسان تا محصولات فروشگاهی قابل تطبیق باشند
 const coinPackages = [
+  { coins: 5 },
   { coins: 10 },
   { coins: 50 },
   { coins: 100 },
-  { coins: 500 },
 ];
 
 // حداقل موجودی لازم برای برداشت (قانون ۲)
@@ -170,8 +169,6 @@ export default function CoinsActions({
   const [missions, setMissions] = useState<Mission[]>([]);
   const [missionsLoading, setMissionsLoading] = useState(true);
   const [selectedPkg, setSelectedPkg] = useState(2);
-  // مبلغ دلخواه — اگر پر باشد جای پکیج پیشنهادی خرید می شود
-  const [customCoins, setCustomCoins] = useState("");
   const [buyLoading, setBuyLoading] = useState(false);
   const [buyMsg, setBuyMsg] = useState<{ ok: boolean; text: string } | null>(
     null
@@ -224,21 +221,30 @@ export default function CoinsActions({
   async function handleBuy(e: React.FormEvent) {
     e.preventDefault();
     setBuyMsg(null);
-    const n = parseInt(customCoins, 10);
-    if (customCoins.trim() && (!Number.isFinite(n) || n < 1 || n > 100_000)) {
-      setBuyMsg({ ok: false, text: "تعداد سکه باید بین ۱ تا ۱۰۰٬۰۰۰ باشد" });
-      return;
-    }
-    const coinsToBuy = customCoins.trim() ? n : coinPackages[selectedPkg].coins;
-    if (coinsToBuy * coinValue < 1000) {
-      setBuyMsg({
-        ok: false,
-        text: `حداقل خرید ${toPersianDigits(Math.ceil(1000 / coinValue))} سکه است`,
-      });
-      return;
-    }
+    const coinsToBuy = coinPackages[selectedPkg].coins;
     setBuyLoading(true);
     try {
+      // اپ مارکتی (بازار/مایکت) — خرید درون برنامه ای همان مارکت
+      if (isMarketBillingAvailable()) {
+        const productId = `coins_${coinsToBuy}`;
+        const purchase = await purchaseProduct(productId);
+        const res = await fetch("/api/iap/verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...purchase, productId }),
+        });
+        const data = await res.json();
+        setBuyLoading(false);
+        if (!res.ok) {
+          setBuyMsg({ ok: false, text: data.error ?? "خطا در تایید پرداخت" });
+          return;
+        }
+        // مصرف خرید تا امکان خرید مجدد همان محصول فراهم شود
+        void consumePurchase(purchase.purchaseToken);
+        setBuyMsg({ ok: true, text: `${toPersianDigits(coinsToBuy)} سکه به کیف پول شما اضافه شد` });
+        router.refresh();
+        return;
+      }
       const res = await fetch("/api/payment/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -346,25 +352,20 @@ export default function CoinsActions({
     (historyPage + 1) * pageSize
   );
 
-  const customN = parseInt(customCoins, 10);
-  const buyCoinsCount = customCoins.trim()
-    ? Number.isFinite(customN) ? customN : 0
-    : coinPackages[selectedPkg].coins;
-  const finalPrice = Math.max(0, buyCoinsCount) * coinValue;
+  const buyCoinsCount = coinPackages[selectedPkg].coins;
+  const finalPrice = buyCoinsCount * coinValue;
   const withdrawAmount = (parseInt(withdrawCoins, 10) || 0) * coinValue;
   const withdrawFee = Math.round(withdrawAmount * 0.09);
   const withdrawNet = withdrawAmount - withdrawFee;
   const hasMinBalance = balance >= MIN_BALANCE_FOR_WITHDRAW;
 
-  // در اپ اندروید (سیاست گوگل پلی) خرید سکه و اشتراک نمایش داده نمی شود — فقط برداشت و تاریخچه
-  const inApp = isAppShellClient();
+  // خرید سکه و اشتراک در همه محیط ها فعال است — وب/اپ کندو با کندوپی، اپ های مارکتی با پرداخت درون برنامه ای
   const tabs: { key: Tab; label: string; icon: typeof Coins }[] = [
     { key: "buy" as Tab, label: "خرید سکه", icon: ArrowDown },
     { key: "sell" as Tab, label: "برداشت سکه", icon: ArrowUp },
     { key: "sub" as Tab, label: "اشتراک", icon: Crown },
     { key: "history" as Tab, label: "تاریخچه", icon: Clock },
   ].filter((t) => {
-    if (inApp && (t.key === "buy" || t.key === "sub")) return false;
     if (t.key === "buy") return buyCoinsEnabled;
     if (t.key === "sell") return withdrawCoinsEnabled;
     return true;
@@ -447,32 +448,9 @@ export default function CoinsActions({
               خرید سکه
             </h2>
 
-            {/* ورود مقدار دلخواه */}
-            <div>
-              <label className="block text-xs font-bold text-ig-gray mb-1.5">
-                مقدار دلخواه (هر مقدار سکه که بخواهید)
-              </label>
-              <input
-                dir="ltr"
-                inputMode="numeric"
-                value={customCoins}
-                onChange={(e) =>
-                  setCustomCoins(normalizeDigits(e.target.value).replace(/\D/g, "").slice(0, 6))
-                }
-                placeholder="مثلا ۲۵۰"
-                className={`${inputClass} text-center font-bold tabular-nums`}
-              />
-              {customCoins.trim() && Number.isFinite(customN) && customN > 0 && (
-                <p className="text-xs text-ig-gray mt-1.5 text-center">
-                  {toPersianDigits(customN.toLocaleString("en-US"))} سکه ={" "}
-                  {formatToman(finalPrice)}
-                </p>
-              )}
-            </div>
-
-            {/* پکیج های پیشنهادی */}
+            {/* پکیج های ثابت سکه */}
             <p className="text-xs font-bold text-ig-gray">
-              یا یکی از پکیج های پیشنهادی:
+              یکی از پکیج های زیر را انتخاب کنید:
             </p>
             <div
               role="radiogroup"
@@ -481,17 +459,14 @@ export default function CoinsActions({
             >
               {coinPackages.map((p, i) => {
                 const pPrice = p.coins * coinValue;
-                const active = !customCoins.trim() && selectedPkg === i;
+                const active = selectedPkg === i;
                 return (
                   <button
                     key={p.coins}
                     type="button"
                     role="radio"
                     aria-checked={active}
-                    onClick={() => {
-                      setSelectedPkg(i);
-                      setCustomCoins("");
-                    }}
+                    onClick={() => setSelectedPkg(i)}
                     className={cn(
                       "relative py-3 px-2 rounded-xl text-center border-2 transition-all duration-200 active:scale-95",
                       active
@@ -1119,19 +1094,17 @@ export default function CoinsActions({
                 است.
               </p>
               <div className="mt-4">
-                {!inApp && (
-                  <Button
-                    type="button"
-                    size="lg"
-                    fullWidth
-                    onClick={() => {
-                      setRuleModal(null);
-                      setTab("buy");
-                    }}
-                  >
-                    خرید سکه
-                  </Button>
-                )}
+                <Button
+                  type="button"
+                  size="lg"
+                  fullWidth
+                  onClick={() => {
+                    setRuleModal(null);
+                    setTab("buy");
+                  }}
+                >
+                  خرید سکه
+                </Button>
                 <p className="text-xs text-ig-gray mt-3 flex items-center justify-center gap-1.5">
                   <MessageCircle className="w-3.5 h-3.5" />
                   در چت ها از کاربران درخواست سکه کنید
@@ -1152,16 +1125,14 @@ export default function CoinsActions({
               <p className="text-xs text-ig-gray mt-1.5 leading-5">
                 برای برداشت سکه باید اشتراک ویژه فعال داشته باشید
               </p>
-              {!inApp && (
-                <div className="mt-4">
-                  <Link
-                    href="/dashboard/subscription"
-                    className="w-full h-11 rounded-lg bg-ig-blue text-white text-sm font-bold flex items-center justify-center gap-2 hover:bg-ig-blue-hover active:scale-[0.98] transition-all"
-                  >
-                    خرید اشتراک ویژه
-                  </Link>
-                </div>
-              )}
+              <div className="mt-4">
+                <Link
+                  href="/dashboard/subscription"
+                  className="w-full h-11 rounded-lg bg-ig-blue text-white text-sm font-bold flex items-center justify-center gap-2 hover:bg-ig-blue-hover active:scale-[0.98] transition-all"
+                >
+                  خرید اشتراک ویژه
+                </Link>
+              </div>
             </div>
           )}
 

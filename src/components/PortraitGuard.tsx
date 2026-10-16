@@ -2,10 +2,12 @@
 
 // قفل حالت عمودی: مرورگر و PWA در صورت پشتیبانی قفل می کنند؛ روی گوشی افقی پیام می دهیم
 import { useEffect } from "react";
+import { useBrand } from "@/components/BrandProvider";
 
 type LockableOrientation = ScreenOrientation & { lock?: (orientation: string) => Promise<void> };
 
 export default function PortraitGuard() {
+  const brand = useBrand();
   useEffect(() => {
     const orientation = screen.orientation as LockableOrientation | undefined;
     orientation?.lock?.("portrait-primary").catch(() => {});
@@ -21,7 +23,7 @@ export default function PortraitGuard() {
           </svg>
         </div>
         <p className="text-base font-black text-foreground">دستگاه خود را بچرخانید</p>
-        <p className="text-sm text-ig-gray leading-6">کندو فقط در حالت عمودی کار می کند</p>
+        <p className="text-sm text-ig-gray leading-6">{brand.name} فقط در حالت عمودی کار می کند</p>
       </div>
     </div>
   );

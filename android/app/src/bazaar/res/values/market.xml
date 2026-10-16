@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <!-- تنظیمات پرداخت کافه بازار — سرویس IAB نسخه ۳ -->
+    <string name="market_name">bazaar</string>
+    <string name="market_package">com.farsitel.bazaar</string>
+    <string name="market_bind_action">ir.cafebazaar.pardakht.InAppBillingService.BIND</string>
+</resources>

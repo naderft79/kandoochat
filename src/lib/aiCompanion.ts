@@ -1,6 +1,7 @@
 // مدیریت همراه‌های هوش مصنوعی (هانی برای پسران، آقای زنبور برای دختران)
 import { prisma } from "@/lib/prisma";
 import { publishToConversation } from "@/lib/chatEvents";
+import { getUserBrandName } from "@/lib/brand-server";
 
 // --- پیکربندی همراه‌ها ---
 
@@ -378,9 +379,11 @@ export async function generateHaniReply(conversationId: string, companionId: str
     content: m.type === "TEXT" ? m.content : `[${m.type}]`,
   }));
 
-  // ساخت پرامپت پویا با مشخصات کاربر
+  // ساخت پرامپت پویا با مشخصات کاربر — نام اپ در پرامپت برند خود کاربر است
   const userProfile = await buildUserProfileSection(userId);
-  const systemPrompt = config.systemPrompt + "\n" + BASE_PROMPT.replace("{name}", config.firstName) + "\n\n" + userProfile;
+  const brandName = await getUserBrandName(userId);
+  const systemPrompt = (config.systemPrompt + "\n" + BASE_PROMPT.replace("{name}", config.firstName) + "\n\n" + userProfile)
+    .replaceAll("کندو", brandName);
 
   const apiMessages = [
     { role: "system", content: systemPrompt },

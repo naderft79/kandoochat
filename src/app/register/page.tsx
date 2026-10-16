@@ -15,6 +15,7 @@ import Input, { PasswordInput } from "@/components/ui/Input";
 import SelectMenu, { type SelectOption } from "@/components/ui/SelectMenu";
 import Captcha from "@/components/auth/Captcha";
 import { cn } from "@/components/ui/cn";
+import { useBrand } from "@/components/BrandProvider";
 
 const STEPS = ["حساب کاربری", "تایید موبایل", "مشخصات فردی"];
 const CURRENT_JY = currentJalaliYear();
@@ -56,6 +57,7 @@ function persianOnly(v: string): { value: string; blocked: boolean } {
 }
 
 function RegisterForm() {
+  const brand = useBrand();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [step, setStep] = useState(0);
@@ -347,7 +349,7 @@ function RegisterForm() {
               router.refresh();
             }}
           >
-            شروع استفاده از کندو
+            شروع استفاده از {brand.name}
           </Button>
         </div>
       </div>
@@ -357,8 +359,8 @@ function RegisterForm() {
   return (
     <div className="min-h-dvh bg-surface flex items-center justify-center p-4">
       <div className="w-full max-w-[400px] bg-surface border border-ig-border rounded-xl p-6 sm:p-8">
-        <h1 className="text-2xl font-bold text-center mb-1">کندو</h1>
-        <p className="text-sm text-ig-gray text-center mb-5">ثبت نام در کندو</p>
+        <h1 className="text-2xl font-bold text-center mb-1">{brand.name}</h1>
+        <p className="text-sm text-ig-gray text-center mb-5">ثبت نام در {brand.name}</p>
 
         <ol className="flex items-center justify-center gap-1.5 mb-6" aria-label="مراحل ثبت نام">
           {STEPS.map((label, i) => (

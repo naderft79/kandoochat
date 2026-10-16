@@ -5,6 +5,7 @@ import { useEffect, useState, useTransition } from "react";
 import { SkeletonRow } from "@/components/dashboard/Skeleton";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useBrand } from "@/components/BrandProvider";
 import {
   Bell,
   Lock,
@@ -140,6 +141,7 @@ function LinkRow({
 }
 
 export default function SettingsPage() {
+  const brand = useBrand();
   const router = useRouter();
   const [settings, setSettings] = useState<UserSettingsData>(defaultSettings);
   const [loading, setLoading] = useState(true);
@@ -457,7 +459,7 @@ export default function SettingsPage() {
               />
               <LinkRow
                 icon={Info}
-                title="درباره کندو"
+                title={`درباره ${brand.name}`}
                 href="/about"
               />
               <LinkRow
@@ -500,7 +502,7 @@ export default function SettingsPage() {
           </section>
 
           <p className="text-center text-xs text-ig-gray pt-2">
-            کندو نسخه ۰.۱.۰
+            {brand.name} نسخه ۰.۱.۰
           </p>
         </>
       )}

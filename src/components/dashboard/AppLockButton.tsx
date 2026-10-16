@@ -19,6 +19,7 @@ import {
   type BiometryKind,
 } from "@/lib/appLock";
 import { useToast } from "@/components/ToastProvider";
+import { useBrand } from "@/components/BrandProvider";
 
 type Mode = "info" | "set" | "change" | "disable" | "menu";
 
@@ -39,6 +40,7 @@ const INFO_POINTS = [
 
 export default function AppLockButton() {
   const { toast } = useToast();
+  const brand = useBrand();
   const [enabled, setEnabled] = useState<boolean | null>(null);
   const [bioOn, setBioOn] = useState(false);
   const [bioKind, setBioKind] = useState<BiometryKind>("none");
@@ -178,7 +180,7 @@ export default function AppLockButton() {
   async function toggleBio(next: boolean) {
     // روشن کردن بیومتریک با یک بار تایید واقعی انجام می شود
     if (next) {
-      const ok = await biometricUnlock();
+      const ok = await biometricUnlock(brand.name);
       if (!ok) return;
     }
     await setBioEnabled(next);

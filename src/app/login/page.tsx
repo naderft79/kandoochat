@@ -8,9 +8,11 @@ import Button from "@/components/ui/Button";
 import Input, { PasswordInput } from "@/components/ui/Input";
 import Captcha from "@/components/auth/Captcha";
 import { normalizeDigits } from "@/lib/format";
+import { useBrand } from "@/components/BrandProvider";
 import { cleanupPushSubscriptions } from "@/lib/pushClient";
 
 function LoginForm() {
+  const brand = useBrand();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [phone, setPhone] = useState("");
@@ -53,7 +55,7 @@ function LoginForm() {
   return (
     <div className="w-full max-w-[350px]">
       <div className="bg-surface border border-ig-border rounded-xl p-8 mb-3">
-        <h1 className="text-3xl font-bold text-center mb-8">کندو</h1>
+        <h1 className="text-3xl font-bold text-center mb-8">{brand.name}</h1>
 
         <form onSubmit={handleSubmit} className="space-y-3" noValidate>
           <Input

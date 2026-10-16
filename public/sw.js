@@ -113,7 +113,8 @@ self.addEventListener("push", (event) => {
   if (!event.data) return;
   try {
     const data = event.data.json();
-    const title = data.title || "کندو";
+    // نام برند اپ (برندهای مارکتی) به عنوان پیشوند عنوان نوتیف می آید
+    const title = data.appName ? `${data.appName} — ${data.title || ""}` : data.title || "کندو";
     const options = {
       body: data.body || "",
       icon: data.icon || "/bee-colori-logo.png",

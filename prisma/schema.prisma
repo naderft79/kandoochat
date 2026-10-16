@@ -59,6 +59,7 @@ model User {
   referralCode   String?  @unique // کد دعوت یکتای کاربر — ۷ کاراکتر حروف بزرگ و عدد
   legacyReferralCode String? @unique // کد دعوت قدیمی برای زنده ماندن لینک های قبلی
   referralMilestonePaidAt DateTime? // زمان پرداخت جایزه مایلستون دعوت
+  brand          String? // برند اپی که کاربر با آن ثبت نام کرد (null = کندو)
   feedHides          FeedHide[] @relation("FeedHideOwner")
   hiddenInFeeds      FeedHide[] @relation("FeedHideTarget")
   createdAt    DateTime @default(now())
@@ -107,8 +108,26 @@ model User {
   ticketMessages   TicketMessage[]  @relation("TicketMessages")
   pushSubscriptions PushSubscription[]
   fcmTokens      FcmToken[]
+  iapPurchases   IapPurchase[]
   verificationRequests VerificationRequest[]
   @@index([deletePurgeAfter])
+}
+
+// خریدهای درون برنامه ای مارکت ها (بازار/مایکت) — purchaseToken یکتا برای idempotency
+model IapPurchase {
+  id            String   @id @default(cuid())
+  userId        String
+  brand         String   // شناسه برند اپ خریدار
+  market        String   // bazaar | myket
+  productId     String   // coins_5 | coins_10 | coins_50 | coins_100 | sub_1m | ...
+  purchaseToken String   @unique // توکن خرید مارکت — هر توکن فقط یک بار اعتبار می شود
+  orderId       String?
+  packageName   String?
+  credited      Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 // کیف پول سکه هر کاربر
@@ -732,6 +751,7 @@ model PushSubscription {
   p256dh    String
   auth      String
   userAgent String?
+  brand     String? // برند اپ دستگاه (null = کندو)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -745,6 +765,7 @@ model FcmToken {
   userId    String
   token     String   @unique
   platform  String   @default("android")
+  brand     String? // برند اپ دستگاه (null = کندو)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)

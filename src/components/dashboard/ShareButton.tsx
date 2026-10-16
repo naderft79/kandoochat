@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Share2, Copy, Check, Send, MessageCircle, X } from "lucide-react";
 import Portal from "@/components/ui/Portal";
 import { nativeShare as capShare, nativeCopy } from "@/lib/native";
+import { useBrand } from "@/components/BrandProvider";
 
 export default function ShareButton({
   url,
@@ -13,11 +14,12 @@ export default function ShareButton({
   url: string;
   title: string;
 }) {
+  const brand = useBrand();
   const [showMenu, setShowMenu] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const fullUrl = typeof window !== "undefined" ? `${window.location.origin}${url}` : url;
-  const shareText = `${title} — کندو`;
+  const shareText = `${title} — ${brand.name}`;
 
   async function share() {
     const ok = await capShare({ title: shareText, url: fullUrl });

@@ -11,7 +11,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { getActiveSubscription } from "@/lib/finance";
 import { toPersianDigits } from "@/lib/format";
 import CoinBadge from "@/components/dashboard/CoinBadge";
-import KandooLogo from "@/components/KandooLogo";
+import BrandLogo from "@/components/BrandLogo";
 import PageHeader from "@/components/dashboard/PageHeader";
 import NotificationBell from "@/components/dashboard/NotificationBell";
 import FeedList from "@/components/dashboard/FeedList";
@@ -40,7 +40,7 @@ export default async function DashboardPage() {
     {/* هدر یکپارچه: لوگو در موبایل، عنوان در دسکتاپ */}
     <PageHeader
       center={
-        <KandooLogo href="/dashboard" textClassName="text-3xl" hideIcon />
+        <BrandLogo href="/dashboard" textClassName="text-3xl" hideIcon />
       }
       right={<NotificationBell />}
       left={<CoinBadge />}

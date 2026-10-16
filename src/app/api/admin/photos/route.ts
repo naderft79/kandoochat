@@ -4,6 +4,7 @@ import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { logAction } from "@/lib/audit";
 import { sendAdminMessage } from "@/lib/adminProfile";
+import { getUserBrandName } from "@/lib/brand-server";
 
 export async function GET(request: Request) {
   const user = await requireAdmin();
@@ -156,7 +157,8 @@ export async function PUT(request: Request) {
     // ارسال پیام مدیریتی به کاربر با دلیل رد
     if (reason) {
       const photoType = photo.isProfile ? "عکس پروفایل" : "عکس گالری";
-      const adminMsg = `سلام،\n\n${photoType} شما در سایت کندو بررسی شد و متاسفانه تایید نشد.\n\nدلیل رد شدن:\n${reason}\n\nلطفا با رعایت قوانین سایت، عکس جدید و بدون مشکل آپلود کنید تا تایید شود. در صورت داشتن سوال می توانید با پشتیبانی در ارتباط باشید.\n\nبا احترام،\nتیم مدیریت کندو`;
+      const brandName = await getUserBrandName(photo.userId);
+      const adminMsg = `سلام،\n\n${photoType} شما در ${brandName} بررسی شد و متاسفانه تایید نشد.\n\nدلیل رد شدن:\n${reason}\n\nلطفا با رعایت قوانین سایت، عکس جدید و بدون مشکل آپلود کنید تا تایید شود. در صورت داشتن سوال می توانید با پشتیبانی در ارتباط باشید.\n\nبا احترام،\nتیم مدیریت ${brandName}`;
       await sendAdminMessage(photo.userId, adminMsg);
     }
 

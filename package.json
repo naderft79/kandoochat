@@ -21,6 +21,8 @@
     "demo:reviewer": "tsx scripts/seed-demo-reviewer.ts",
     "deploy:apk": "tsx scripts/deploy-apk.ts",
     "cap:sync": "npx cap sync android",
+    "brands:generate": "node scripts/brands-generate.mjs",
+    "build:brands": "node scripts/build-brands.mjs",
     "db:seed-missions": "tsx prisma/seed-missions.ts",
     "db:seed-production": "tsx prisma/seed-production.ts",
     "lint:ui": "tsx scripts/check-ui.ts --strict",

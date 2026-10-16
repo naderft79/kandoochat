@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <!-- تنظیمات پرداخت مایکت — سرویس IAB نسخه ۳ -->
+    <string name="market_name">myket</string>
+    <string name="market_package">ir.mservices.market</string>
+    <string name="market_bind_action">ir.mservices.market.InAppBillingService.BIND</string>
+</resources>

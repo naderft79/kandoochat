@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- تنظیمات فلیور مایکت — مجوز پرداخت درون برنامه ای و دسترسی به اپ مایکت در اندروید ۱۱+ -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="ir.mservices.market.BILLING" />
+
+    <queries>
+        <package android:name="ir.mservices.market" />
+        <intent>
+            <action android:name="ir.mservices.market.InAppBillingService.BIND" />
+        </intent>
+    </queries>
+</manifest>

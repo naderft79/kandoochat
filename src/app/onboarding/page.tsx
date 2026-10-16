@@ -8,6 +8,7 @@ import Image from "next/image";
 import { Heart, Search, MessageCircle, BadgeCheck, ArrowLeft, ArrowRight } from "lucide-react";
 import { toPersianDigits } from "@/lib/format";
 import { cn } from "@/components/ui/cn";
+import { useBrand } from "@/components/BrandProvider";
 
 const SLIDES = [
   {
@@ -41,9 +42,16 @@ const SLIDES = [
 ];
 
 export default function OnboardingPage() {
+  const brand = useBrand();
   const router = useRouter();
   const [index, setIndex] = useState(0);
-  const slide = SLIDES[index];
+  const rawSlide = SLIDES[index];
+  // نام برند در متن اسلایدها جایگزین می شود
+  const slide = {
+    ...rawSlide,
+    title: rawSlide.title.replaceAll("کندو", brand.name),
+    body: rawSlide.body.replaceAll("کندو", brand.name),
+  };
   const isLast = index === SLIDES.length - 1;
   const Icon = slide.icon;
 
@@ -69,7 +77,12 @@ export default function OnboardingPage() {
       {/* محتوای اسلاید */}
       <div className="flex-1 flex flex-col items-center justify-center px-8 text-center">
         <div className="w-14 h-14 rounded-2xl overflow-hidden mb-8 shadow-sm">
-          <Image src="/bee-colori-logo.png" alt="کندو" width={56} height={56} priority />
+          {brand.id === "kandoo" ? (
+            <Image src="/bee-colori-logo.png" alt={brand.name} width={56} height={56} priority />
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src="/api/brand-icon/96" alt={brand.name} width={56} height={56} className="rounded-2xl" />
+          )}
         </div>
         <div
           key={index}

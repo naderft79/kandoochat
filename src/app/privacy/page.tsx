@@ -2,19 +2,24 @@
 import type { Metadata } from "next";
 import { Lock, Shield, Eye, UserCheck } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "حریم خصوصی",
-  description: "سیاست های حفظ حریم خصوصی و امنیت اطلاعات کاربران در کندو.",
-};
-import KandooLogo from "@/components/KandooLogo";
+export async function generateMetadata(): Promise<Metadata> {
+  const n = await requestBrandName();
+  return {
+    title: "حریم خصوصی",
+    description: `سیاست های حفظ حریم خصوصی و امنیت اطلاعات کاربران در ${n}.`,
+  };
+}
+import { requestBrandName } from "@/lib/brand-server";
+import BrandLogo from "@/components/BrandLogo";
 import AcceptBackButton from "@/components/AcceptBackButton";
 
-export default function PrivacyPage() {
+export default async function PrivacyPage() {
+  const n = await requestBrandName();
   return (
     <div className="min-h-dvh bg-gradient-to-b from-neutral-50 to-white">
       <div className="max-w-2xl mx-auto px-4 py-8 md:py-16">
         <div className="text-center mb-8">
-          <KandooLogo iconClassName="w-10 h-10" textClassName="text-2xl" />
+          <BrandLogo iconClassName="w-10 h-10" textClassName="text-2xl" />
           <div className="flex items-center justify-center gap-2 mt-2">
             <Lock className="w-4 h-4 text-ig-gray" />
             <p className="text-sm text-ig-gray">حریم خصوصی</p>
@@ -27,10 +32,10 @@ export default function PrivacyPage() {
               <div className="w-10 h-10 rounded-xl ig-gradient flex items-center justify-center shrink-0">
                 <Shield className="w-5 h-5 text-white" />
               </div>
-              <h1 className="text-lg font-bold text-foreground">سیاست حریم خصوصی کندو</h1>
+              <h1 className="text-lg font-bold text-foreground">سیاست حریم خصوصی {n}</h1>
             </div>
             <p className="text-sm text-foreground/70 leading-7">
-              کندو متعهد به حفاظت از اطلاعات شخصی شماست. این سند توضیح می دهد که چه اطلاعاتی از شما جمع آوری می شود و چگونه استفاده می شود.
+              {n} متعهد به حفاظت از اطلاعات شخصی شماست. این سند توضیح می دهد که چه اطلاعاتی از شما جمع آوری می شود و چگونه استفاده می شود.
             </p>
           </section>
 

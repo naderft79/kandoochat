@@ -19,6 +19,7 @@ import DefaultAvatar from "@/components/dashboard/DefaultAvatar";
 import { IpCountryBadge } from "@/components/admin/CountryFlag";
 import DeleteUserModal from "@/components/admin/DeleteUserModal";
 import UserLink from "@/components/admin/user-modal/UserLink";
+import { BRANDS, getBrandById } from "@/lib/brands";
 
 type UserItem = {
   id: string;
@@ -43,6 +44,7 @@ type UserItem = {
   phoneVerified: boolean;
   isSpecial: boolean;
   isFake: boolean;
+  brand: string | null;
   hasSubscription: boolean;
   subscription: { startsAt: string; endsAt: string } | null;
   createdAt: string | Date;
@@ -102,6 +104,7 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
   const [cityFilter, setCityFilter] = useState("");
   const [verifiedFilter, setVerifiedFilter] = useState("");
   const [activeFilter, setActiveFilter] = useState("");
+  const [brandFilter, setBrandFilter] = useState("");
   const [hideFake, setHideFake] = useState(false);
   const [sort, setSort] = useState("newest");
   const [showFilters, setShowFilters] = useState(false);
@@ -143,6 +146,7 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
       cityFilter: string;
       verifiedFilter: string;
       activeFilter: string;
+      brandFilter: string;
       hideFake: boolean;
       sort: string;
     }>
@@ -154,6 +158,7 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
     const city = overrides?.cityFilter ?? cityFilter;
     const verified = overrides?.verifiedFilter ?? verifiedFilter;
     const active = overrides?.activeFilter ?? activeFilter;
+    const brandVal = overrides?.brandFilter ?? brandFilter;
     const hideFakeVal = overrides?.hideFake ?? hideFake;
     const sortVal = overrides?.sort ?? sort;
 
@@ -164,6 +169,7 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
     if (city) p.set("city", city);
     if (verified) p.set("verified", verified);
     if (active) p.set("active", active);
+    if (brandVal) p.set("brand", brandVal);
     if (hideFakeVal) p.set("hideFake", "true");
     if (sortVal && sortVal !== "newest") p.set("sort", sortVal);
     p.set("tab", tab);
@@ -278,7 +284,7 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
   // گزینه های شهر از لیست ثابت استان ها (نه فقط کاربران بارگذاری شده)
   const cities = provinceFilter ? PROVINCES[provinceFilter] ?? [] : [];
 
-  const hasActiveFilters = genderFilter || provinceFilter || cityFilter || verifiedFilter || activeFilter || hideFake;
+  const hasActiveFilters = genderFilter || provinceFilter || cityFilter || verifiedFilter || activeFilter || brandFilter || hideFake;
 
   // تغییر وضعیت عدم نمایش فیک + ماندگاری در مرورگر
   function toggleHideFake(value: boolean) {
@@ -297,6 +303,7 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
     setCityFilter("");
     setVerifiedFilter("");
     setActiveFilter("");
+    setBrandFilter("");
     setHideFake(false);
     localStorage.removeItem(HIDE_FAKE_KEY);
   }
@@ -479,6 +486,23 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
               <option value="blocked">مسدود</option>
             </select>
 
+            {/* برند — کاربران هر اپ مارکتی جدا فیلتر می شوند */}
+            <select
+              value={brandFilter}
+              onChange={(e) => {
+                const value = e.target.value;
+                setBrandFilter(value);
+                fetchUsers(0, true, { brandFilter: value });
+              }}
+              className="px-3 py-2 rounded-lg border border-[rgba(212,175,55,0.15)] bg-[#0d0d0d] text-[#e8e8e8] text-xs font-medium focus:outline-none focus:border-[rgba(212,175,55,0.4)]"
+            >
+              <option value="">همه برندها</option>
+              <option value="kandoo">کندو</option>
+              {BRANDS.map((b) => (
+                <option key={b.id} value={b.id}>{b.name}</option>
+              ))}
+            </select>
+
             {hasActiveFilters && (
               <button
                 onClick={() => {
@@ -489,6 +513,7 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
                     cityFilter: "",
                     verifiedFilter: "",
                     activeFilter: "",
+                    brandFilter: "",
                     hideFake: false,
                   });
                 }}
@@ -561,6 +586,15 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
                 <p className="font-black text-foreground text-sm flex items-center gap-1 flex-wrap xl:justify-center">
                   <UserLink userId={u.id}>{u.firstName} {u.lastName}</UserLink>
                   {u.isVerified && <VerifiedBadge className="w-5 h-5" />}
+                  {/* بج برند — کاربران اپ های مارکتی با رنگ برندشان مشخص می شوند */}
+                  {u.brand && (
+                    <span
+                      className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-black text-white"
+                      style={{ backgroundColor: getBrandById(u.brand).colors.primary }}
+                    >
+                      {getBrandById(u.brand).name}
+                    </span>
+                  )}
                 </p>
                 {!u.isActive && (
                   <span className="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded bg-red-50 text-[9px] text-ig-red font-bold">

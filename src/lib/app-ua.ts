@@ -22,3 +22,9 @@ export function isAppShellClient(): boolean {
   if (typeof navigator === "undefined") return false;
   return navigator.userAgent.includes(USER_APP_UA);
 }
+
+// آیا اپ مارکتی است (بازار/مایکت) — خرید درون برنامه ای مارکت فعال می شود
+export function isMarketAppClient(): boolean {
+  if (typeof navigator === "undefined") return false;
+  return /KandooApp\/[a-z0-9-]+\.(bazaar|myket)\//i.test(navigator.userAgent);
+}

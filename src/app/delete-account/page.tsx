@@ -4,12 +4,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Trash2, ShieldAlert } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
-import KandooLogo from "@/components/KandooLogo";
+import BrandLogo from "@/components/BrandLogo";
 import DeleteAccountForm from "@/components/auth/DeleteAccountForm";
 
 export const metadata: Metadata = {
   title: "حذف حساب کاربری",
-  description: "حذف دائمی حساب کاربری کندو",
+  description: "حذف دائمی حساب کاربری",
 };
 
 export default async function DeleteAccountPage() {
@@ -19,7 +19,7 @@ export default async function DeleteAccountPage() {
     <div className="min-h-dvh bg-gradient-to-b from-neutral-50 to-white">
       <div className="max-w-2xl mx-auto px-4 py-8 md:py-16">
         <div className="text-center mb-8">
-          <KandooLogo iconClassName="w-10 h-10" textClassName="text-2xl" />
+          <BrandLogo iconClassName="w-10 h-10" textClassName="text-2xl" />
           <div className="flex items-center justify-center gap-2 mt-2">
             <Trash2 className="w-4 h-4 text-ig-gray" />
             <p className="text-sm text-ig-gray">حذف حساب کاربری</p>
@@ -33,7 +33,7 @@ export default async function DeleteAccountPage() {
                 <ShieldAlert className="w-5 h-5 text-ig-red" />
               </div>
               <h1 className="text-lg font-bold text-foreground">
-                حذف حساب کاربری کندو
+                حذف حساب کاربری
               </h1>
             </div>
             <p className="text-sm text-foreground/70 leading-7">

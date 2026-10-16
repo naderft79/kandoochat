@@ -2,19 +2,24 @@
 import type { Metadata } from "next";
 import { FileText } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "قوانین و مقررات",
-  description: "شرایط و قوانین استفاده از سایت همسریابی کندو.",
-};
-import KandooLogo from "@/components/KandooLogo";
+export async function generateMetadata(): Promise<Metadata> {
+  const n = await requestBrandName();
+  return {
+    title: "قوانین و مقررات",
+    description: `شرایط و قوانین استفاده از سایت همسریابی ${n}.`,
+  };
+}
+import { requestBrandName } from "@/lib/brand-server";
+import BrandLogo from "@/components/BrandLogo";
 import AcceptBackButton from "@/components/AcceptBackButton";
 
-export default function TermsPage() {
+export default async function TermsPage() {
+  const n = await requestBrandName();
   return (
     <div className="min-h-dvh bg-gradient-to-b from-neutral-50 to-white">
       <div className="max-w-2xl mx-auto px-4 py-8 md:py-16">
         <div className="text-center mb-8">
-          <KandooLogo iconClassName="w-10 h-10" textClassName="text-2xl" />
+          <BrandLogo iconClassName="w-10 h-10" textClassName="text-2xl" />
           <div className="flex items-center justify-center gap-2 mt-2">
             <FileText className="w-4 h-4 text-ig-gray" />
             <p className="text-sm text-ig-gray">قوانین و مقررات</p>
@@ -23,9 +28,9 @@ export default function TermsPage() {
 
         <div className="space-y-4">
           <section className="bg-surface border border-ig-border rounded-2xl p-6">
-            <h1 className="text-lg font-bold text-foreground mb-3">قوانین و مقررات کندو</h1>
+            <h1 className="text-lg font-bold text-foreground mb-3">قوانین و مقررات {n}</h1>
             <p className="text-sm text-foreground/70 leading-7">
-              با استفاده از کندو، شما موافقت می کنید که قوانین زیر را رعایت کنید. عدم رعایت این قوانین ممکن است منجر به مسدود شدن حساب شما شود.
+              با استفاده از {n}، شما موافقت می کنید که قوانین زیر را رعایت کنید. عدم رعایت این قوانین ممکن است منجر به مسدود شدن حساب شما شود.
             </p>
           </section>
 
@@ -61,7 +66,7 @@ export default function TermsPage() {
             <ul className="space-y-2 text-sm text-foreground/70 leading-6">
               <li>- اطلاعات حساب خود را با دیگران به اشتراک نگذارید</li>
               <li>- فعالیت های مشکوک را گزارش کنید</li>
-              <li>- کندو مسئولیتی در قبال ارتباطات خارج از پلتفرم ندارد</li>
+              <li>- {n} مسئولیتی در قبال ارتباطات خارج از پلتفرم ندارد</li>
             </ul>
           </section>
 

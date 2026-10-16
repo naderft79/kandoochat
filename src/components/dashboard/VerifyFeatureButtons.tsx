@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BadgeCheck, UserCheck, ShieldCheck, HeartHandshake, Banknote, Sparkles, Eye, TrendingUp } from "lucide-react";
 import { FeatureRow, FeaturePitchSheet, type FeatureStatus } from "@/components/dashboard/features/FeatureKit";
+import { useBrand } from "@/components/BrandProvider";
 
 type VerifyState = {
   isVerified: boolean;
@@ -21,6 +22,7 @@ function rowStatus(status: string | null): FeatureStatus | undefined {
 }
 
 export default function VerifyFeatureButtons() {
+  const brand = useBrand();
   const router = useRouter();
   const [state, setState] = useState<VerifyState | null>(null);
   const [sheet, setSheet] = useState<"kyc" | "bluetick" | null>(null);
@@ -91,7 +93,7 @@ export default function VerifyFeatureButtons() {
         benefits={[
           { icon: HeartHandshake, title: "اعتماد فوری", desc: "کاربران به پروفایل های تیک دار سریع تر اعتماد، لایک و پیام می دهند" },
           { icon: Eye, title: "دیده شدن بیشتر", desc: "تیک آبی پروفایل شما را در فید و جستجو متمایز و چشمگیر می کند" },
-          { icon: Sparkles, title: "اعتبار واقعی", desc: "با بررسی سلفی و صدای شما توسط تیم کندو، نشان اعتبار می گیرید" },
+          { icon: Sparkles, title: "اعتبار واقعی", desc: `با بررسی سلفی و صدای شما توسط تیم ${brand.name}، نشان اعتبار می گیرید` },
         ]}
         ctaLabel="دریافت تیک آبی"
         onConfirm={async () => {

@@ -11,6 +11,7 @@ import {
 import { toPersianDigits } from "@/lib/format";
 import { nativeShare as capShare, nativeCopy } from "@/lib/native";
 import DefaultAvatar from "@/components/dashboard/DefaultAvatar";
+import { useBrand } from "@/components/BrandProvider";
 
 type ReferralItem = {
   id: string;
@@ -31,6 +32,7 @@ type ReferralData = {
 };
 
 export default function ReferralPage() {
+  const brand = useBrand();
   const [data, setData] = useState<ReferralData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -48,9 +50,9 @@ export default function ReferralPage() {
   const shareText = useMemo(
     () =>
       data
-        ? `به کندو بیا! با لینک دعوت من ثبت نام کن و ${toPersianDigits(data.rewardCoins)} سکه رایگان بگیر:`
+        ? `به ${brand.name} بیا! با لینک دعوت من ثبت نام کن و ${toPersianDigits(data.rewardCoins)} سکه رایگان بگیر:`
         : "",
-    [data]
+    [data, brand.name]
   );
 
   useEffect(() => {
@@ -80,7 +82,7 @@ export default function ReferralPage() {
   }
 
   async function share() {
-    const ok = await capShare({ title: "دعوت به کندو", text: shareText, url: inviteLink });
+    const ok = await capShare({ title: `دعوت به ${brand.name}`, text: shareText, url: inviteLink });
     if (!ok) copyText(inviteLink, "link");
   }
 

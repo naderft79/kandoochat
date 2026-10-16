@@ -10,6 +10,7 @@ import { getSetting } from "@/lib/settings";
 import { logAction } from "@/lib/audit";
 import { canViewIp } from "@/lib/permissions";
 import { lookupCountry } from "@/lib/geo";
+import { isValidBrandId } from "@/lib/brands";
 import { softDeleteUser, restoreUser, DeleteUserError } from "@/lib/user-deletion";
 import { getUserStatsMap } from "@/lib/user-stats";
 
@@ -64,6 +65,8 @@ export async function GET(request: Request) {
     const city = searchParams.get("city") ?? "";
     const verified = searchParams.get("verified") ?? "";
     const active = searchParams.get("active") ?? "";
+    // فیلتر برند — «kandoo» یعنی کاربران برند اصلی (brand=null)، بقیه شناسه برند
+    const brand = searchParams.get("brand") ?? "";
     const tab = searchParams.get("tab") ?? "overview";
     const sort = searchParams.get("sort") ?? "";
     const hideFake = searchParams.get("hideFake") === "true";
@@ -98,6 +101,9 @@ export async function GET(request: Request) {
 
     if (active === "active") where.isActive = true;
     if (active === "blocked") where.isActive = false;
+
+    if (brand === "kandoo") where.brand = null;
+    else if (brand && isValidBrandId(brand)) where.brand = brand;
 
     // فیلتر «عدم نمایش فیک» — کاربران seed شده/ربات پنهان می شوند
     if (hideFake) where.isFake = false;

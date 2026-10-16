@@ -14,6 +14,7 @@ import DefaultAvatar from "@/components/dashboard/DefaultAvatar";
 import PublicProfileActions from "@/components/dashboard/PublicProfileActions";
 import PublicGallery from "@/components/dashboard/PublicGallery";
 import PublicProfilePhoto from "@/components/dashboard/PublicProfilePhoto";
+import { getRequestBrand } from "@/lib/brand-server";
 
 export async function generateMetadata({
   params,
@@ -32,9 +33,10 @@ export async function generateMetadata({
   }
 
   const title = `${user.firstName} ${user.lastName} — ${toPersianDigits(user.age)} ساله، ${user.city}`;
+  const brand = await getRequestBrand();
   const description = user.bio
     ? `${user.firstName} ${user.lastName} از ${user.city} — ${user.bio.slice(0, 150)}`
-    : `${user.firstName} ${user.lastName}، ${toPersianDigits(user.age)} ساله از ${user.city}. پروفایل در سایت همسریابی کندو.`;
+    : `${user.firstName} ${user.lastName}، ${toPersianDigits(user.age)} ساله از ${user.city}. پروفایل در سایت همسریابی ${brand.name}.`;
 
   return {
     title,

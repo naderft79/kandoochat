@@ -2,11 +2,15 @@
 import type { Metadata } from "next";
 import { Mail, Phone, MessageCircle, Send, Headphones } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "تماس با ما",
-  description: "راه های ارتباط با پشتیبانی کندو — پاسخگویی سریع به سوالات و مشکلات شما.",
-};
-import KandooLogo from "@/components/KandooLogo";
+export async function generateMetadata(): Promise<Metadata> {
+  const n = await requestBrandName();
+  return {
+    title: "تماس با ما",
+    description: `راه های ارتباط با پشتیبانی ${n} — پاسخگویی سریع به سوالات و مشکلات شما.`,
+  };
+}
+import { requestBrandName } from "@/lib/brand-server";
+import BrandLogo from "@/components/BrandLogo";
 import ContactForm from "@/components/ContactForm";
 import { SUPPORT_EMAIL } from "@/lib/site";
 
@@ -15,7 +19,7 @@ export default function ContactPage() {
     <div className="min-h-dvh bg-gradient-to-b from-neutral-50 to-white">
       <div className="max-w-2xl mx-auto px-4 py-8 md:py-16">
         <div className="text-center mb-8">
-          <KandooLogo iconClassName="w-10 h-10" textClassName="text-2xl" />
+          <BrandLogo iconClassName="w-10 h-10" textClassName="text-2xl" />
         </div>
 
         <div className="bg-surface border border-ig-border rounded-2xl p-6 mb-4">

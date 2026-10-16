@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <!-- فلیور مستقیم (کندو/مدیریت) — پرداخت مارکتی غیرفعال است -->
+    <string name="market_name">direct</string>
+    <string name="market_package"></string>
+    <string name="market_bind_action"></string>
+</resources>

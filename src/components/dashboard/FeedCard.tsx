@@ -30,6 +30,7 @@ import { toPersianDigits, formatToman } from "@/lib/format";
 import { cn } from "@/components/ui/cn";
 import { useLike, useStartChat } from "@/hooks/useProfileActions";
 import { useToast } from "@/components/ToastProvider";
+import { useBrand } from "@/components/BrandProvider";
 
 export type FeedMatch = {
   id: string;
@@ -61,6 +62,7 @@ export default function FeedCard({
   onHidden?: (id: string) => void;
 }) {
   const { toast } = useToast();
+  const brand = useBrand();
   const router = useRouter();
   const like = useLike(match.id, isLiked);
   const chat = useStartChat(match.id);
@@ -107,7 +109,7 @@ export default function FeedCard({
     const url = `${window.location.origin}/profile/${match.id}`;
     try {
       if (navigator.share)
-        await navigator.share({ title: `${fullName} در کندو`, url });
+        await navigator.share({ title: `${fullName} در ${brand.name}`, url });
       else {
         await navigator.clipboard.writeText(url);
         toast("لینک پروفایل کپی شد", "success");

@@ -18,6 +18,7 @@ import Input, { PasswordInput } from "@/components/ui/Input";
 import SelectMenu, { type SelectOption } from "@/components/ui/SelectMenu";
 import Captcha from "@/components/auth/Captcha";
 import { cn } from "@/components/ui/cn";
+import { useBrand } from "@/components/BrandProvider";
 
 const STEPS = ["حساب کاربری", "تایید موبایل", "مشخصات فردی"];
 const CURRENT_JY = currentJalaliYear();
@@ -88,6 +89,7 @@ function persianOnly(v: string): { value: string; blocked: boolean } {
 }
 
 function SpecialRegisterFormInner({ slug }: { slug: string }) {
+  const brand = useBrand();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [step, setStep] = useState(0);
@@ -368,7 +370,7 @@ function SpecialRegisterFormInner({ slug }: { slug: string }) {
                 <Crown className="w-4 h-4 text-white" />
                 <span className="text-xs font-black text-white">دعوت نامه ویژه</span>
               </div>
-              <h1 className="text-2xl font-black text-white drop-shadow-sm">کاربر ویژه کندو شوید</h1>
+              <h1 className="text-2xl font-black text-white drop-shadow-sm">کاربر ویژه {brand.name} شوید</h1>
               <p className="text-[13px] text-white/90 mt-1.5 leading-6">
                 سکه جمع کنید، درآمد واقعی بسازید و هر وقت خواستید نقدش کنید
               </p>
@@ -408,7 +410,7 @@ function SpecialRegisterFormInner({ slug }: { slug: string }) {
             </div>
             <p className="text-[11px] text-ig-gray leading-5 mt-3 pt-3 border-t border-ig-divider flex items-start gap-1.5">
               <Banknote className="w-3.5 h-3.5 shrink-0 mt-0.5 text-ig-online" />
-              کاربران کندو تا امروز بیش از {toPersianDigits(TOTAL_PAYOUT.toLocaleString("en-US"))} تومان درآمد داشته اند و سکه هایشان را سریع نقد کرده اند.
+              کاربران {brand.name} تا امروز بیش از {toPersianDigits(TOTAL_PAYOUT.toLocaleString("en-US"))} تومان درآمد داشته اند و سکه هایشان را سریع نقد کرده اند.
             </p>
           </div>
 
@@ -439,7 +441,7 @@ function SpecialRegisterFormInner({ slug }: { slug: string }) {
       {view === "form" && (
       <div className="w-full max-w-[400px] bg-surface border border-ig-border rounded-xl p-6 sm:p-8">
         <div className="flex items-center justify-center gap-2 mb-1">
-          <h1 className="text-2xl font-bold text-center">کندو</h1>
+          <h1 className="text-2xl font-bold text-center">{brand.name}</h1>
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-ig-gold/15 text-ig-gold text-[10px] font-black">
             <Crown className="w-3 h-3" />
             ویژه

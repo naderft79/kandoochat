@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Crown, CreditCard, Loader2 } from "lucide-react";
-import { isAppShellClient } from "@/lib/app-ua";
+import { isMarketBillingAvailable, purchaseProduct } from "@/lib/marketBilling";
 
 export default function BuySubscriptionButton({
   hasEnoughCoins,
@@ -18,9 +18,6 @@ export default function BuySubscriptionButton({
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [redirecting, setRedirecting] = useState(false);
-
-  // سیاست گوگل پلی: خرید اشتراک در اپ اندروید نمایش داده نمی شود
-  if (isAppShellClient()) return null;
 
   async function buyWithCoins() {
     setError("");
@@ -44,6 +41,24 @@ export default function BuySubscriptionButton({
     setError("");
     setRedirecting(true);
     try {
+      // اپ مارکتی — پرداخت درون برنامه ای مارکت به جای کندوپی
+      if (isMarketBillingAvailable()) {
+        const productId = "sub_1m";
+        const purchase = await purchaseProduct(productId);
+        const res = await fetch("/api/iap/verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...purchase, productId }),
+        });
+        const data = await res.json();
+        setRedirecting(false);
+        if (!res.ok) {
+          setError(data.error ?? "خطا در تایید پرداخت");
+          return;
+        }
+        router.refresh();
+        return;
+      }
       const res = await fetch("/api/payment/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

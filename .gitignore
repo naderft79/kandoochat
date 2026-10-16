@@ -52,7 +52,16 @@ next-env.d.ts
 
 # امضای اندروید — هرگز کامیت نشود
 *.keystore
+*.jks
 keystore.properties
+android/keystore-*.properties
+
+# خروجی های برند — با brands-generate تولید می شوند
+dist/android/
+android/app/brands.gradle
+android/app/src/nafs/
+android/app/src/mahdel/
+android/app/src/hammasir/
 
 # فایربیس/FCM — حاوی کلیدهای پروژه است
 google-services.json

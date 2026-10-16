@@ -10,7 +10,7 @@ export const DEFAULT_SETTINGS = {
   TRANSFER_FEE_PERCENT: "10",
   BUY_COINS_ENABLED: "true",
   WITHDRAW_COINS_ENABLED: "true",
-  COIN_PACKAGES: '[{"coins":100,"price":1000000,"label":"بسته ۱۰۰ سکه"},{"coins":500,"price":4500000,"label":"بسته ۵۰۰ سکه"},{"coins":1000,"price":8000000,"label":"بسته ۱۰۰۰ سکه"}]',
+  COIN_PACKAGES: '[{"coins":5,"price":50000,"label":"بسته ۵ سکه"},{"coins":10,"price":100000,"label":"بسته ۱۰ سکه"},{"coins":50,"price":500000,"label":"بسته ۵۰ سکه"},{"coins":100,"price":1000000,"label":"بسته ۱۰۰ سکه"}]',
   MAX_COINS_PER_PURCHASE: "10000",
   MIN_COINS_FOR_GIFT: "10",
   WITHDRAW_COMMISSION_PERCENT: "0",

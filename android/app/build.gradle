@@ -11,15 +11,23 @@ android {
     namespace = "com.kandoochats.app"
     compileSdk = rootProject.ext.compileSdkVersion
 
-    // دو خروجی APK در هر بیلد: اپ کاربر + اپ «مدیریت کندو»
-    flavorDimensions "app"
+    // سرویس پرداخت درون برنامه ای مارکت ها بدون AIDL و با transact مستقیم پیاده شده است
+
+    // ماتریس خروجی: برند (کندو + برندهای تولیدی) × مارکت (direct/bazaar/myket)
+    // ترکیب های مجاز در brands.gradle محدود می شوند: userDirect، adminDirect و <brand><Market>
+    flavorDimensions "brand", "market"
     productFlavors {
         user {
+            dimension "brand"
             applicationId "com.kandoochats.app"
         }
         admin {
+            dimension "brand"
             applicationId "com.kandoo.admin"
         }
+        direct { dimension "market" }
+        bazaar { dimension "market" }
+        myket  { dimension "market" }
     }
 
     defaultConfig {
@@ -36,10 +44,12 @@ android {
     }
     signingConfigs {
         release {
-            keyAlias keystoreProperties['keyAlias']
-            keyPassword keystoreProperties['keyPassword']
-            storeFile rootProject.file(keystoreProperties['storeFile'])
-            storePassword keystoreProperties['storePassword']
+            if (keystoreProperties['keyAlias']) {
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+                storeFile keystoreProperties['storeFile'] ? rootProject.file(keystoreProperties['storeFile']) : null
+                storePassword keystoreProperties['storePassword']
+            }
         }
     }
     buildTypes {
@@ -50,6 +60,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+}
+
+// فلیورهای برندهای تولیدی (نفس/ماه دل/هم مسیر...) + امضای هر برند + محدودسازی ترکیب ها
+// این فایل با scripts/brands-generate.mjs تولید می شود
+if (file('brands.gradle').exists()) {
+    apply from: 'brands.gradle'
 }
 
 repositories {
@@ -74,8 +90,6 @@ apply from: 'capacitor.build.gradle'
 
 try {
     // google-services.json باید داخل src/user باشد تا فقط برای فلیور کاربر اعمال شود
-    // (فایل در ریشه ماژول برای فلیور admin هم دیده می شود و چون com.kandoo.admin
-    // در پروژه Firebase نیست، بیلد فلیور admin خطا می خورد)
     def servicesJSON = file('src/user/google-services.json')
     if (servicesJSON.text) {
         apply plugin: 'com.google.gms.google-services'

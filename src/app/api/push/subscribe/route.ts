@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireUser, AuthError } from "@/lib/auth";
+import { parseBrandFromUA } from "@/lib/brands";
 
 const subscribeSchema = z.object({
   endpoint: z.string().url(),
@@ -22,13 +23,16 @@ export async function POST(request: Request) {
     const user = await requireUser();
     const body = await request.json();
 
+    // برند دستگاه از User-Agent — برای نوتیف با نام برند هر اپ
+    const { brandId } = parseBrandFromUA(request.headers.get("user-agent"));
+
     // ثبت توکن FCM اپ اندروید — برای پوش وقتی اپ بسته است
     const fcm = fcmSchema.safeParse(body);
     if (fcm.success) {
       await prisma.fcmToken.upsert({
         where: { token: fcm.data.fcmToken },
-        update: { userId: user.id, platform: fcm.data.platform ?? "android" },
-        create: { userId: user.id, token: fcm.data.fcmToken, platform: fcm.data.platform ?? "android" },
+        update: { userId: user.id, platform: fcm.data.platform ?? "android", brand: brandId },
+        create: { userId: user.id, token: fcm.data.fcmToken, platform: fcm.data.platform ?? "android", brand: brandId },
       });
       return NextResponse.json({ ok: true });
     }
@@ -43,8 +47,8 @@ export async function POST(request: Request) {
 
     await prisma.pushSubscription.upsert({
       where: { endpoint },
-      update: { userId: user.id, p256dh: keys.p256dh, auth: keys.auth, userAgent },
-      create: { userId: user.id, endpoint, p256dh: keys.p256dh, auth: keys.auth, userAgent },
+      update: { userId: user.id, p256dh: keys.p256dh, auth: keys.auth, userAgent, brand: brandId },
+      create: { userId: user.id, endpoint, p256dh: keys.p256dh, auth: keys.auth, userAgent, brand: brandId },
     });
 
     return NextResponse.json({ ok: true });

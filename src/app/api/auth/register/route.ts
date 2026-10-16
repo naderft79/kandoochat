@@ -139,6 +139,9 @@ export async function POST(request: Request) {
     }
 
     const hashed = await bcrypt.hash(data.password, 10);
+    // برند اپ ثبت نام کننده از User-Agent — اپ های مارکتی توکن خودشان را می فرستند
+    const { parseBrandFromUA } = await import("@/lib/brands");
+    const { brandId: regBrand } = parseBrandFromUA(request.headers.get("user-agent"));
     // کد دعوت ۷ کاراکتری برای کاربر جدید — ترکیب حروف بزرگ و اعداد
     const { generateReferralCode, findUserByReferralCode, createPendingReferral } = await import("@/lib/referral");
     const newReferralCode = await generateReferralCode();
@@ -162,6 +165,7 @@ export async function POST(request: Request) {
         termsAcceptedAt: data.termsAccepted ? new Date() : null,
         passwordChangedAt: new Date(),
         referralCode: newReferralCode || null,
+        brand: regBrand,
         wallet: { create: { balance: 0 } },
       },
     });

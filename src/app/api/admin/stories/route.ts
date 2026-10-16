@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { requireAdmin, AuthError } from "@/lib/auth";
 import { logAction } from "@/lib/audit";
 import { sendAdminMessage } from "@/lib/adminProfile";
+import { getUserBrandName } from "@/lib/brand-server";
 
 // GET — لیست استوری های در انتظار تایید
 export async function GET(request: Request) {
@@ -87,7 +88,8 @@ export async function PATCH(request: Request) {
 
       // ارسال پیام مدیریتی به کاربر با دلیل رد
       if (reason) {
-        const adminMsg = `سلام،\n\nاستوری شما در سایت کندو بررسی شد و متاسفانه تایید نشد.\n\nدلیل رد شدن:\n${reason}\n\nلطفا با رعایت قوانین سایت، استوری جدید و بدون مشکل منتشر کنید تا تایید شود. در صورت داشتن سوال می توانید با پشتیبانی در ارتباط باشید.\n\nبا احترام،\nتیم مدیریت کندو`;
+        const brandName = await getUserBrandName(story.userId);
+        const adminMsg = `سلام،\n\nاستوری شما در ${brandName} بررسی شد و متاسفانه تایید نشد.\n\nدلیل رد شدن:\n${reason}\n\nلطفا با رعایت قوانین سایت، استوری جدید و بدون مشکل منتشر کنید تا تایید شود. در صورت داشتن سوال می توانید با پشتیبانی در ارتباط باشید.\n\nبا احترام،\nتیم مدیریت ${brandName}`;
         await sendAdminMessage(story.userId, adminMsg);
       }
 

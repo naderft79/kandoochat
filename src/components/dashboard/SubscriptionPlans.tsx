@@ -8,6 +8,7 @@ import { Crown, Check, CreditCard, Loader2, Coins, Calendar, Infinity as Infinit
 import Dialog from "@/components/ui/Dialog";
 import { formatCoins, formatToman, toPersianDigits } from "@/lib/format";
 import type { SubscriptionPlan } from "@/lib/subscriptionPlans";
+import { isMarketBillingAvailable, purchaseProduct } from "@/lib/marketBilling";
 
 export default function SubscriptionPlans({
   plans,
@@ -57,6 +58,24 @@ export default function SubscriptionPlans({
     setError("");
     setRedirecting(true);
     try {
+      // اپ مارکتی — خرید اشتراک با پرداخت درون برنامه ای همان مارکت
+      if (isMarketBillingAvailable()) {
+        const productId = `sub_${current.key}`;
+        const purchase = await purchaseProduct(productId);
+        const res = await fetch("/api/iap/verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...purchase, productId }),
+        });
+        const data = await res.json();
+        setRedirecting(false);
+        if (!res.ok) {
+          setError(data.error ?? "خطا در تایید پرداخت");
+          return;
+        }
+        router.refresh();
+        return;
+      }
       const res = await fetch("/api/payment/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

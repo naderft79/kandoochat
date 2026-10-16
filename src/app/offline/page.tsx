@@ -1,21 +1,28 @@
 // صفحه آفلاین PWA — وقتی شبکه قطع است و صفحه کش نشده
 import Image from "next/image";
 import { WifiOff } from "lucide-react";
+import { getRequestBrand } from "@/lib/brand-server";
 
 export const metadata = {
   title: "آفلاین هستید",
 };
 
-export default function OfflinePage() {
+export default async function OfflinePage() {
+  const brand = await getRequestBrand();
   return (
     <div className="min-h-dvh flex flex-col items-center justify-center px-6 text-center bg-surface">
-      <Image
-        src="/bee-colori-logo.png"
-        alt="کندو"
-        width={96}
-        height={96}
-        className="mb-6"
-      />
+      {brand.id === "kandoo" ? (
+        <Image
+          src="/bee-colori-logo.png"
+          alt={brand.name}
+          width={96}
+          height={96}
+          className="mb-6"
+        />
+      ) : (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src="/api/brand-icon/192" alt={brand.name} width={96} height={96} className="mb-6 rounded-3xl" />
+      )}
       <div className="w-16 h-16 rounded-full bg-ig-btn2 flex items-center justify-center mb-4">
         <WifiOff className="w-8 h-8 text-neutral-400" strokeWidth={1.5} />
       </div>

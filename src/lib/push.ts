@@ -1,5 +1,6 @@
 // ارسال Web Push با VAPID + FCM برای اپ اندروید — نیازمند کلیدها در .env
 import webpush from "web-push";
+import { getBrandById } from "@/lib/brands";
 import { JWT } from "google-auth-library";
 import { prisma } from "@/lib/prisma";
 import { SITE_DOMAIN } from "@/lib/site";
@@ -57,11 +58,12 @@ function getFcmProject() {
   return fcmAuth;
 }
 
-// ارسال یک پیام FCM به توکن دستگاه
-async function sendFcmMessage(token: string, payload: PushPayload): Promise<boolean> {
+// ارسال یک پیام FCM به توکن دستگاه — عنوان با نام برند دستگاه شروع می شود
+async function sendFcmMessage(token: string, payload: PushPayload, brandName?: string | null): Promise<boolean> {
   const fcm = getFcmProject();
   if (!fcm) return false;
   try {
+    const title = brandName ? `${brandName} — ${payload.title}` : payload.title;
     const access = await fcm.client.getAccessToken();
     const res = await fetch(`https://fcm.googleapis.com/v1/projects/${fcm.projectId}/messages:send`, {
       method: "POST",
@@ -69,7 +71,7 @@ async function sendFcmMessage(token: string, payload: PushPayload): Promise<bool
       body: JSON.stringify({
         message: {
           token,
-          notification: { title: payload.title, body: payload.body },
+          notification: { title, body: payload.body },
           data: { url: payload.url ?? "/dashboard/notifications" },
           android: {
             priority: "HIGH",
@@ -113,13 +115,19 @@ export async function sendPushToUser(userId: string, payload: PushPayload): Prom
   const vapidOk = initVapid();
   for (const sub of subs) {
     if (!vapidOk) break;
+    // نام برند دستگاه به payload اضافه می شود تا نوتیف با نام اپ خودش دیده شود
+    const subBrand = sub.brand ? getBrandById(sub.brand) : null;
+    const brandedPayload =
+      subBrand && subBrand.id !== "kandoo"
+        ? { ...payload, appName: subBrand.name }
+        : payload;
     try {
       await webpush.sendNotification(
         {
           endpoint: sub.endpoint,
           keys: { p256dh: sub.p256dh, auth: sub.auth },
         },
-        JSON.stringify(payload)
+        JSON.stringify(brandedPayload)
       );
       sent++;
     } catch (err) {
@@ -133,7 +141,9 @@ export async function sendPushToUser(userId: string, payload: PushPayload): Prom
   }
 
   for (const t of fcmTokens) {
-    if (await sendFcmMessage(t.token, payload)) sent++;
+    const tBrand = t.brand ? getBrandById(t.brand) : null;
+    const tBrandName = tBrand && tBrand.id !== "kandoo" ? tBrand.name : null;
+    if (await sendFcmMessage(t.token, payload, tBrandName)) sent++;
   }
 
   return sent;

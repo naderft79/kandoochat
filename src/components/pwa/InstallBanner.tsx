@@ -6,6 +6,7 @@ import Image from "next/image";
 import { X, Share, Plus, Menu } from "lucide-react";
 import { isNativeApp } from "@/lib/native";
 import { USER_APP_UA, ADMIN_APP_UA } from "@/lib/app-ua";
+import { useBrand } from "@/components/BrandProvider";
 
 // کلید v2 — بنر برای همه کاربران از الان نمایش داده می شود حتی اگر قبلا بسته اند
 const DISMISS_KEY = "kandoo-install-dismissed-v2";
@@ -40,6 +41,7 @@ function isDismissed() {
 }
 
 export default function InstallBanner() {
+  const brand = useBrand();
   const [deferred, setDeferred] = useState<BeforeInstallPromptEvent | null>(null);
   const deferredRef = useRef<BeforeInstallPromptEvent | null>(null);
   const [show, setShow] = useState(false);
@@ -140,9 +142,14 @@ export default function InstallBanner() {
 
   return (
     <div className="fixed bottom-16 lg:bottom-4 inset-x-3 z-40 max-w-md mx-auto bg-surface border border-ig-border rounded-2xl shadow-lg p-3.5 flex items-center gap-3 ig-fade-in">
-      <Image src="/bee-colori-logo.png" alt="کندو" width={40} height={40} className="rounded-xl shrink-0" />
+      {brand.id === "kandoo" ? (
+        <Image src="/bee-colori-logo.png" alt={brand.name} width={40} height={40} className="rounded-xl shrink-0" />
+      ) : (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src="/api/brand-icon/96" alt={brand.name} width={40} height={40} className="rounded-xl shrink-0" />
+      )}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-bold text-foreground">کندو را نصب کنید</p>
+        <p className="text-sm font-bold text-foreground">{brand.name} را نصب کنید</p>
         <p className="text-xs text-ig-gray mt-0.5 leading-5">
           {iosMode ? (
             <>

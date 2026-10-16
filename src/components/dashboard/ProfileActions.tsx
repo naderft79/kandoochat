@@ -9,6 +9,7 @@ import ProfileForm from "@/components/dashboard/ProfileForm";
 import { OPEN_PROFILE_EDIT_EVENT } from "@/components/dashboard/ProfileCompletionCard";
 import { useToast } from "@/components/ToastProvider";
 import { nativeShare as capShare, nativeCopy } from "@/lib/native";
+import { useBrand } from "@/components/BrandProvider";
 
 type ProfileData = {
   id: string;
@@ -26,6 +27,7 @@ type ProfileData = {
 };
 
 export default function ProfileActions({ initial }: { initial: ProfileData }) {
+  const brand = useBrand();
   const [editOpen, setEditOpen] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
@@ -39,7 +41,7 @@ export default function ProfileActions({ initial }: { initial: ProfileData }) {
 
   async function share() {
     const url = `${window.location.origin}/profile/${initial.id}`;
-    const ok = await capShare({ title: "پروفایل من در کندو", url });
+    const ok = await capShare({ title: `پروفایل من در ${brand.name}`, url });
     if (!ok) {
       if (await nativeCopy(url)) toast("لینک پروفایل کپی شد", "success");
     }

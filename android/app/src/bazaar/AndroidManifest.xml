@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- تنظیمات فلیور بازار — مجوز پرداخت درون برنامه ای و دسترسی به اپ بازار در اندروید ۱۱+ -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="com.farsitel.bazaar.permission.BILLING" />
+
+    <queries>
+        <package android:name="com.farsitel.bazaar" />
+        <intent>
+            <action android:name="ir.cafebazaar.pardakht.InAppBillingService.BIND" />
+        </intent>
+    </queries>
+</manifest>

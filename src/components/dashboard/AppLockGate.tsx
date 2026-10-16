@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Fingerprint, Lock, ScanFace } from "lucide-react";
 import PinPad from "@/components/dashboard/PinPad";
+import { useBrand } from "@/components/BrandProvider";
 import {
   getLockConfig,
   verifyPin,
@@ -16,6 +17,7 @@ import {
 } from "@/lib/appLock";
 
 export default function AppLockGate() {
+  const brand = useBrand();
   const router = useRouter();
   const [locked, setLocked] = useState(false);
   const [pin, setPin] = useState("");
@@ -27,10 +29,10 @@ export default function AppLockGate() {
   const tryBiometric = useCallback(async () => {
     if (busy.current) return;
     busy.current = true;
-    const ok = await biometricUnlock();
+    const ok = await biometricUnlock(brand.name);
     busy.current = false;
     if (ok) setLocked(false);
-  }, []);
+  }, [brand.name]);
 
   useEffect(() => {
     // خواندن localStorage باید async انجام شود تا با SSR تداخل نکند
@@ -120,7 +122,7 @@ export default function AppLockGate() {
           <Lock className="w-7 h-7 text-foreground" strokeWidth={1.8} />
         </span>
       </span>
-      <h1 className="text-lg font-black text-foreground mt-4">کندو قفل است</h1>
+      <h1 className="text-lg font-black text-foreground mt-4">{brand.name} قفل است</h1>
       <p className="text-xs text-ig-gray mt-1">پین ۴ رقمی را وارد کنید</p>
 
       {/* صفحه کلید عددی اختصاصی — کیبورد گوشی هیچ وقت باز نمی شود */}

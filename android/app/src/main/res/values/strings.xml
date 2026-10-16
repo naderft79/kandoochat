@@ -4,4 +4,6 @@
     <string name="title_activity_main">کندو</string>
     <string name="package_name">com.kandoochats.app</string>
     <string name="custom_url_scheme">com.kandoochats.app</string>
+    <!-- شناسه برند در UA — برای فلیورهای برند تولیدی بازنویسی می شود -->
+    <string name="ua_brand"></string>
 </resources>

@@ -2,11 +2,15 @@
 import type { Metadata } from "next";
 import { HelpCircle } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "راهنما و سوالات متداول",
-  description: "پاسخ سوالات پرتکرار درباره استفاده از کندو، احراز هویت، سکه ها و اشتراک.",
-};
-import KandooLogo from "@/components/KandooLogo";
+export async function generateMetadata(): Promise<Metadata> {
+  const n = await requestBrandName();
+  return {
+    title: "راهنما و سوالات متداول",
+    description: `پاسخ سوالات پرتکرار درباره استفاده از ${n}، احراز هویت، سکه ها و اشتراک.`,
+  };
+}
+import { requestBrandName } from "@/lib/brand-server";
+import BrandLogo from "@/components/BrandLogo";
 import FAQAccordion, { type FAQItem, type FAQCategory } from "@/components/FAQAccordion";
 
 const categories: FAQCategory[] = [
@@ -147,19 +151,26 @@ const faqs: FAQItem[] = [
   },
 ];
 
-export default function HelpPage() {
+export default async function HelpPage() {
+  const n = await requestBrandName();
+  // نام برند در متن سوالات جایگزین می شود
+  const brandedFaqs = faqs.map((f) => ({
+    ...f,
+    q: f.q.replaceAll("کندو", n),
+    a: f.a.replaceAll("کندو", n),
+  }));
   return (
     <div className="min-h-dvh bg-gradient-to-b from-neutral-50 to-white">
       <div className="max-w-2xl mx-auto px-4 py-8 md:py-16">
         <div className="text-center mb-8">
-          <KandooLogo iconClassName="w-10 h-10" textClassName="text-2xl" />
+          <BrandLogo iconClassName="w-10 h-10" textClassName="text-2xl" />
           <div className="flex items-center justify-center gap-2 mt-2">
             <HelpCircle className="w-4 h-4 text-ig-gray" />
             <p className="text-sm text-ig-gray">راهنما و سوالات متداول</p>
           </div>
         </div>
 
-        <FAQAccordion items={faqs} categories={categories} />
+        <FAQAccordion items={brandedFaqs} categories={categories} />
       </div>
     </div>
   );

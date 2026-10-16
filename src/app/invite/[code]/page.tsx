@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { getAllSettings } from "@/lib/settings";
 import { findUserByReferralCode, normalizeReferralCode } from "@/lib/referral";
 import { toPersianDigits } from "@/lib/format";
+import { requestBrandName } from "@/lib/brand-server";
 import DefaultAvatar from "@/components/dashboard/DefaultAvatar";
 
 export const dynamic = "force-dynamic";
@@ -17,10 +18,11 @@ export async function generateMetadata({
   params: Promise<{ code: string }>;
 }): Promise<Metadata> {
   const { code } = await params;
+  const n = await requestBrandName();
   const referrer = await findUserByReferralCode(code);
-  if (!referrer) return { title: "دعوت دوستان — کندو" };
+  if (!referrer) return { title: `دعوت دوستان — ${n}` };
   return {
-    title: `دعوت ${referrer.firstName} به کندو`,
+    title: `دعوت ${referrer.firstName} به ${n}`,
     description: "با لینک دعوت ثبت نام کنید و سکه رایگان دریافت کنید",
   };
 }
@@ -31,6 +33,7 @@ export default async function InvitePage({
   params: Promise<{ code: string }>;
 }) {
   const { code } = await params;
+  const n = await requestBrandName();
   const normalized = normalizeReferralCode(code);
   const referrer = await findUserByReferralCode(code);
   const settings = await getAllSettings();
@@ -85,7 +88,7 @@ export default async function InvitePage({
                   <DefaultAvatar size={80} />
                 )}
                 <h1 className="text-xl font-bold text-foreground">
-                  {referrer.firstName} شما را به کندو دعوت کرد
+                  {referrer.firstName} شما را به {n} دعوت کرد
                 </h1>
               </div>
               <p className="text-sm text-ig-gray leading-6">
@@ -96,7 +99,7 @@ export default async function InvitePage({
             </>
           ) : (
             <>
-              <h1 className="text-xl font-bold text-foreground">دعوت به کندو</h1>
+              <h1 className="text-xl font-bold text-foreground">دعوت به {n}</h1>
               <p className="text-sm text-ig-gray leading-6">
                 {normalized
                   ? "این کد دعوت معتبر نیست یا منقضی شده — ولی می توانید همین حالا ثبت نام کنید و از همه امکانات استفاده کنید."
@@ -109,7 +112,7 @@ export default async function InvitePage({
             href={referrer ? `/register?ref=${encodeURIComponent(normalized)}` : "/register"}
             className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-ig-blue text-white font-bold text-base hover:bg-ig-blue-hover transition-colors active:scale-[0.98]"
           >
-            {referrer ? "ثبت نام و دریافت پاداش" : "ثبت نام در کندو"}
+            {referrer ? "ثبت نام و دریافت پاداش" : `ثبت نام در ${n}`}
             <ArrowLeft className="w-5 h-5" />
           </Link>
 

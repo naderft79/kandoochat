@@ -16,7 +16,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { toPersianDigits, formatToman } from "@/lib/format";
-import KandooLogo from "@/components/KandooLogo";
+import BrandLogo from "@/components/BrandLogo";
 import DefaultAvatar from "@/components/dashboard/DefaultAvatar";
 
 type Profile = {
@@ -62,7 +62,7 @@ export default function LandingClient({
       {/* نوار بالا — مثل هدر اینستاگرام */}
       <header className="sticky top-0 z-40 backdrop-blur-lg bg-surface/80 border-b border-ig-border">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-          <KandooLogo href="/" iconClassName="w-8 h-8" textClassName="text-xl sm:text-2xl" />
+          <BrandLogo href="/" iconClassName="w-8 h-8" textClassName="text-xl sm:text-2xl" />
           <nav className="flex items-center gap-2 sm:gap-3">
             {isLoggedIn ? (
               <Link
@@ -345,7 +345,7 @@ export default function LandingClient({
       <footer className="border-t border-ig-border bg-surface py-8">
         <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <KandooLogo color iconClassName="w-6 h-6" textClassName="text-lg" />
+            <BrandLogo color iconClassName="w-6 h-6" textClassName="text-lg" />
             <span className="text-ig-gray text-sm">| سایت همسریابی</span>
           </div>
           <p className="text-xs text-ig-gray">

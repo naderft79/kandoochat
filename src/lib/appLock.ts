@@ -111,13 +111,13 @@ export async function checkBiometry(): Promise<{ available: boolean; kind: Biome
 }
 
 // باز کردن قفل با بیومتریک یا رمز دستگاه (پین/الگوی خود گوشی)
-export async function biometricUnlock(): Promise<boolean> {
+export async function biometricUnlock(appName = "کندو"): Promise<boolean> {
   try {
     const { BiometricAuth } = await import("@aparajita/capacitor-biometric-auth");
     await BiometricAuth.authenticate({
-      reason: "باز کردن قفل کندو",
+      reason: `باز کردن قفل ${appName}`,
       cancelTitle: "انصراف",
-      androidTitle: "قفل کندو",
+      androidTitle: `قفل ${appName}`,
       androidSubtitle: "برای ورود هویت خود را تایید کنید",
       allowDeviceCredential: true,
     });

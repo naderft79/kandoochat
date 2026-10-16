@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { getRequestBrandInfo } from "@/lib/brand-server";
+import BrandProvider from "@/components/BrandProvider";
 import { Vazirmatn, Grand_Hotel } from "next/font/google";
 import "./globals.css";
 import ServiceWorkerRegister from "@/components/pwa/ServiceWorkerRegister";
@@ -24,53 +26,57 @@ const grandHotel = Grand_Hotel({
   weight: ["400"],
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(SITE_URL),
-  title: {
-    default: "کندو | سایت همسریابی",
-    template: "%s | کندو",
-  },
-  description:
-    "کندو، جایی برای پیدا کردن نیمه گمشده شما. با پروفایل های تایید شده و امنیت بالا.",
-  keywords: ["همسریابی", "کندو", "آشنایی", "ازدواج", "پروفایل تایید شده", "سایت همسریابی"],
-  authors: [{ name: "Kandoo" }],
-  creator: "Kandoo",
-  manifest: "/manifest.json",
-  icons: {
-    icon: [
-      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
-      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
-    ],
-    apple: "/apple-touch-icon.png",
-  },
-  openGraph: {
-    type: "website",
-    locale: "fa_IR",
-    title: "کندو | سایت همسریابی",
-    description: "کندو، جایی برای پیدا کردن نیمه گمشده شما. با پروفایل های تایید شده و امنیت بالا.",
-    siteName: "کندو",
-    images: [{ url: "/bee-colori-logo.png", width: 512, height: 512, alt: "کندو" }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "کندو | سایت همسریابی",
-    description: "کندو، جایی برای پیدا کردن نیمه گمشده شما.",
-    images: ["/bee-colori-logo.png"],
-  },
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: "کندو",
-  },
-  other: {
-    "mobile-web-app-capable": "yes",
-    "apple-mobile-web-app-capable": "yes",
-    "apple-mobile-web-app-status-bar-style": "default",
-    "apple-mobile-web-app-title": "کندو",
-    "application-name": "کندو",
-    "format-detection": "telephone=no",
-  },
-};
+// metadata پویا بر اساس برند تشخیص داده شده از User-Agent — اپ های مارکتی نام خودشان را می بینند
+export async function generateMetadata(): Promise<Metadata> {
+  const { brand } = await getRequestBrandInfo();
+  const n = brand.name;
+  return {
+    metadataBase: new URL(SITE_URL),
+    title: {
+      default: `${n} | سایت ${brand.slogan}`,
+      template: `%s | ${n}`,
+    },
+    description: `${n}، جایی برای پیدا کردن نیمه گمشده شما. با پروفایل های تایید شده و امنیت بالا.`,
+    keywords: ["همسریابی", n, "آشنایی", "ازدواج", "پروفایل تایید شده", "سایت همسریابی"],
+    authors: [{ name: n }],
+    creator: n,
+    manifest: "/manifest.json",
+    icons: {
+      icon: [
+        { url: "/api/brand-icon/192", sizes: "192x192", type: "image/png" },
+        { url: "/api/brand-icon/512", sizes: "512x512", type: "image/png" },
+      ],
+      apple: "/api/brand-icon/180",
+    },
+    openGraph: {
+      type: "website",
+      locale: "fa_IR",
+      title: `${n} | سایت ${brand.slogan}`,
+      description: `${n}، جایی برای پیدا کردن نیمه گمشده شما. با پروفایل های تایید شده و امنیت بالا.`,
+      siteName: n,
+      images: [{ url: "/api/brand-icon/512", width: 512, height: 512, alt: n }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${n} | سایت ${brand.slogan}`,
+      description: `${n}، جایی برای پیدا کردن نیمه گمشده شما.`,
+      images: ["/api/brand-icon/512"],
+    },
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: "default",
+      title: n,
+    },
+    other: {
+      "mobile-web-app-capable": "yes",
+      "apple-mobile-web-app-capable": "yes",
+      "apple-mobile-web-app-status-bar-style": "default",
+      "apple-mobile-web-app-title": n,
+      "application-name": n,
+      "format-detection": "telephone=no",
+    },
+  };
+}
 
 export const viewport = {
   themeColor: "#ffffff",
@@ -87,18 +93,31 @@ export const viewport = {
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   // فقط برای کاربران وارد شده — اعلان زنده باید در همه صفحات کار کند
   const session = await getSession();
+  const { brand, market } = await getRequestBrandInfo();
+  // رنگ برند → اکسنت اصلی رابط (ig-blue ها) + متغیرهای برند برای استفاده های سفارشی
+  const brandStyle = {
+    "--brand-gold": brand.colors.primary,
+    "--brand-gold-light": brand.colors.light,
+    "--brand-gold-dark": brand.colors.dark,
+    "--color-ig-blue": brand.colors.primary,
+    "--color-ig-blue-hover": brand.colors.dark,
+    "--color-ig-blue-bright": brand.colors.light,
+  } as React.CSSProperties;
 
   return (
     <html
       lang="fa"
       dir="rtl"
       data-scroll-behavior="smooth"
+      data-brand={brand.id}
       suppressHydrationWarning
+      style={brandStyle}
       className={`${vazirmatn.variable} ${grandHotel.variable} h-full antialiased`}
     >
       <head />
       <body className="min-h-full flex flex-col font-sans" suppressHydrationWarning>
         <ThemeProvider>
+          <BrandProvider brand={brand} market={market}>
           <ServiceWorkerRegister />
           <AndroidBackHandler />
           <PortraitGuard />
@@ -110,6 +129,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             </LiveDataProvider>
           </ToastProvider>
           <InstallBanner />
+          </BrandProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -28,7 +28,7 @@ import {
 import CoinBadge from "@/components/dashboard/CoinBadge";
 import { usePresence } from "@/hooks/usePresence";
 import { formatBadgeCount } from "@/lib/format";
-import KandooLogo from "@/components/KandooLogo";
+import BrandLogo from "@/components/BrandLogo";
 import DefaultAvatar from "@/components/dashboard/DefaultAvatar";
 
 // ۵ دکمه اصلی اینستاگرام
@@ -98,9 +98,9 @@ export default function DashboardNav({
       <aside className="hidden lg:flex flex-col w-16 lg:w-56 xl:w-64 shrink-0 bg-surface border-l border-ig-border min-h-dvh sticky top-0 h-screen transition-all duration-300">
         {/* لوگو + سکه */}
         <div className="px-3 lg:px-6 pt-8 pb-4">
-          <KandooLogo href="/dashboard" iconClassName="w-8 h-8 xl:w-9 xl:h-9" textClassName="text-xl xl:text-2xl lg:block hidden" />
+          <BrandLogo href="/dashboard" iconClassName="w-8 h-8 xl:w-9 xl:h-9" textClassName="text-xl xl:text-2xl lg:block hidden" />
           <div className="lg:hidden flex justify-center">
-            <KandooLogo href="/dashboard" iconClassName="w-8 h-8" textClassName="hidden" />
+            <BrandLogo href="/dashboard" iconClassName="w-8 h-8" textClassName="hidden" />
           </div>
           <div className="mt-3 lg:block hidden">
             <CoinBadge />
@@ -170,7 +170,7 @@ export default function DashboardNav({
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between px-6 pt-8 pb-6">
-              <KandooLogo iconClassName="w-7 h-7" textClassName="text-xl" />
+              <BrandLogo iconClassName="w-7 h-7" textClassName="text-xl" />
               <button onClick={() => setMoreOpen(false)} className="p-1 hover:bg-ig-gray-bg rounded-lg">
                 <X className="w-5 h-5" />
               </button>
