@@ -57,7 +57,7 @@ CAPACITOR_SERVER_URL=https://kandoochat.top npm run build:aab -- --versionCode=1
 - `allowBackup="false"` باشد.
 - مجوز `SCHEDULE_EXACT_ALARM` در مانیفست ریلیز نباشد.
 - سرویس FCM و متادیتای آن در مانیفست ریلیز نباشد (نسخه اول بدون پوش).
-- مجوزهای اعلام شده: `INTERNET`، `ACCESS_NETWORK_STATE`، `POST_NOTIFICATIONS` (اعلان محلی لایک/پیام)، `RECORD_AUDIO` (ضبط ویس)، `CAMERA` (احراز هویت).
+- مجوزهای اعلام شده: `INTERNET`، `ACCESS_NETWORK_STATE`، `POST_NOTIFICATIONS` (اعلان محلی لایک/پیام)، `RECORD_AUDIO` (ضبط ویس)، `CAMERA` (احراز هویت)، `USE_BIOMETRIC`/`USE_FINGERPRINT` (قفل برنامه با اثر انگشت یا تشخیص چهره — فقط اگر کاربر فعال کند).
 - `adb shell pm get-app-links com.kandoochats.app` → وضعیت verified.
 
 ## فرم های Google Play Console

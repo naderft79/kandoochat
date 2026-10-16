@@ -23,6 +23,7 @@ import AvatarUploader from "@/components/dashboard/AvatarUploader";
 import BoostButton from "@/components/dashboard/BoostButton";
 import FeaturedButton from "@/components/dashboard/FeaturedButton";
 import ReferralRow from "@/components/dashboard/ReferralRow";
+import AppLockButton from "@/components/dashboard/AppLockButton";
 import VerifyFeatureButtons from "@/components/dashboard/VerifyFeatureButtons";
 import GoldenStoryButton from "@/components/dashboard/GoldenStoryButton";
 import SpecialMissionsButton from "@/components/dashboard/SpecialMissionsButton";
@@ -269,6 +270,7 @@ export default async function ProfilePage() {
             <BoostButton />
             <VerifyFeatureButtons />
             <ReferralRow />
+            <AppLockButton />
           </div>
         </section>
 

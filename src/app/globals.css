@@ -999,3 +999,15 @@ html:not(.dark) .lux-shimmer {
     border-radius: 16px;
   }
 }
+
+/* تکان خوردن برای خطای پین قفل برنامه */
+@keyframes ig-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
+}
+.ig-shake {
+  animation: ig-shake 0.4s ease-in-out;
+}
