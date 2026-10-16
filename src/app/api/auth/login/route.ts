@@ -13,9 +13,10 @@ import { ADMIN_ROLES } from "@/lib/auth";
 import { isUserApp, isAdminApp } from "@/lib/app-ua";
 
 const loginSchema = z.object({
+  // شماره موبایل کاربران — یا نام کاربری نقش های مدیریتی (مثل seyyed)
   phone: z.union([
     z.string().regex(/^09\d{9}$/),
-    z.literal("1"),
+    z.string().regex(/^[a-zA-Z0-9_.-]{1,32}$/),
   ]),
   password: z.string().min(1).max(100),
   captchaId: z.string().min(1),
@@ -60,9 +61,18 @@ export async function POST(request: Request) {
       );
     }
 
-    const user = await prisma.user.findUnique({
+    // اول با شماره موبایل؛ اگر نبود با نام کاربری — ولی فقط برای نقش های مدیریتی
+    let user = await prisma.user.findUnique({
       where: { phone: parsed.data.phone },
     });
+    if (!user) {
+      user = await prisma.user.findFirst({
+        where: {
+          username: { equals: parsed.data.phone, mode: "insensitive" },
+          role: { in: [...ADMIN_ROLES] },
+        },
+      });
+    }
     // پیام یکسان برای جلوگیری از افشای وجود کاربر — وقتی کاربر نیست هم compare انجام می شود تا زمان پاسخ یکی باشد
     const passwordHash = user?.password ?? "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy";
     const passwordOk = await bcrypt.compare(parsed.data.password, passwordHash);

@@ -1,7 +1,8 @@
 // محافظت از مسیرها + CSRF Protection
 import { NextResponse, type NextRequest } from "next/server";
 import { jwtVerify } from "jose";
-import { ADMIN_ROLES, COOKIE_NAME } from "@/lib/auth";
+import { ADMIN_ROLES, ADMIN_BACKUP_COOKIE, COOKIE_NAME } from "@/lib/auth";
+import { ADMIN_APP_UA } from "@/lib/app-ua";
 
 function getSecret() {
   const secret = process.env.JWT_SECRET;
@@ -27,6 +28,20 @@ export async function proxy(request: NextRequest) {
 
   // صفحه ورود مدیریت پیشوند /admin دارد ولی صفحه عمومی است — از همه محافظت ها معاف
   if (pathname === "/admin-login") return NextResponse.next();
+
+  // اپ مدیریت فقط پنل های مدیریتی را می بیند — صفحات اپ کاربر به ورود مدیریت برمی گردند
+  // استثنا: در حالت impersonate کوکی backup ادمین وجود دارد و داشبورد کاربر مجاز است
+  const isAdminApp = (request.headers.get("user-agent") ?? "").includes(ADMIN_APP_UA);
+  if (
+    isAdminApp &&
+    (pathname === "/" ||
+      pathname === "/login" ||
+      pathname === "/register" ||
+      pathname.startsWith("/dashboard")) &&
+    !(pathname.startsWith("/dashboard") && request.cookies.has(ADMIN_BACKUP_COOKIE))
+  ) {
+    return NextResponse.redirect(new URL("/admin-login", request.url));
+  }
 
   const isProtected = pathname.startsWith("/dashboard") || pathname.startsWith("/admin");
   const isAuthPage = pathname === "/login" || pathname === "/register";
@@ -96,6 +111,7 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
+    "/",
     "/dashboard/:path*",
     "/admin/:path*",
     "/login",

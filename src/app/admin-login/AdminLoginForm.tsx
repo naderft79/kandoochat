@@ -38,6 +38,8 @@ export default function AdminLoginForm() {
       // سرور نقش غیر مدیر را در اپ مدیریت با همان ارور رمز رد می کند؛
       // این شاخه فقط برای ورود از مرورگر است تا کاربر عادی گیر نکند
       const isAdminRole = ["ADMIN", "SUPER_ADMIN", "CONTENT_ADMIN", "SUPPORT_ADMIN"].includes(data.role);
+      // نشست جدید — پرچم مودال هشدار پاک شود تا هر ورود دوباره نمایان شود
+      sessionStorage.removeItem("seyyed_warned");
       router.push(isAdminRole ? "/admin" : "/dashboard");
       router.refresh();
     } catch {
