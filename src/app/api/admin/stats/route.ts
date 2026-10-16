@@ -12,6 +12,10 @@ export async function GET() {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
+    // فیلتر کاربر واقعی: نه فیک، نه همراه AI، نه حذف شده
+    const realUser = { isFake: false, isAICompanion: false, deletedAt: null } as const;
+    const realUserOnly = { role: "USER", ...realUser } as const;
+
     const [
       totalUsers,
       newUsers7d,
@@ -27,29 +31,29 @@ export async function GET() {
       transferVolume7d,
       todayLogins,
     ] = await Promise.all([
-      // همه آمارها بدون حساب های فیک
-      prisma.user.count({ where: { role: "USER", isFake: false } }),
-      prisma.user.count({ where: { role: "USER", isFake: false, createdAt: { gte: sevenDaysAgo } } }),
-      prisma.user.count({ where: { role: "USER", isFake: false, createdAt: { gte: thirtyDaysAgo } } }),
-      prisma.subscription.count({ where: { endsAt: { gt: now }, user: { isFake: false } } }),
+      // همه آمارها بدون حساب های فیک، AI و حذف شده
+      prisma.user.count({ where: realUserOnly }),
+      prisma.user.count({ where: { ...realUserOnly, createdAt: { gte: sevenDaysAgo } } }),
+      prisma.user.count({ where: { ...realUserOnly, createdAt: { gte: thirtyDaysAgo } } }),
+      prisma.subscription.count({ where: { endsAt: { gt: now }, user: realUser } }),
       prisma.transaction.aggregate({
-        where: { type: "COIN_PURCHASE", status: "COMPLETED", user: { isFake: false } },
+        where: { type: { in: ["COIN_PURCHASE", "SUBSCRIPTION"] }, status: "COMPLETED", user: realUser },
         _sum: { amountToman: true },
       }),
       prisma.transaction.aggregate({
-        where: { type: "COIN_PURCHASE", status: "COMPLETED", createdAt: { gte: sevenDaysAgo }, user: { isFake: false } },
+        where: { type: { in: ["COIN_PURCHASE", "SUBSCRIPTION"] }, status: "COMPLETED", createdAt: { gte: sevenDaysAgo }, user: realUser },
         _sum: { amountToman: true },
       }),
-      prisma.boost.count({ where: { user: { isFake: false } } }),
-      prisma.boost.count({ where: { endsAt: { gt: now }, user: { isFake: false } } }),
-      prisma.report.count({ where: { status: "PENDING", reporter: { isFake: false } } }),
-      prisma.withdrawRequest.count({ where: { status: "PENDING", user: { isFake: false } } }),
-      prisma.coinTransfer.count({ where: { status: "COMPLETED", sender: { isFake: false } } }),
+      prisma.boost.count({ where: { user: realUser } }),
+      prisma.boost.count({ where: { endsAt: { gt: now }, user: realUser } }),
+      prisma.report.count({ where: { status: "PENDING", reporter: realUser } }),
+      prisma.withdrawRequest.count({ where: { status: "PENDING", user: realUser } }),
+      prisma.coinTransfer.count({ where: { status: "COMPLETED", sender: realUser } }),
       prisma.coinTransfer.aggregate({
-        where: { status: "COMPLETED", createdAt: { gte: sevenDaysAgo }, sender: { isFake: false } },
+        where: { status: "COMPLETED", createdAt: { gte: sevenDaysAgo }, sender: realUser },
         _sum: { coins: true },
       }),
-      prisma.user.count({ where: { lastSeen: { gte: new Date(now.getTime() - 24 * 60 * 60 * 1000) }, isFake: false } }),
+      prisma.user.count({ where: { ...realUser, lastSeen: { gte: new Date(now.getTime() - 24 * 60 * 60 * 1000) } } }),
     ]);
 
     // آمار روزانه کاربران جدید (۷ روز)
@@ -61,7 +65,7 @@ export async function GET() {
       const end = new Date(start);
       end.setDate(end.getDate() + 1);
       const count = await prisma.user.count({
-        where: { role: "USER", isFake: false, createdAt: { gte: start, lt: end } },
+        where: { ...realUserOnly, createdAt: { gte: start, lt: end } },
       });
       dailyNewUsers.push({ date: start.toDateString(), count });
     }
@@ -79,7 +83,7 @@ export async function GET() {
           type: { in: ["COIN_PURCHASE", "SUBSCRIPTION"] },
           status: "COMPLETED",
           createdAt: { gte: start, lt: end },
-          user: { isFake: false },
+          user: realUser,
         },
         _sum: { amountToman: true },
       });
@@ -88,7 +92,7 @@ export async function GET() {
 
     // فعال ترین کاربران (بر اساس تعداد چت)
     const activeUsers = await prisma.user.findMany({
-      where: { role: "USER", isActive: true, isFake: false },
+      where: { ...realUserOnly, isActive: true },
       orderBy: { lastSeen: "desc" },
       take: 10,
       select: {

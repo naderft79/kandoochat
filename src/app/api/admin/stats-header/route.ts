@@ -10,6 +10,10 @@ export async function GET() {
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
+    // فیلتر کاربر واقعی: نه فیک، نه همراه AI، نه حذف شده
+    const realUser = { isFake: false, isAICompanion: false, deletedAt: null } as const;
+    const realUserOnly = { role: "USER", ...realUser } as const;
+
     // اجرای همزمان همه query ها
     const [
       userStats,
@@ -20,22 +24,22 @@ export async function GET() {
       todayRevenue,
       totalRevenue,
     ] = await Promise.all([
-      // گروه بندی کاربران بر اساس جنسیت در یک query — فیک ها محاسبه نمی شوند
+      // گروه بندی کاربران بر اساس جنسیت در یک query — فیک ها و AI محاسبه نمی شوند
       prisma.user.groupBy({
         by: ["gender"],
-        where: { role: "USER", isFake: false },
+        where: realUserOnly,
         _count: true,
       }),
-      prisma.user.count({ where: { role: "USER", isOnline: true, isFake: false } }),
-      prisma.user.count({ where: { role: "USER", createdAt: { gte: todayStart }, isFake: false } }),
-      prisma.message.count({ where: { createdAt: { gte: todayStart }, sender: { isFake: false } } }),
-      prisma.message.count({ where: { sender: { isFake: false } } }),
+      prisma.user.count({ where: { ...realUserOnly, isOnline: true } }),
+      prisma.user.count({ where: { ...realUserOnly, createdAt: { gte: todayStart } } }),
+      prisma.message.count({ where: { createdAt: { gte: todayStart }, sender: realUser } }),
+      prisma.message.count({ where: { sender: realUser } }),
       prisma.transaction.aggregate({
         where: {
           createdAt: { gte: todayStart },
           status: "COMPLETED",
           type: { in: ["COIN_PURCHASE", "SUBSCRIPTION"] },
-          user: { isFake: false },
+          user: realUser,
         },
         _sum: { amountToman: true },
       }),
@@ -43,7 +47,7 @@ export async function GET() {
         where: {
           status: "COMPLETED",
           type: { in: ["COIN_PURCHASE", "SUBSCRIPTION"] },
-          user: { isFake: false },
+          user: realUser,
         },
         _sum: { amountToman: true },
       }),
