@@ -80,6 +80,8 @@ export const viewport = {
   maximumScale: 1,
   userScalable: false,
   viewportFit: "cover",
+  // با باز شدن کیبورد، viewport لی اوت کوچک می شود تا هدر و باکس تایپ چت دیده شوند
+  interactiveWidget: "resizes-content",
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {

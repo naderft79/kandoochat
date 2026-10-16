@@ -913,7 +913,7 @@ export default function ChatRoom({
       )}
 
       {/* پیام ها */}
-      <div ref={listRef} onScroll={handleScroll} data-testid="message-list" className="flex-1 overflow-y-auto overflow-x-hidden overscroll-contain thin-scroll px-3 py-4 space-y-1 min-h-0">
+      <div ref={listRef} onScroll={handleScroll} data-testid="message-list" className="flex-1 overflow-y-auto overflow-x-hidden thin-scroll px-3 py-4 space-y-1 min-h-0">
         {loadingOlder && (
           <p className="text-center text-xs text-ig-gray py-2" role="status">در حال بارگذاری پیام های قدیمی تر...</p>
         )}

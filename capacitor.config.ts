@@ -26,9 +26,10 @@ const config: CapacitorConfig = {
     appendUserAgent: "KandooApp/1.0",
   },
   plugins: {
-    // کیبورد: تغییر اندازه وب ویو تا اینپوت زیر کیبورد نرود (چت)
+    // کیبورد: خودِ WebView کوچک می شود تا هدر و باکس تایپ چت بالای کیبورد بمانند
+    // و فقط ناحیه پیام ها کوچک شود (resize: native + resizeOnFullScreen)
     Keyboard: {
-      resize: "body",
+      resize: "native",
       resizeOnFullScreen: true,
     },
     // اسپلش: بعد از لود وب خودش محو می شود
