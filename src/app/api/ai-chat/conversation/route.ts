@@ -1,13 +1,15 @@
 // دریافت یا ایجاد شناسه گفتگو با همراه هوش مصنوعی
 import { NextResponse } from "next/server";
 import { requireUser } from "@/lib/auth";
-import { getOrCreateAIConversation } from "@/lib/aiCompanion";
 
 export async function POST() {
   try {
-    const user = await requireUser();
-    const { conversation } = await getOrCreateAIConversation(user.id);
-    return NextResponse.json({ conversationId: conversation.id });
+    await requireUser();
+    // هانی و آقای زنبور فعلا غیرفعال هستند
+    return NextResponse.json(
+      { error: "این قابلیت بزودی فعال می شود" },
+      { status: 403 }
+    );
   } catch {
     return NextResponse.json({ error: "خطا" }, { status: 500 });
   }

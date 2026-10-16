@@ -3,7 +3,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import {
-  Edit,
   SquarePen,
   ImageIcon,
   Mic,
@@ -21,6 +20,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { formatTime, toPersianDigits } from "@/lib/format";
 import PageHeader from "@/components/dashboard/PageHeader";
 import CoinBadge from "@/components/dashboard/CoinBadge";
+import ChatListLive from "@/components/dashboard/ChatListLive";
 import { getOrCreateAIConversation } from "@/lib/aiCompanion";
 
 export default async function ChatList() {
@@ -135,6 +135,8 @@ export default async function ChatList() {
 
   return (
     <div className="w-full h-full flex flex-col">
+      {/* تازه سازی زنده لیست با پیام جدید */}
+      <ChatListLive />
       {/* هدر یکپارچه */}
       <PageHeader
         title="پیام ها"
@@ -155,9 +157,8 @@ export default async function ChatList() {
       <div className="flex-1 overflow-y-auto thin-scroll">
         {/* گفتگوی همراه هوش مصنوعی - پین شده در بالا */}
         {aiConv && aiConfig && (
-          <Link
-            href={`/dashboard/chat/${aiConv.id}`}
-            className={`flex items-center gap-3 px-4 py-3 hover:bg-ig-gray-bg transition-colors border-b border-ig-border/50 bg-ig-gray-bg`}
+          <div
+            className="flex items-center gap-3 px-4 py-3 border-b border-ig-border/50 bg-ig-gray-bg opacity-80 cursor-default"
           >
             {/* آواتار همراه */}
             <div className="relative shrink-0">
@@ -192,43 +193,22 @@ export default async function ChatList() {
               )}
             </div>
 
-            {/* نام + آخرین پیام */}
+            {/* نام + بج بزودی */}
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold flex items-center gap-1">
+              <p className="text-sm font-bold flex items-center gap-1.5">
                 {aiConfig.firstName}
+                <span className="inline-flex items-center px-1.5 py-0.5 rounded-full bg-ig-blue/10 text-ig-blue text-[10px] font-bold">
+                  بزودی
+                </span>
               </p>
-              <p
-                className={`text-sm truncate flex items-center gap-1 ${
-                  aiConv._count.messages > 0
-                    ? "text-foreground font-bold"
-                    : "text-ig-gray"
-                }`}
-              >
-                {getLastMessageIcon(aiConv.messages[0]?.type || "TEXT")}
-                {aiConv.messages[0]
-                  ? getLastMessagePreview(
-                      aiConv.messages[0].content,
-                      aiConv.messages[0].type
-                    )
-                  : `با ${aiConfig.firstName} درد دل کن، مشاوره و یا راهنمایی بگیر`}
+              <p className="text-sm truncate text-ig-gray">
+                {`با ${aiConfig.firstName} درد دل کن، مشاوره و یا راهنمایی بگیر`}
               </p>
             </div>
 
             {/* زمان */}
-            <div className="flex flex-col items-end gap-0.5 shrink-0">
-              {aiConv.messages[0] && (
-                <span
-                  className={`text-xs ${
-                    aiConv._count.messages > 0
-                      ? "text-ig-blue font-bold"
-                      : "text-ig-gray"
-                  }`}
-                >
-                  {formatTime(aiConv.messages[0].createdAt)}
-                </span>
-              )}
-            </div>
-          </Link>
+            <div className="flex flex-col items-end gap-0.5 shrink-0" />
+          </div>
         )}
 
         {/* سایر گفتگوها */}

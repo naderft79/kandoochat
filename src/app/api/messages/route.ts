@@ -160,6 +160,14 @@ export async function POST(request: Request) {
     // بررسی اینکه آیا طرف مقابل هانی (هوش مصنوعی) است
     const otherIsHani = await isHaniUser(otherUserId);
 
+    // هانی و آقای زنبور فعلا غیرفعال هستند — ارسال پیام به آن ها ممکن نیست
+    if (otherIsHani) {
+      return NextResponse.json(
+        { error: "این قابلیت بزودی فعال می شود" },
+        { status: 403 }
+      );
+    }
+
     // جلوگیری از ارسال پیام در گفتگو مدیریتی (به جز هانی)
     if (!otherIsHani) {
       const otherUser = await prisma.user.findUnique({

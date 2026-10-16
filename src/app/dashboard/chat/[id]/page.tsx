@@ -53,6 +53,9 @@ export default async function ChatRoomPage({
   const isAdminChat = other.isAdminProfile === true;
   const isAIChat = other.isAICompanion === true;
 
+  // هانی و آقای زنبور فعلا غیرفعال هستند — ورود به گفتگو با آن ها ممکن نیست
+  if (isAIChat) redirect("/dashboard/chat");
+
   // دریافت کانفیگ همراه هوش مصنوعی (تم رنگی)
   const aiConfig = isAIChat ? await getCompanionConfigByCompanionId(other.id) : null;
   const aiGradient = aiConfig?.gradient ?? "";

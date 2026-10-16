@@ -23,6 +23,8 @@ type LiveData = {
   unreadCount: number;
   unreadConversations: number;
   balance: number | null;
+  // آخرین پیام رسیده از SSE — صفحات لیست گفتگو با آن خود را تازه می کنند
+  lastMessage: LiveMessage | null;
   refresh: () => void;
 };
 
@@ -30,6 +32,7 @@ const LiveDataContext = createContext<LiveData>({
   unreadCount: 0,
   unreadConversations: 0,
   balance: null,
+  lastMessage: null,
   refresh: () => {},
 });
 
@@ -41,6 +44,8 @@ export default function LiveDataProvider({ children, enabled = true }: { childre
   const [unreadCount, setUnreadCount] = useState(0);
   const [unreadConversations, setUnreadConversations] = useState(0);
   const [balance, setBalance] = useState<number | null>(null);
+  // آخرین پیام رسیده — برای تازه سازی زنده لیست گفتگوها
+  const [lastMessage, setLastMessage] = useState<LiveMessage | null>(null);
   // آخرین اعلان رسیده از SSE — برای نمایش بنر زنده
   const [liveToast, setLiveToast] = useState<LiveToast | null>(null);
   // آخرین زمان نمایش توست — محدودیت اسپم
@@ -118,6 +123,7 @@ export default function LiveDataProvider({ children, enabled = true }: { childre
           // پیام جدید — توست داخلی «شما پیام جدیدی دارید»
           const msg = d.message as LiveMessage | undefined;
           if (d.scope === "messages" && msg?.id) {
+            setLastMessage(msg);
             const chatUrl = `/dashboard/chat/${msg.conversationId}`;
             const insideChat = window.location.pathname.startsWith(chatUrl);
             if (!insideChat && !notifiedMsgs.current.has(msg.id)) {
@@ -158,6 +164,7 @@ export default function LiveDataProvider({ children, enabled = true }: { childre
         unreadCount,
         unreadConversations,
         balance,
+        lastMessage,
         refresh: () => void fetchCounts(),
       }}
     >
