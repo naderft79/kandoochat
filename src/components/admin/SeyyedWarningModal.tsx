@@ -13,7 +13,6 @@ const RULES = [
   "لجبازی با مدیر اصلی",
   "فوش دادن تو چت پشتیبانی",
   "قضاوت عکس های بقیه با غرور",
-  "گشتن دنبال زن واسه خودت تو پنل",
 ];
 
 export default function SeyyedWarningModal() {
@@ -38,8 +37,8 @@ export default function SeyyedWarningModal() {
           <ShieldAlert className="w-7 h-7 text-[#d4af37]" />
         </div>
         <h2 className="text-base font-bold text-[#e8e8e8]">شیطونی نکنی</h2>
-        <p className="text-2xl font-black lux-gold-text mt-1 mb-4">سید</p>
-        <ul className="text-sm text-[#bbb] space-y-1.5 mb-2 leading-6">
+        <p className="text-2xl font-black text-emerald-400 mt-1 mb-4">سید</p>
+        <ul className="text-sm font-bold text-[#e8e8e8] space-y-1.5 mb-2 leading-6">
           {RULES.map((r) => (
             <li key={r}>{r}</li>
           ))}
