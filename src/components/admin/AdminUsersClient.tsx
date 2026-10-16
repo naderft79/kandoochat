@@ -4,7 +4,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { BadgeCheck, Ban, Search, Filter, X, Loader2, User, MapPin, Briefcase, Calendar, Crown, Phone, Image as ImageIcon, UserCog, Lock, Trash2, RotateCcw } from "lucide-react";
+import { BadgeCheck, Ban, Search, Filter, X, Loader2, User, MapPin, Briefcase, Calendar, Crown, Phone, Image as ImageIcon, UserCog, Lock, Trash2, RotateCcw, Gift } from "lucide-react";
 import VerifiedBadge from "@/components/dashboard/VerifiedBadge";
 import { formatCoins, formatDate, formatToman, toPersianDigits } from "@/lib/format";
 import { PROVINCES, PROVINCE_NAMES } from "@/lib/iran";
@@ -54,6 +54,7 @@ type UserItem = {
   deletedAt: string | null;
   deletePurgeAfter: string | null;
   stats: UserStats;
+  referredBy: { phone: string; username: string } | null;
   wallet: { balance: number;[key: string]: unknown } | null;
   photos: { id: string; url: string; isProfile: boolean }[];
 };
@@ -568,6 +569,14 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
                     <Ban className="w-2.5 h-2.5" />
                     مسدود
                   </span>
+                )}
+                {u.referredBy && (
+                  <p className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-purple-50 border border-purple-200 text-[9px] font-bold text-purple-700 xl:justify-center">
+                    <Gift className="w-2.5 h-2.5" />
+                    دعوت شده توسط:
+                    <span dir="ltr">{u.referredBy.phone}</span>
+                    <span dir="ltr">@{u.referredBy.username}</span>
+                  </p>
                 )}
               </div>
             </div>

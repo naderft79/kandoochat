@@ -21,6 +21,8 @@ export default async function AdminUsersPage() {
         wallet: true,
         photos: { select: { id: true, url: true, isProfile: true }, where: { isDeletedByUser: false }, orderBy: { order: "asc" } },
         subscriptions: { where: { endsAt: { gt: new Date() } }, take: 1 },
+        // دعوت کننده کاربر — برای نمایش «دعوت شده توسط» در لیست
+        receivedReferral: { select: { referrer: { select: { phone: true, username: true } } } },
       },
       orderBy: [{ createdAt: "desc" }],
       take: 50,
@@ -29,7 +31,7 @@ export default async function AdminUsersPage() {
   ]);
 
   const statsMap = await getUserStatsMap(users.map((u) => u.id));
-  const usersWithSubscription = users.map(({ password: _password, ...u }) => ({
+  const usersWithSubscription = users.map(({ password: _password, receivedReferral, ...u }) => ({
     ...u,
     messageLockUntil: u.messageLockUntil ? u.messageLockUntil.toISOString() : null,
     lastIpAt: u.lastIpAt ? u.lastIpAt.toISOString() : null,
@@ -40,6 +42,9 @@ export default async function AdminUsersPage() {
     hasSubscription: u.subscriptions.length > 0,
     subscription: u.subscriptions[0]
       ? { startsAt: u.subscriptions[0].startsAt.toISOString(), endsAt: u.subscriptions[0].endsAt.toISOString() }
+      : null,
+    referredBy: receivedReferral?.referrer
+      ? { phone: receivedReferral.referrer.phone, username: receivedReferral.referrer.username }
       : null,
     stats: statsMap[u.id],
   }));

@@ -173,6 +173,8 @@ export async function GET(request: Request) {
           wallet: true,
           photos: { select: { id: true, url: true, isProfile: true }, where: { isDeletedByUser: false }, orderBy: { order: "asc" } },
           subscriptions: { where: { endsAt: { gt: new Date() } }, take: 1 },
+          // دعوت کننده کاربر — برای نمایش «دعوت شده توسط» در لیست کاربران
+          receivedReferral: { select: { referrer: { select: { phone: true, username: true } } } },
         },
         orderBy,
         skip: Number.isNaN(skip) ? 0 : Math.max(0, skip),
@@ -182,7 +184,7 @@ export async function GET(request: Request) {
     ]);
 
     const statsMap = await getUserStatsMap(users.map((u) => u.id));
-    const serialized = users.map(({ password: _password, ...u }) => ({
+    const serialized = users.map(({ password: _password, receivedReferral, ...u }) => ({
       ...u,
       messageLockUntil: u.messageLockUntil ? u.messageLockUntil.toISOString() : null,
       hasSubscription: u.subscriptions.length > 0,
@@ -194,6 +196,9 @@ export async function GET(request: Request) {
       lastIp: canViewIp(admin.role) ? u.lastIp : null,
       lastCountry: lookupCountry(u.lastIp),
       deletedAt: u.deletedAt ? u.deletedAt.toISOString() : null,
+      referredBy: receivedReferral?.referrer
+        ? { phone: receivedReferral.referrer.phone, username: receivedReferral.referrer.username }
+        : null,
       deletePurgeAfter: u.deletePurgeAfter ? u.deletePurgeAfter.toISOString() : null,
       stats: statsMap[u.id],
     }));
