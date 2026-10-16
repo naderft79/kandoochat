@@ -23,20 +23,6 @@ export default async function AdminDashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* کارت داشبورد و قانون اشتراک یک هفته ای در یک ردیف */}
-      <div className="grid grid-cols-1 gap-4 items-stretch lg:grid-cols-2">
-        <div className="lux-card p-5">
-          <h1 className="text-lg font-black text-[#e8e8e8] flex items-center gap-2">
-            <LayoutDashboard className="w-5 h-5 text-[#d4af37]" />
-            داشبورد مدیریت
-          </h1>
-          <p className="text-[#888] mt-1 text-xs">
-            ارزش هر سکه: {formatToman(settings.coinValue)} — قیمت اشتراک: {formatToman(settings.subscriptionPrice)}
-          </p>
-        </div>
-        <FreeWeekToggle initial={settings.freeWeekSubscription} />
-      </div>
-
       {/* دسترسی سریع */}
       <div className="lux-card p-4">
         <h2 className="text-sm font-bold text-[#e8e8e8] flex items-center gap-2 mb-3">
@@ -55,6 +41,20 @@ export default async function AdminDashboardPage() {
             </Link>
           ))}
         </div>
+      </div>
+
+      {/* کارت داشبورد و قانون اشتراک یک هفته ای در یک ردیف */}
+      <div className="grid grid-cols-1 gap-4 items-stretch lg:grid-cols-2">
+        <div className="lux-card p-5">
+          <h1 className="text-lg font-black text-[#e8e8e8] flex items-center gap-2">
+            <LayoutDashboard className="w-5 h-5 text-[#d4af37]" />
+            داشبورد مدیریت
+          </h1>
+          <p className="text-[#888] mt-1 text-xs">
+            ارزش هر سکه: {formatToman(settings.coinValue)} — قیمت اشتراک: {formatToman(settings.subscriptionPrice)}
+          </p>
+        </div>
+        <FreeWeekToggle initial={settings.freeWeekSubscription} />
       </div>
 
       {/* QR لاگین سریع با گوشی — فقط دسکتاپ */}
