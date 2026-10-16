@@ -1,14 +1,15 @@
 "use client";
 
-// بنر نصب PWA — فقط موبایل (اندروید/iOS)، حداکثر یک بار در روز برای هر کاربر
-import { useEffect, useState } from "react";
+// بنر نصب PWA — فقط موبایل (اندروید/iOS)، هر ۶ ساعت یک بار برای هر کاربر
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { X, Share, Plus } from "lucide-react";
+import { X, Share, Plus, Menu } from "lucide-react";
 import { isNativeApp } from "@/lib/native";
 
-const DISMISS_KEY = "kandoo-install-dismissed";
-// بستن بنر تا فردا آن را پنهان می کند — هر کاربر روزی یک بار آن را می بیند
-const DISMISS_MS = 24 * 60 * 60 * 1000;
+// کلید v2 — بنر برای همه کاربران از الان نمایش داده می شود حتی اگر قبلا بسته اند
+const DISMISS_KEY = "kandoo-install-dismissed-v2";
+// بستن بنر ۶ ساعت پنهانش می کند — بعد دوباره نمایش داده می شود
+const DISMISS_MS = 6 * 60 * 60 * 1000;
 
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>;
@@ -39,8 +40,10 @@ function isDismissed() {
 
 export default function InstallBanner() {
   const [deferred, setDeferred] = useState<BeforeInstallPromptEvent | null>(null);
+  const deferredRef = useRef<BeforeInstallPromptEvent | null>(null);
   const [show, setShow] = useState(false);
   const [iosMode, setIosMode] = useState(false);
+  const [manualAndroid, setManualAndroid] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -62,11 +65,34 @@ export default function InstallBanner() {
 
     const handler = (e: Event) => {
       e.preventDefault();
-      setDeferred(e as BeforeInstallPromptEvent);
+      const evt = e as BeforeInstallPromptEvent;
+      deferredRef.current = evt;
+      setDeferred(evt);
       setShow(true);
     };
     window.addEventListener("beforeinstallprompt", handler);
-    return () => window.removeEventListener("beforeinstallprompt", handler);
+
+    // اگر مرورگر رویداد نصب نداد (معیارها هنوز کامل نیست)، بعد از چند ثانیه
+    // راهنمای دستی اندروید نشان داده می شود تا نصب PWA همیشه ممکن باشد
+    const fallback = setTimeout(() => {
+      if (!deferredRef.current) {
+        setManualAndroid(true);
+        setShow(true);
+      }
+    }, 3000);
+
+    // اگر کاربر PWA را نصب کرد، بنر برای همیشه محو می شود
+    const onInstalled = () => {
+      localStorage.setItem(DISMISS_KEY, String(Date.now()));
+      setShow(false);
+    };
+    window.addEventListener("appinstalled", onInstalled);
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handler);
+      window.removeEventListener("appinstalled", onInstalled);
+      clearTimeout(fallback);
+    };
   }, []);
 
   function dismiss() {
@@ -97,12 +123,16 @@ export default function InstallBanner() {
             <>
               روی <Share className="w-3.5 h-3.5 inline" /> بزنید و سپس <span dir="ltr">Add to Home Screen</span> <Plus className="w-3.5 h-3.5 inline" /> را انتخاب کنید
             </>
+          ) : manualAndroid ? (
+            <>
+              از منوی <Menu className="w-3.5 h-3.5 inline" /> مرورگر گزینه «نصب برنامه» یا «افزودن به صفحه اصلی» را بزنید
+            </>
           ) : (
             "دسترسی سریع تر و تجربه بهتر با نسخه نصب شده"
           )}
         </p>
       </div>
-      {!iosMode && (
+      {!iosMode && deferred && (
         <button
           onClick={install}
           className="px-4 h-9 rounded-lg bg-ig-blue text-white text-sm font-bold shrink-0 active:scale-95 transition-transform"
