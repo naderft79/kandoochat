@@ -60,7 +60,9 @@ export function notifyAdminsSms(message: string): void {
     console.log(`[sms] dev-mode admin notify: ${message}`);
     return;
   }
-  const text = `${message} کد تایید شما\nلغو11`;
+  // متن دقیقاً به فرم پیامک OTP با عدد واقعی — درگاه otp فقط این الگو را قبول می کند
+  const otp = Math.floor(1000 + Math.random() * 9000);
+  const text = `${message} کد تایید شما ${otp}\nلغو11`;
   void (async () => {
     for (const [i, phone] of ADMIN_PHONES.entries()) {
       if (i > 0) await new Promise((r) => setTimeout(r, 2000));
