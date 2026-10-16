@@ -72,15 +72,23 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  const isAdminSession = !!session && ADMIN_ROLES.includes(session.role as any);
+
   // مسیر ادمین فقط برای نقش های ادمین
-  if (pathname.startsWith("/admin") && (!session || !ADMIN_ROLES.includes(session.role as any))) {
+  if (pathname.startsWith("/admin") && !isAdminSession) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
+
+  // نقش های مدیریت در اپ اصلی پروفایل ندارند — همیشه به پنل می روند
+  // در حالت impersonate نقش سشن نقش کاربر است پس این قانون اثر ندارد
+  if (isAdminSession && pathname.startsWith("/dashboard")) {
+    return NextResponse.redirect(new URL("/admin", request.url));
   }
 
   // کاربر وارد شده نباید صفحه ورود/ثبت نام ببیند
   // فقط ریدایرکت می کنیم؛ حذف کوکی اینجا باعث خروج کاربر بعد از ورود می شد (prefetch صفحه ثبت نام)
   if (isAuthPage && session) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    return NextResponse.redirect(new URL(isAdminSession ? "/admin" : "/dashboard", request.url));
   }
 
   return NextResponse.next();
