@@ -36,9 +36,10 @@ export default function SeyyedWarningModal() {
         <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-[#d4af37]/15 flex items-center justify-center">
           <ShieldAlert className="w-7 h-7 text-[#d4af37]" />
         </div>
-        <h2 className="text-base font-bold text-[#e8e8e8]">شیطونی نکنی</h2>
-        <p className="text-2xl font-black text-emerald-400 mt-1 mb-4">سید</p>
-        <ul className="text-sm font-bold text-[#e8e8e8] space-y-1.5 mb-2 leading-6">
+        <h2 className="text-base font-bold text-black dark:text-white">
+          شیطونی نکنی <span className="text-2xl font-black text-emerald-500">سید</span>
+        </h2>
+        <ul className="mt-4 text-sm font-bold text-black dark:text-white space-y-1.5 mb-2 leading-6">
           {RULES.map((r) => (
             <li key={r}>{r}</li>
           ))}
