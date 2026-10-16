@@ -1,17 +1,19 @@
 "use client";
 
-// مودال هشدار برای ورود «آقا سید» — هر نشست مرورگر یک بار نمایش داده می شود
+// مودال شوخی برای ورود «آقا سید» — هر نشست مرورگر یک بار نمایش داده می شود
 import { useEffect, useState } from "react";
 import { ShieldAlert } from "lucide-react";
 
 const RULES = [
   "شیطنت",
   "آزار و اذیت پسران",
-  "خنده و تمسخر کاربران",
+  "خنده و تمسخر کاربرا",
   "دست انداختن بقیه",
-  "تغییر اعداد و ارقام بدون اجازه",
-  "ورود به پنل کاربران بدون دلیل",
-  "پاک کردن اطلاعات و داده ها",
+  "دزدیدن سکه از کاربرا",
+  "لجبازی با مدیر اصلی",
+  "فوش دادن تو چت پشتیبانی",
+  "قضاوت عکس های بقیه با غرور",
+  "گشتن دنبال زن واسه خودت تو پنل",
 ];
 
 export default function SeyyedWarningModal() {
@@ -35,7 +37,8 @@ export default function SeyyedWarningModal() {
         <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-[#d4af37]/15 flex items-center justify-center">
           <ShieldAlert className="w-7 h-7 text-[#d4af37]" />
         </div>
-        <h2 className="text-lg font-black text-[#e8e8e8] mb-4">شیطونی نکنی سید</h2>
+        <h2 className="text-base font-bold text-[#e8e8e8]">شیطونی نکنی</h2>
+        <p className="text-2xl font-black lux-gold-text mt-1 mb-4">سید</p>
         <ul className="text-sm text-[#bbb] space-y-1.5 mb-2 leading-6">
           {RULES.map((r) => (
             <li key={r}>{r}</li>
@@ -47,7 +50,7 @@ export default function SeyyedWarningModal() {
           onClick={() => setOpen(false)}
           className="lux-btn-gold w-full py-2.5 rounded-xl text-sm font-bold"
         >
-          باشه بذار
+          باشه عثلم
         </button>
       </div>
     </div>
