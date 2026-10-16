@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   description: "شرایط و قوانین استفاده از سایت همسریابی کندو.",
 };
 import KandooLogo from "@/components/KandooLogo";
+import AcceptBackButton from "@/components/AcceptBackButton";
 
 export default function TermsPage() {
   return (
@@ -76,6 +77,8 @@ export default function TermsPage() {
           <p className="text-xs text-ig-gray text-center pt-4">
             آخرین بروزرسانی: مرداد ۱۴۰۴
           </p>
+
+          <AcceptBackButton label="قبول قوانین" />
         </div>
       </div>
     </div>

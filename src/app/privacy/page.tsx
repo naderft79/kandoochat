@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   description: "سیاست های حفظ حریم خصوصی و امنیت اطلاعات کاربران در کندو.",
 };
 import KandooLogo from "@/components/KandooLogo";
+import AcceptBackButton from "@/components/AcceptBackButton";
 
 export default function PrivacyPage() {
   return (
@@ -106,6 +107,8 @@ export default function PrivacyPage() {
           <p className="text-xs text-ig-gray text-center pt-4">
             آخرین بروزرسانی: آبان ۱۴۰۴
           </p>
+
+          <AcceptBackButton label="قبول حریم خصوصی" />
         </div>
       </div>
     </div>
