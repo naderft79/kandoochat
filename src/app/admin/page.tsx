@@ -12,7 +12,7 @@ import { qrLoginEnabled } from "@/lib/qr-login";
 
 const QUICK_LINKS = [
   { href: "/admin/users", label: "مدیریت کاربران", icon: Users },
-  { href: "/admin/visits", label: "انالیز لحظه ای", icon: Activity },
+  { href: "/admin/analytics", label: "انالیز لحظه ای", icon: Activity },
   { href: "/admin/finance", label: "مالی", icon: Wallet },
   { href: "/admin/photos", label: "تایید عکس", icon: BadgeCheck },
 ];
@@ -34,9 +34,9 @@ export default async function AdminDashboardPage() {
             <Link
               key={l.href}
               href={l.href}
-              className="lux-btn-outline flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-bold"
+              className="lux-btn-outline flex items-center justify-center gap-2 py-3.5 rounded-lg text-sm font-bold"
             >
-              <l.icon className="w-3.5 h-3.5" />
+              <l.icon className="w-4 h-4" />
               {l.label}
             </Link>
           ))}
