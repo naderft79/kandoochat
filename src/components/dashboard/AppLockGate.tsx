@@ -4,8 +4,8 @@
 // پین ۴ رقمی + بیومتریک (اثر انگشت/چهره) در اپ اندروید
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Delete, Fingerprint, Lock, ScanFace } from "lucide-react";
-import { toPersianDigits } from "@/lib/format";
+import { Fingerprint, Lock, ScanFace } from "lucide-react";
+import PinPad from "@/components/dashboard/PinPad";
 import {
   getLockConfig,
   verifyPin,
@@ -14,8 +14,6 @@ import {
   biometricUnlock,
   type BiometryKind,
 } from "@/lib/appLock";
-
-const PAD = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "del"];
 
 export default function AppLockGate() {
   const router = useRouter();
@@ -122,53 +120,15 @@ export default function AppLockGate() {
       <h1 className="text-lg font-black text-foreground mt-4">کندو قفل است</h1>
       <p className="text-xs text-ig-gray mt-1">پین ۴ رقمی را وارد کنید</p>
 
-      {/* نمایش رقم های وارد شده */}
-      <div
-        dir="ltr"
-        className={`mt-6 flex gap-3 ${shake ? "ig-shake" : ""}`}
-        aria-live="polite"
-      >
-        {Array.from({ length: 4 }).map((_, i) => (
-          <span
-            key={i}
-            className={`w-3.5 h-3.5 rounded-full border-2 transition-colors ${
-              i < pin.length
-                ? "bg-ig-blue border-ig-blue"
-                : "border-ig-border bg-transparent"
-            }`}
-          />
-        ))}
-      </div>
-      <p className="mt-3 h-5 text-xs text-ig-red" role="alert">
-        {error}
-      </p>
-
-      {/* صفحه کلید عددی */}
-      <div dir="ltr" className="mt-4 grid grid-cols-3 gap-3 w-full max-w-[260px]">
-        {PAD.map((k, i) =>
-          k === "" ? (
-            <span key={`e${i}`} />
-          ) : k === "del" ? (
-            <button
-              key="del"
-              type="button"
-              onClick={() => press("del")}
-              aria-label="حذف"
-              className="h-16 rounded-full flex items-center justify-center text-foreground active:bg-ig-btn2 transition-colors"
-            >
-              <Delete className="w-6 h-6" />
-            </button>
-          ) : (
-            <button
-              key={k}
-              type="button"
-              onClick={() => press(k)}
-              className="h-16 rounded-full bg-ig-gray-bg border border-ig-divider text-xl font-bold text-foreground active:bg-ig-btn2 transition-colors"
-            >
-              {toPersianDigits(k)}
-            </button>
-          )
-        )}
+      {/* صفحه کلید عددی اختصاصی — کیبورد گوشی هیچ وقت باز نمی شود */}
+      <div className="mt-6">
+        <PinPad
+          pin={pin}
+          onDigit={(d) => press(d)}
+          onDelete={() => press("del")}
+          error={error}
+          shake={shake}
+        />
       </div>
 
       {bioKind !== "none" && (

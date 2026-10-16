@@ -1,7 +1,17 @@
 // قفل برنامه: پین ۴ رقمی + بیومتریک (اثر انگشت/چهره) در اپ اندروید
 // پین فقط به صورت هش SHA-256 با salt تصادفی در localStorage همان دستگاه نگه داری می شود
 // و هیچ وقت به سرور ارسال نمی شود — قفل محلی هر دستگاه است
-const KEY = "kandoo.applock.v1";
+// v2: قفل های نسخه قبلی (v1) نادیده گرفته و پاک می شوند تا کاربران دوباره راه اندازی کنند
+const KEY = "kandoo.applock.v2";
+const LEGACY_KEY = "kandoo.applock.v1";
+
+function cleanLegacy() {
+  try {
+    localStorage.removeItem(LEGACY_KEY);
+  } catch {
+    // ignore
+  }
+}
 
 export type AppLockConfig = {
   salt: string;
@@ -39,6 +49,7 @@ function randomSalt(): string {
 
 export function getLockConfig(): AppLockConfig | null {
   try {
+    cleanLegacy();
     const raw = localStorage.getItem(KEY);
     if (!raw) return null;
     const cfg = JSON.parse(raw) as AppLockConfig;
@@ -69,6 +80,7 @@ export async function setBioEnabled(bio: boolean): Promise<void> {
 
 export function clearLock(): void {
   try {
+    cleanLegacy();
     localStorage.removeItem(KEY);
   } catch {
     // ignore
