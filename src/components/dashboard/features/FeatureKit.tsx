@@ -61,7 +61,8 @@ export function FeatureRow({
   onClick?: () => void;
   href?: string;
 }) {
-  const interactive = (!!onClick || !!href) && !status;
+  // داشتن وضعیت (فعال و…) نباید ردیف را غیرقابل کلیک کند — مدیریت قابلیت فعال با کلیک انجام می شود
+  const interactive = !!onClick || !!href;
   const body = (
     <>
       <span className="w-11 h-11 rounded-full bg-ig-gray-bg border border-ig-divider flex items-center justify-center shrink-0">
@@ -76,16 +77,21 @@ export function FeatureRow({
         </span>
       </span>
       {status ? (
-        <span
-          className={cn(
-            "shrink-0 px-2.5 py-1 rounded-full text-xs font-bold",
-            status.kind === "active"
-              ? "bg-ig-blue text-white"
-              : "bg-ig-btn2 text-ig-gray"
+        <>
+          <span
+            className={cn(
+              "shrink-0 px-2.5 py-1 rounded-full text-xs font-bold",
+              status.kind === "active"
+                ? "bg-ig-blue text-white"
+                : "bg-ig-btn2 text-ig-gray"
+            )}
+          >
+            {status.label}
+          </span>
+          {interactive && (
+            <ChevronLeft className="w-4 h-4 text-ig-gray shrink-0" aria-hidden />
           )}
-        >
-          {status.label}
-        </span>
+        </>
       ) : (
         <>
           {cost != null && (
