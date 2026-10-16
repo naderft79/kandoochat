@@ -84,7 +84,25 @@ export default function LiveAnalyticsClient() {
 
       {/* محتوای تب فعال — فقط تب فعال mount می شود */}
       <div>
-        {activeTab === "chat" && <LiveChatClient />}
+        {activeTab === "chat" && (
+          // چت زنده و عکس زنده همزمان — در RTL ستون اول سمت راست می افتد
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
+            <section>
+              <h2 className="text-sm font-black text-[#e8e8e8] mb-3 flex items-center gap-1.5">
+                <MessageCircle className="w-4 h-4 text-[#d4af37]" />
+                چت زنده
+              </h2>
+              <LiveChatClient compact />
+            </section>
+            <section>
+              <h2 className="text-sm font-black text-[#e8e8e8] mb-3 flex items-center gap-1.5">
+                <Image className="w-4 h-4 text-[#d4af37]" />
+                عکس زنده
+              </h2>
+              <LivePhotosClient compact />
+            </section>
+          </div>
+        )}
         {activeTab === "liveStories" && <LiveStoriesClient />}
         {activeTab === "livePhotos" && <LivePhotosClient />}
         {activeTab === "onlineUsers" && <LiveFeedClient channel="onlineUsers" emptyLabel="در حال حاضر کاربری آنلاین نیست" />}

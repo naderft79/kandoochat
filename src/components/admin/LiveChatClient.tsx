@@ -43,7 +43,8 @@ type LiveMessage = {
   };
 };
 
-export default function LiveChatClient() {
+// حالت compact برای نمایش کنار عکس زنده در یک ردیف — داخل نیمه صفحه دو ستونه می شود
+export default function LiveChatClient({ compact = false }: { compact?: boolean }) {
   const [messages, setMessages] = useState<LiveMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(false);
@@ -147,10 +148,11 @@ export default function LiveChatClient() {
     }
   }
 
-  // تقسیم پیام ها به 3 ستون برای دسکتاپ
-  const columns: LiveMessage[][] = [[], [], []];
+  // تقسیم پیام ها به ستون ها — در حالت compact دو ستون کافی است
+  const colCount = compact ? 2 : 3;
+  const columns: LiveMessage[][] = Array.from({ length: colCount }, () => []);
   messages.forEach((msg, i) => {
-    columns[i % 3].push(msg);
+    columns[i % colCount].push(msg);
   });
 
   if (loading) {
@@ -189,8 +191,8 @@ export default function LiveChatClient() {
 
       <div ref={topRef} />
 
-      {/* لایوت موبایل: تک ستونه / دسکتاپ: سه ستونه */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      {/* لایوت موبایل: تک ستونه / دسکتاپ: سه ستونه (در حالت compact دو ستون) */}
+      <div className={compact ? "grid grid-cols-1 sm:grid-cols-2 gap-3" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"}>
         {columns.map((col, colIdx) => (
           <div key={colIdx} className="space-y-3">
             {col.map((msg) => {

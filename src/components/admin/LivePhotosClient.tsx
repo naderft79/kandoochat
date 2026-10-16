@@ -43,7 +43,8 @@ type LiveMessage = {
   };
 };
 
-export default function LivePhotosClient() {
+// حالت compact برای نمایش کنار چت زنده در یک ردیف — داخل نیمه صفحه دو ستونه می شود
+export default function LivePhotosClient({ compact = false }: { compact?: boolean }) {
   const [messages, setMessages] = useState<LiveMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(false);
@@ -204,7 +205,7 @@ export default function LivePhotosClient() {
       {newCount > 0 && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-20 lg:bottom-8 left-8 z-50 lux-btn-gold px-4 py-2.5 rounded-full text-xs font-bold flex items-center gap-2 transition-all"
+          className={`fixed ${compact ? "bottom-36 lg:bottom-20" : "bottom-20 lg:bottom-8"} left-8 z-50 lux-btn-gold px-4 py-2.5 rounded-full text-xs font-bold flex items-center gap-2 transition-all`}
         >
           <ArrowUp className="w-4 h-4" />
           {toPersianDigits(newCount)} عکس جدید
@@ -213,8 +214,8 @@ export default function LivePhotosClient() {
 
       <div ref={topRef} />
 
-      {/* لایوت: موبایل 1 ستون / تبلت 2 ستون / دسکتاپ 3 ستون — مثل چت زنده */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 items-start">
+      {/* لایوت: موبایل 1 ستون / تبلت 2 ستون / دسکتاپ 3 ستون — در حالت compact دو ستون */}
+      <div className={compact ? "grid grid-cols-1 sm:grid-cols-2 gap-3 items-start" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 items-start"}>
         {messages.map((msg) => {
           const receiver =
             msg.conversation.userAId === msg.sender.id
