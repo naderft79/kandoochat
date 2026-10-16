@@ -39,7 +39,8 @@ if (invalid.length) {
 }
 
 const isWin = process.platform === "win32";
-const gradlew = isWin ? "gradlew.bat" : "./gradlew";
+// روی ویندوز مسیر مطلق + shell لازم است تا فایل bat پیدا شود
+const gradlew = isWin ? path.join(androidDir, "gradlew.bat") : "./gradlew";
 mkdirSync(outDir, { recursive: true });
 
 const results = [];
@@ -55,11 +56,11 @@ for (const variant of variants) {
     }
     // کپی خروجی به dist/android با نام فلیور
     const ext = kind === "assemble" ? "apk" : "aab";
+    // خروجی APK در apk/<variant>/release و AAB در bundle/<variant>Release قرار می گیرد
     const srcDir = path.join(
       androidDir,
       "app/build/outputs",
-      kind === "assemble" ? "apk" : "bundle",
-      `${variant}Release`
+      kind === "assemble" ? path.join("apk", variant, "release") : path.join("bundle", `${variant}Release`)
     );
     let copied = null;
     if (existsSync(srcDir)) {
