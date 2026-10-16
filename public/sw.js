@@ -1,6 +1,23 @@
 // Service Worker — PWA کندو
-const CACHE_NAME = "kandoo-v5";
+const CACHE_NAME = "kandoo-v6";
 const STATIC_ASSETS = ["/manifest.json", "/bee-colori-logo.png", "/offline"];
+
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// شبکه های ناپایدار (VPN و…) گاهی fetch را یک باره رد می کنند
+// چند بار تلاش مجدد می کنیم تا صفحه آفلاین اشتباهی نمایش داده نشود
+async function fetchWithRetry(request, attempts = 3) {
+  let lastError;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      return await fetch(request);
+    } catch (error) {
+      lastError = error;
+      if (i < attempts - 1) await wait(600 * (i + 1));
+    }
+  }
+  throw lastError;
+}
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -58,7 +75,7 @@ self.addEventListener("fetch", (event) => {
   // navigation ها: network-first — آفلاین اول صفحه کش شده، در آخر صفحه آفلاین
   if (request.mode === "navigate" || request.destination === "document") {
     event.respondWith(
-      fetch(request)
+      fetchWithRetry(request)
         .then((response) => {
           if (response && response.status === 200 && response.type === "basic") {
             const clone = response.clone();
