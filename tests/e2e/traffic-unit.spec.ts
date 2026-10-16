@@ -38,6 +38,16 @@ test.describe("طبقه بندی منبع ورود", () => {
     expect(classifyEntry({ ...base, ua: WEB_UA, referrer: "https://blog.example.org/post" })).toEqual({ channel: "REFERRAL", source: "blog.example.org", platform: "WEB" });
   });
 
+  test("وب ویو داخلی اپ های دیگر بدون ارجاع به عنوان شبکه اجتماعی ناشناس ثبت می شود", () => {
+    // تلگرام و مشابه روی اندروید مرورگر داخلی wv دارند ولی ارجاع/توکن نمی فرستند
+    expect(classifyEntry({ ...base, ua: WV_UA, referrer: null })).toEqual({ channel: "SOCIAL", source: "inapp", platform: "APP" });
+    // اپ خودمان با توکن KandooApp اشتباه شبکه اجتماعی نشود
+    const own = "Mozilla/5.0 (Linux; Android 14; wv) AppleWebKit/537.36 KandooApp/1.0";
+    expect(classifyEntry({ ...base, ua: own, referrer: null }).channel).toBe("DIRECT");
+    // وب ویو با ارجاع شناخته شده همان منبع دقیق را می گیرد
+    expect(classifyEntry({ ...base, ua: WV_UA, referrer: "https://t.me/channel" }).source).toBe("telegram");
+  });
+
   test("پلتفرم اپ اندروید از KandooApp یا وب ویوی اندروید", () => {
     expect(detectPlatform(APP_UA)).toBe("APP");
     expect(detectPlatform(WV_UA)).toBe("APP");

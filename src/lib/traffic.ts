@@ -14,7 +14,7 @@ type SourceDef = {
 
 // منابع شناخته شده؛ hosts با انتهای دامنه تطبیق داده می شود و uaTokens برای مرورگرهای داخلی اپ ها است
 export const SOURCES: SourceDef[] = [
-  { key: "google", name: "گوگل", channel: "SEARCH", hosts: [/(^|\.)google\.[a-z]{2,3}(\.[a-z]{2})?$/], uaTokens: [] },
+  { key: "google", name: "گوگل", channel: "SEARCH", hosts: [/(^|\.)google\.[a-z]{2,3}(\.[a-z]{2})?$/], uaTokens: ["GSA/"] },
   { key: "bing", name: "بینگ", channel: "SEARCH", hosts: [/(^|\.)bing\.com$/], uaTokens: [] },
   { key: "yahoo", name: "یاهو", channel: "SEARCH", hosts: [/(^|\.)yahoo\.[a-z.]{2,6}$/], uaTokens: [] },
   { key: "duckduckgo", name: "داک داک گو", channel: "SEARCH", hosts: [/(^|\.)duckduckgo\.com$/], uaTokens: [] },
@@ -28,14 +28,21 @@ export const SOURCES: SourceDef[] = [
   { key: "facebook", name: "فیسبوک", channel: "SOCIAL", hosts: [/(^|\.)(facebook\.com|fb\.com|fb\.me)$/], uaTokens: ["FBAN", "FBAV", "FB_IAB"] },
   { key: "linkedin", name: "لینکدین", channel: "SOCIAL", hosts: [/(^|\.)linkedin\.com$/], uaTokens: ["LinkedInApp"] },
   { key: "youtube", name: "یوتیوب", channel: "SOCIAL", hosts: [/(^|\.)(youtube\.com|youtu\.be)$/], uaTokens: [] },
-  { key: "tiktok", name: "تیک تاک", channel: "SOCIAL", hosts: [/(^|\.)tiktok\.com$/], uaTokens: ["musical_ly", "BytedanceWebview"] },
+  { key: "tiktok", name: "تیک تاک", channel: "SOCIAL", hosts: [/(^|\.)tiktok\.com$/], uaTokens: ["musical_ly", "BytedanceWebview", "TikTok"] },
   { key: "whatsapp", name: "واتساپ", channel: "SOCIAL", hosts: [/(^|\.)(whatsapp\.com|wa\.me)$/], uaTokens: ["WhatsApp"] },
-  { key: "pinterest", name: "پینترست", channel: "SOCIAL", hosts: [/(^|\.)pinterest\.[a-z.]{2,6}$/], uaTokens: [] },
+  { key: "pinterest", name: "پینترست", channel: "SOCIAL", hosts: [/(^|\.)pinterest\.[a-z.]{2,6}$/], uaTokens: ["Pinterest"] },
   { key: "reddit", name: "ردیت", channel: "SOCIAL", hosts: [/(^|\.)reddit\.com$/], uaTokens: [] },
-  { key: "threads", name: "Threads", channel: "SOCIAL", hosts: [/(^|\.)threads\.net$/], uaTokens: [] },
+  { key: "threads", name: "Threads", channel: "SOCIAL", hosts: [/(^|\.)threads\.net$/], uaTokens: ["Barcelona"] },
   { key: "aparat", name: "آپارات", channel: "SOCIAL", hosts: [/(^|\.)aparat\.com$/], uaTokens: [] },
-  { key: "eitaa", name: "ایتا", channel: "SOCIAL", hosts: [/(^|\.)eitaa\.(com|ir)$/], uaTokens: [] },
+  { key: "eitaa", name: "ایتا", channel: "SOCIAL", hosts: [/(^|\.)eitaa\.(com|ir)$/], uaTokens: ["Eitaa"] },
   { key: "bale", name: "بله", channel: "SOCIAL", hosts: [/(^|\.)bale\.ai$/], uaTokens: [] },
+  { key: "rubika", name: "روبیکا", channel: "SOCIAL", hosts: [/(^|\.)rubika\.(ir|com)$/], uaTokens: ["Rubika"] },
+  { key: "snapchat", name: "اسنپ چت", channel: "SOCIAL", hosts: [/(^|\.)snapchat\.com$/], uaTokens: ["Snapchat"] },
+  { key: "line", name: "لاین", channel: "SOCIAL", hosts: [/(^|\.)line\.me$/], uaTokens: ["Line/"] },
+  { key: "vk", name: "VK", channel: "SOCIAL", hosts: [/(^|\.)vk\.(com|ru)$/], uaTokens: ["VKClient"] },
+  { key: "youtube-app", name: "یوتیوب", channel: "SOCIAL", hosts: [], uaTokens: ["com.google.android.youtube", "YouTube/"] },
+  // مرورگر داخلی اپ هایی که ارجاع و توکن نمی فرستند (تلگرام و …) — فقط به عنوان fallback از روی wv تشخیص داده می شود
+  { key: "inapp", name: "اپلیکیشن (مرورگر داخلی)", channel: "SOCIAL", hosts: [], uaTokens: [] },
 ];
 
 const SOURCE_BY_KEY = new Map(SOURCES.map((s) => [s.key, s]));
@@ -105,6 +112,12 @@ export function classifyEntry(input: ClassifyInput): { channel: Channel; source:
       if (s.hosts.some((re) => re.test(host))) return { channel: s.channel, source: s.key, platform };
     }
     return { channel: "REFERRAL", source: host.slice(0, 80), platform };
+  }
+
+  // مرورگر داخلی اپ های دیگر (WebView اندروید با توکن wv) بدون ارجاع و بدون توکن شناخته شده → شبکه اجتماعی ناشناس
+  // توکن اپ خودمان جدا چک می شود تا بازدید اپ با شبکه اجتماعی اشتباه نشود
+  if (/;\s?wv\)/.test(input.ua) && !/Kandoo(Admin)?App/i.test(input.ua)) {
+    return { channel: "SOCIAL", source: "inapp", platform };
   }
 
   return { channel: "DIRECT", source: "direct", platform };

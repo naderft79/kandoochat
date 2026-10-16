@@ -261,41 +261,43 @@ export default function VisitsDashboard() {
           </div>
 
           <Card title="جدول بازدید صفحات" subtitle="همه صفحات با نام، تعداد بازدید و سهم" icon={FileText}>
+            {/* گرید با ستون های ثابت — نام و آدرس در یک ستون، عدد و سهم در ستون های تراز شده */}
             <div className="overflow-x-auto">
-              <table className="w-full text-xs">
-                <thead>
-                  <tr className="text-[#888] border-b border-[rgba(212,175,55,0.12)]">
-                    <th className="text-right py-2 font-bold">صفحه</th>
-                    <th className="text-right py-2 font-bold">آدرس</th>
-                    <th className="text-right py-2 font-bold">بازدید</th>
-                    <th className="text-right py-2 font-bold w-1/3">سهم</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.pages.map((p, i) => {
-                    const share = data.kpis.views > 0 ? (p.views / data.kpis.views) * 100 : 0;
-                    return (
-                      <tr key={p.key} className="border-b border-[rgba(212,175,55,0.06)]">
-                        <td className="py-2 font-bold text-foreground">{p.name}</td>
-                        <td className="py-2 text-[#888]" dir="ltr">{p.key}</td>
-                        <td className="py-2 font-black text-[#d4af37]">
-                          <CountUp value={p.views} />
-                        </td>
-                        <td className="py-2">
-                          <div className="h-1.5 rounded-full bg-[rgba(212,175,55,0.08)] overflow-hidden">
-                            <motion.div
-                              initial={{ width: 0 }}
-                              animate={{ width: `${Math.max(2, share)}%` }}
-                              transition={{ delay: 0.05 * i, duration: 0.6, ease: "easeOut" }}
-                              className="h-full rounded-full bg-[#d4af37]"
-                            />
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+              <div className="min-w-[460px]">
+                <div className="grid grid-cols-[minmax(0,1fr)_72px_140px] gap-3 items-center text-[10px] font-bold text-[#888] border-b border-[rgba(212,175,55,0.12)] pb-2">
+                  <span>صفحه</span>
+                  <span className="text-center">بازدید</span>
+                  <span>سهم از کل</span>
+                </div>
+                {data.pages.map((p, i) => {
+                  const share = data.kpis.views > 0 ? (p.views / data.kpis.views) * 100 : 0;
+                  return (
+                    <div
+                      key={p.key}
+                      className="grid grid-cols-[minmax(0,1fr)_72px_140px] gap-3 items-center py-2.5 border-b border-[rgba(212,175,55,0.06)] last:border-0"
+                    >
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold text-foreground truncate">{p.name}</p>
+                        <p className="text-[10px] text-[#888] truncate mt-0.5" dir="ltr">{p.key}</p>
+                      </div>
+                      <p className="text-xs font-black text-[#d4af37] text-center">
+                        <CountUp value={p.views} />
+                      </p>
+                      <div className="flex items-center gap-2" dir="ltr">
+                        <div className="h-1.5 flex-1 rounded-full bg-[rgba(212,175,55,0.08)] overflow-hidden">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${Math.max(2, share)}%` }}
+                            transition={{ delay: 0.05 * i, duration: 0.6, ease: "easeOut" }}
+                            className="h-full rounded-full bg-[#d4af37]"
+                          />
+                        </div>
+                        <span className="text-[10px] text-[#888] w-9 text-left shrink-0">{fa(Math.round(share))}٪</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </Card>
         </>

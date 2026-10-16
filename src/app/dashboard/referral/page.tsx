@@ -42,6 +42,9 @@ export default function ReferralPage() {
     [data?.code]
   );
 
+  // لینک های اشتراک شبکه اجتماعی با utm تگ می شوند تا منبع ورود در آمار دقیق ثبت شود
+  const taggedLink = (src: string) => `${inviteLink}?utm_source=${src}&utm_medium=social`;
+
   const shareText = useMemo(
     () =>
       data
@@ -174,14 +177,14 @@ export default function ReferralPage() {
         {/* دکمه های اشتراک گذاری */}
         <div className="grid grid-cols-3 gap-2 mt-4">
           <button
-            onClick={() => openShare(`https://t.me/share/url?url=${encodeURIComponent(inviteLink)}&text=${encodeURIComponent(shareText)}`)}
+            onClick={() => openShare(`https://t.me/share/url?url=${encodeURIComponent(taggedLink("telegram"))}&text=${encodeURIComponent(shareText)}`)}
             className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-ig-btn2 hover:bg-ig-btn2-hover text-sm font-bold transition-colors"
           >
             <Send className="w-4 h-4 text-sky-500" />
             تلگرام
           </button>
           <button
-            onClick={() => openShare(`https://wa.me/?text=${encodeURIComponent(`${shareText} ${inviteLink}`)}`)}
+            onClick={() => openShare(`https://wa.me/?text=${encodeURIComponent(`${shareText} ${taggedLink("whatsapp")}`)}`)}
             className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-ig-btn2 hover:bg-ig-btn2-hover text-sm font-bold transition-colors"
           >
             <MessageCircle className="w-4 h-4 text-green-600" />
