@@ -356,7 +356,7 @@ export default function StoryViewer({
   function viewProfile() {
     if (!currentUser) return;
     setShowMenu(false);
-    router.push(`/profile/${currentUser.username}`);
+    router.push(`/profile/${currentUser.userId}`);
   }
 
   // باز کردن مودال انتقال سکه

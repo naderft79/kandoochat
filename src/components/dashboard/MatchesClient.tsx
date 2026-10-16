@@ -613,7 +613,7 @@ export default function MatchesClient({ currentCity, currentProvince, initialMat
                   <Coins className="w-5 h-5" />
                 </button>
                 <button
-                  onClick={() => router.push(`/profile/${photoModal.username}`)}
+                  onClick={() => router.push(`/profile/${photoModal.id}`)}
                   className="w-11 h-11 rounded-full bg-surface hover:bg-ig-btn2 text-foreground flex items-center justify-center ig-shadow-lg active:scale-90 transition-all"
                   title="مشاهده پروفایل"
                 >

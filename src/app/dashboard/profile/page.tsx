@@ -167,6 +167,7 @@ export default async function ProfilePage() {
             {/* دو دکمه خاکستری */}
             <ProfileActions
               initial={{
+                id: user.id,
                 username: user.username,
                 firstName: user.firstName,
                 lastName: user.lastName,

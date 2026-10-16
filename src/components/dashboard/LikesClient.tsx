@@ -15,6 +15,7 @@ export type LikeItem = {
   createdAt: string;
   // فقط برای کاربران ویژه ارسال می شود
   sender?: {
+    id: string;
     firstName: string;
     username: string;
     age: number;
@@ -119,7 +120,7 @@ function PremiumCard({ item }: { item: LikeItem }) {
   const s = item.sender!;
   return (
     <Link
-      href={`/profile/${s.username}`}
+      href={`/profile/${s.id}`}
       className="group relative rounded-2xl overflow-hidden bg-ig-gray-bg border border-ig-border hover:border-foreground/20 transition-colors block"
     >
       <div className="relative aspect-[3/4]">

@@ -325,12 +325,12 @@ export default function ConversationActionsMenu({
                     </p>
                   </div>
                 )}
-                {targetUsername && !isDeletedAccount && (
+                {!isDeletedAccount && (
                   <button
                     type="button"
                     onClick={() => {
                       setOpen(false);
-                      router.push(`/profile/${targetUsername}`);
+                      router.push(`/profile/${targetId}`);
                     }}
                     className={rowCls}
                   >

@@ -105,7 +105,7 @@ export default function FeedCard({
   }
 
   async function share() {
-    const url = `${window.location.origin}/profile/${match.username}`;
+    const url = `${window.location.origin}/profile/${match.id}`;
     try {
       if (navigator.share)
         await navigator.share({ title: `${fullName} در کندو`, url });
@@ -384,7 +384,7 @@ export default function FeedCard({
             </Button>
           </div>
           <Link
-            href={`/profile/${match.username}`}
+            href={`/profile/${match.id}`}
             className="block text-center text-sm font-semibold text-ig-blue"
           >
             مشاهده پروفایل کامل
@@ -489,7 +489,7 @@ export default function FeedCard({
                     <Send className="w-5 h-5 -scale-x-100" />
                   </button>
                   <button
-                    onClick={() => router.push(`/profile/${match.username}`)}
+                    onClick={() => router.push(`/profile/${match.id}`)}
                     className="w-11 h-11 rounded-full bg-surface hover:bg-ig-btn2 text-foreground flex items-center justify-center ig-shadow-lg active:scale-90 transition-all"
                     title="مشاهده پروفایل"
                   >

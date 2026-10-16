@@ -91,7 +91,7 @@ export default function UserActionsSheet({
 
   async function copyLink() {
     try {
-      await navigator.clipboard.writeText(`${window.location.origin}/profile/${target.username}`);
+      await navigator.clipboard.writeText(`${window.location.origin}/profile/${target.id}`);
       toast("لینک پروفایل کپی شد", "success");
     } catch {
       toast("کپی لینک ممکن نشد", "error");

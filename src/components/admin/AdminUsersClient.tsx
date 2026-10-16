@@ -532,7 +532,7 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
               <div className="relative shrink-0 flex flex-col items-center gap-1.5">
                 {u.photos.find((p) => p.isProfile)?.url ? (
                   <div
-                    onClick={() => window.open(`/profile/${u.username}`, "_blank", "width=400,height=800")}
+                    onClick={() => window.open(`/profile/${u.id}`, "_blank", "width=400,height=800")}
                     className="relative w-16 h-16 xl:w-20 xl:h-20 rounded-full overflow-hidden ring-2 ring-neutral-100 cursor-pointer hover:opacity-80 transition-opacity"
                   >
                     <Image
@@ -545,7 +545,7 @@ export default function AdminUsersClient({ initialUsers, total, hasMore: initial
                   </div>
                 ) : (
                   <div
-                    onClick={() => window.open(`/profile/${u.username}`, "_blank", "width=400,height=800")}
+                    onClick={() => window.open(`/profile/${u.id}`, "_blank", "width=400,height=800")}
                     className="inline-block cursor-pointer hover:opacity-80 transition-opacity"
                   >
                     <DefaultAvatar size={80} />

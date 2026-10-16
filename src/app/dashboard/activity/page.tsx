@@ -13,6 +13,7 @@ const photoSelect = {
 };
 
 const personSelect = {
+  id: true,
   firstName: true,
   username: true,
   isVerified: true,
@@ -99,7 +100,7 @@ export default async function ActivityPage() {
       kind: l.type === "SUPER_LIKE" ? "superlike" : "like",
       title: l.type === "SUPER_LIKE" ? `تو ${l.receiver.firstName} را سوپر لایک کردی` : `تو ${l.receiver.firstName} را لایک کردی`,
       photoUrl: l.receiver.photos[0]?.url ?? null,
-      username: l.receiver.username,
+      userId: l.receiver.id,
       verified: l.receiver.isVerified,
       time: l.createdAt.toISOString(),
     });
@@ -112,7 +113,7 @@ export default async function ActivityPage() {
       kind: "match",
       title: `با ${other.firstName} مچ شدی`,
       photoUrl: other.photos[0]?.url ?? null,
-      username: other.username,
+      userId: other.id,
       verified: other.isVerified,
       time: m.createdAt.toISOString(),
     });
@@ -125,7 +126,7 @@ export default async function ActivityPage() {
       kind: "view",
       title: premium ? `${v.viewer.firstName} پروفایل تو را دید` : "یک نفر پروفایل تو را دید",
       photoUrl: premium ? v.viewer.photos[0]?.url ?? null : null,
-      username: premium ? v.viewer.username : undefined,
+      userId: premium ? v.viewer.id : undefined,
       verified: premium ? v.viewer.isVerified : false,
       blurred: !premium,
       time: v.createdAt.toISOString(),
@@ -138,7 +139,7 @@ export default async function ActivityPage() {
       kind: "coin_out",
       title: `${t.coins} سکه به ${t.receiver.firstName} هدیه دادی`,
       photoUrl: t.receiver.photos[0]?.url ?? null,
-      username: t.receiver.username,
+      userId: t.receiver.id,
       verified: t.receiver.isVerified,
       time: t.createdAt.toISOString(),
     });
@@ -150,7 +151,7 @@ export default async function ActivityPage() {
       kind: "coin_in",
       title: `${t.coins} سکه از ${t.sender.firstName} هدیه گرفتی`,
       photoUrl: t.sender.photos[0]?.url ?? null,
-      username: t.sender.username,
+      userId: t.sender.id,
       verified: t.sender.isVerified,
       time: t.createdAt.toISOString(),
     });
@@ -163,7 +164,7 @@ export default async function ActivityPage() {
       title: `${r.referred.firstName} با دعوت تو عضو شد`,
       subtitle: r.status === "PAID" ? `+${r.rewardCoins} سکه پاداش` : "در انتظار پاداش",
       photoUrl: r.referred.photos[0]?.url ?? null,
-      username: r.referred.username,
+      userId: r.referred.id,
       verified: r.referred.isVerified,
       time: r.createdAt.toISOString(),
     });

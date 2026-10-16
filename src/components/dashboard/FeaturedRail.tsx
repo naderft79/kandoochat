@@ -18,7 +18,7 @@ export default function FeaturedRail({ users }: { users: FeaturedUser[] }) {
       <ul className="flex gap-4 overflow-x-auto px-4 pb-1">
         {users.map((u) => (
           <li key={u.id} className="shrink-0 w-[72px]">
-            <Link href={`/profile/${u.username}`} className="flex flex-col items-center gap-1.5 active:scale-95 transition-transform">
+            <Link href={`/profile/${u.id}`} className="flex flex-col items-center gap-1.5 active:scale-95 transition-transform">
               <span className="w-[68px] h-[68px] rounded-full border-2 border-ig-blue p-0.5 flex">
                 <span className="relative w-full h-full rounded-full overflow-hidden bg-ig-btn2 flex items-center justify-center">
                   {u.photo ? <Image src={u.photo} alt="" fill sizes="64px" className="object-cover" /> : <DefaultAvatar size={60} />}

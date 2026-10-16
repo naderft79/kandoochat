@@ -56,6 +56,7 @@ export default async function LikesPage() {
           isMatched: l.isMatched,
           createdAt: l.createdAt.toISOString(),
           sender: {
+            id: l.sender.id,
             firstName: l.sender.firstName,
             username: l.sender.username,
             age: l.sender.age,

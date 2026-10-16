@@ -142,7 +142,7 @@ export default function DailySuggestion({ city, province }: { city?: string; pro
         {/* محتوای کارت */}
         <div className="flex items-center gap-3">
           {/* آواتار */}
-          <Link href={`/profile/${suggestion.username}`} className="shrink-0 group">
+          <Link href={`/profile/${suggestion.id}`} className="shrink-0 group">
             <div className="relative">
               <div className="w-12 h-12 rounded-xl ig-shadow-sm group-hover:scale-105 transition-transform overflow-hidden flex items-center justify-center">
                 {suggestion.photos?.[0]?.url ? (
@@ -161,7 +161,7 @@ export default function DailySuggestion({ city, province }: { city?: string; pro
 
           {/* اطلاعات */}
           <div className="flex-1 min-w-0">
-            <Link href={`/profile/${suggestion.username}`}>
+            <Link href={`/profile/${suggestion.id}`}>
               <p className="text-sm font-black text-foreground flex items-center gap-1 hover:text-ig-gray transition-colors">
                 {suggestion.firstName}
                 {suggestion.isVerified && <VerifiedBadge className="w-3.5 h-3.5" />}
@@ -203,7 +203,7 @@ export default function DailySuggestion({ city, province }: { city?: string; pro
               </button>
             )}
             <Link
-              href={`/profile/${suggestion.username}`}
+              href={`/profile/${suggestion.id}`}
               className="px-3 py-2 rounded-xl bg-surface border border-neutral-200 text-foreground text-xs font-black flex items-center justify-center hover:bg-ig-gray-bg active:scale-95 transition-all"
             >
               پروفایل

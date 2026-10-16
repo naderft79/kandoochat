@@ -97,14 +97,18 @@ export function getNotifHref(type: string, data: string | null): string {
   const d = parseData(data);
   if (typeof d.link === "string") return d.link;
   if (typeof d.conversationId === "string") return `/dashboard/chat/${d.conversationId}`;
-  const username = typeof d.senderUsername === "string" && d.senderUsername ? d.senderUsername : null;
+  // شناسایی کاربر بر اساس id ثابت — با تغییر آیدی هم لینک کار می کند
+  const userId =
+    typeof d.matchUserId === "string" && d.matchUserId ? d.matchUserId
+    : typeof d.senderId === "string" && d.senderId ? d.senderId
+    : null;
 
   switch (type) {
     // لایک و مچ → پروفایل کسی که لایک کرده
     case "LIKE":
     case "SUPER_LIKE":
     case "MATCH":
-      return username ? `/profile/${username}` : "/dashboard/likes";
+      return userId ? `/profile/${userId}` : "/dashboard/likes";
     // سکه و هدیه → اگر گفتگو دارد همان چت، وگرنه صفحه لایک ها
     case "GIFT_RECEIVED":
     case "REQUEST_RECEIVED":

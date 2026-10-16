@@ -16,7 +16,7 @@ export type ActivityItem = {
   title: string;
   subtitle?: string;
   photoUrl?: string | null;
-  username?: string;
+  userId?: string;
   verified?: boolean;
   blurred?: boolean;
   time: string;
@@ -133,8 +133,8 @@ export default function ActivityClient({
                 </span>
               </div>
             );
-            return item.username ? (
-              <Link key={item.id} href={`/profile/${item.username}`} className="block">
+            return item.userId ? (
+              <Link key={item.id} href={`/profile/${item.userId}`} className="block">
                 {inner}
               </Link>
             ) : (

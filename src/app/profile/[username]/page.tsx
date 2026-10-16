@@ -21,8 +21,9 @@ export async function generateMetadata({
   params: Promise<{ username: string }>;
 }): Promise<Metadata> {
   const { username } = await params;
-  const user = await prisma.user.findUnique({
-    where: { username, isActive: true, role: "USER" },
+  // شناسایی بر اساس id ثابت کاربر یا username — با تغییر آیدی لینک های قبلی هم کار می کنند
+  const user = await prisma.user.findFirst({
+    where: { OR: [{ id: username }, { username }], isActive: true, role: "USER" },
     select: { firstName: true, lastName: true, age: true, city: true, bio: true, isVerified: true },
   });
 
@@ -54,8 +55,9 @@ export default async function PublicProfilePage({
 }) {
   const { username } = await params;
 
-  const user = await prisma.user.findUnique({
-    where: { username, isActive: true, role: "USER" },
+  // شناسایی بر اساس id ثابت کاربر یا username — با تغییر آیدی لینک های قبلی هم کار می کنند
+  const user = await prisma.user.findFirst({
+    where: { OR: [{ id: username }, { username }], isActive: true, role: "USER" },
     select: {
       id: true,
       firstName: true,

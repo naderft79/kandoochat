@@ -838,7 +838,7 @@ export default function ChatRoom({
         <Link href="/dashboard/chat" aria-label="بازگشت به لیست گفتگوها" className="p-1.5 shrink-0 active:scale-90 transition-transform lg:hidden">
           <ArrowRight className="w-5 h-5 text-foreground" strokeWidth={2} />
         </Link>
-        <Link href={isAIChat ? "/dashboard/chat" : `/profile/${otherUsername}`} className="shrink-0 active:scale-90 transition-transform">
+        <Link href={isAIChat ? "/dashboard/chat" : `/profile/${otherUserId}`} className="shrink-0 active:scale-90 transition-transform">
           <div className="w-10 h-10 rounded-full shrink-0 relative overflow-hidden flex items-center justify-center">
             {otherPhoto ? (
               <div className="relative w-full h-full">
@@ -856,7 +856,7 @@ export default function ChatRoom({
             )}
           </div>
         </Link>
-        <Link href={isAIChat ? "/dashboard/chat" : `/profile/${otherUsername}`} className="flex-1 min-w-0 active:scale-95 transition-transform">
+        <Link href={isAIChat ? "/dashboard/chat" : `/profile/${otherUserId}`} className="flex-1 min-w-0 active:scale-95 transition-transform">
           <p className="text-sm font-bold flex items-center gap-1">
             {otherName}
             {isAIChat ? null : otherVerified ? (
@@ -897,7 +897,7 @@ export default function ChatRoom({
             )}
             {!isAIChat && (
               <Link
-                href={`/profile/${otherUsername}`}
+                href={`/profile/${otherUserId}`}
                 onClick={() => setShowMenu(false)}
                 className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-ig-gray-bg w-full text-right transition-colors"
               >
@@ -964,7 +964,7 @@ export default function ChatRoom({
         )}
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center py-16 text-center ig-fade-in">
-            <Link href={`/profile/${otherUsername}`} className="active:scale-95 transition-transform">
+            <Link href={`/profile/${otherUserId}`} className="active:scale-95 transition-transform">
               <div className="w-24 h-24 rounded-full mb-4 ig-shadow-lg overflow-hidden flex items-center justify-center">
                 {otherPhoto ? (
                   <div className="relative w-full h-full">

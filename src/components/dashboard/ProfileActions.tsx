@@ -10,6 +10,7 @@ import { useToast } from "@/components/ToastProvider";
 import { nativeShare as capShare, nativeCopy } from "@/lib/native";
 
 type ProfileData = {
+  id: string;
   username: string;
   firstName: string;
   lastName: string;
@@ -31,7 +32,7 @@ export default function ProfileActions({ initial }: { initial: ProfileData }) {
   const { toast } = useToast();
 
   async function share() {
-    const url = `${window.location.origin}/profile/${initial.username}`;
+    const url = `${window.location.origin}/profile/${initial.id}`;
     const ok = await capShare({ title: "پروفایل من در کندو", url });
     if (!ok) {
       if (await nativeCopy(url)) toast("لینک پروفایل کپی شد", "success");
@@ -61,7 +62,7 @@ export default function ProfileActions({ initial }: { initial: ProfileData }) {
             onClick={() => {
               // اول ورودی تاریخچه مودال بسته می شود تا cleanup ناوبری را برنگرداند
               window.history.back();
-              setTimeout(() => router.push(`/profile/${initial.username}`), 50);
+              setTimeout(() => router.push(`/profile/${initial.id}`), 50);
             }}
             className="w-full mb-3 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg bg-ig-gray-bg text-sm font-bold text-foreground hover:bg-ig-btn2-hover transition-colors"
           >
