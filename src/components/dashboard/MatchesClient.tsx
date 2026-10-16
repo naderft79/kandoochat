@@ -75,7 +75,8 @@ export default function MatchesClient({ currentCity, currentProvince, initialMat
   const [chatLoading, setChatLoading] = useState(false);
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
   const [showHeartAnim, setShowHeartAnim] = useState(false);
-  const [filters, setFilters] = useState<Filters>(() => defaultFilters(currentCity, userProvince));
+  // پیش فرض جستجو: همه شهرها — کاربر می تواند شهر خودش را انتخاب کند
+  const [filters, setFilters] = useState<Filters>(() => defaultFilters("ALL", "ALL"));
   const [matchedUser, setMatchedUser] = useState<Match | null>(null);
   const firstRun = useRef(true);
   const savedLoaded = useRef(false);
@@ -97,6 +98,8 @@ export default function MatchesClient({ currentCity, currentProvince, initialMat
       city: f.city,
       province: f.province,
       hasPhoto: String(f.hasPhoto),
+      // مرتب سازی پیش فرض: آنلاین ها اول
+      sort: "ACTIVE",
     });
     if (q.trim()) params.set("q", q.trim());
     if (f.ageMin) params.set("ageMin", f.ageMin);
@@ -137,7 +140,7 @@ export default function MatchesClient({ currentCity, currentProvince, initialMat
         // اگر کاربر قبل از رسیدن پاسخ فیلتر را تغییر داده، فیلتر ذخیره شده جایگزین نشود
         if (d?.filters && !touched.current) {
           // فیلترهای قدیمی ممکن است استان نداشته باشند — با مقادیر پیش فرض ادغام و نرمال می شوند
-          const merged = normalizeFilters({ ...defaultFilters(currentCity, userProvince), ...d.filters });
+          const merged = normalizeFilters({ ...defaultFilters("ALL", "ALL"), ...d.filters });
           // در فیلترهای قدیمی «همه شهرها» یعنی همه کشور، نه همه شهرهای استان کاربر
           if (!d.filters.province && merged.city === "ALL") merged.province = "ALL";
           setFilters(merged);
@@ -269,8 +272,8 @@ export default function MatchesClient({ currentCity, currentProvince, initialMat
         </div>
 
         <MatchesFilters
-          defaultCity={currentCity}
-          defaultProvince={userProvince}
+          defaultCity="ALL"
+          defaultProvince="ALL"
           value={filters}
           onChange={(f) => {
             touched.current = true;

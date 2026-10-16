@@ -86,7 +86,9 @@ export default function MatchesFilters({
   const locationSub = !locationActive
     ? defaultProvince && defaultProvince !== "ALL"
       ? `${defaultProvince} - ${defaultCity}`
-      : defaultCity
+      : defaultCity === "ALL"
+        ? "همه شهرها"
+        : defaultCity
     : value.city !== "ALL"
       ? value.province !== "ALL"
         ? `${value.province} - ${value.city}`

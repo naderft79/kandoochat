@@ -11,7 +11,9 @@ export default async function MatchesPage() {
   if (!user) redirect("/login");
 
   // صفحه اول نتایج (همان کوئری مشترک با /api/matches تا نتیجه یکسان باشد)
-  const { matches, totalPages } = await getDiscoveryPage(user, new URLSearchParams(), 1);
+  // پیش فرض: همه شهرها و مرتب سازی بر اساس آنلاین بودن
+  const params = new URLSearchParams({ city: "ALL", province: "ALL", sort: "ACTIVE" });
+  const { matches, totalPages } = await getDiscoveryPage(user, params, 1);
 
   return (
     <MatchesClient
