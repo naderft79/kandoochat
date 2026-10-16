@@ -82,22 +82,36 @@ export default function AdminAlertsBanner() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let cancelled = false;
+
     async function fetchAlerts() {
       try {
         const res = await fetch("/api/admin/alerts?_t=" + Date.now(), {
           cache: "no-store",
         });
-        if (res.ok) {
+        if (res.ok && !cancelled) {
           const data = await res.json();
           setAlerts(data.alerts ?? []);
         }
       } catch {
         // ignore
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     }
+
     fetchAlerts();
+    // ریل تایم: هر ۳۰ ثانیه به روز می شود و با برگشتن به تب فوراً تازه می شود
+    const interval = setInterval(fetchAlerts, 30_000);
+    const onVisible = () => {
+      if (document.visibilityState === "visible") fetchAlerts();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
   }, []);
 
   if (loading) {

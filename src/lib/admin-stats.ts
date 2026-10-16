@@ -24,9 +24,9 @@ export async function getAdminStats(): Promise<AdminStats> {
   const day30 = new Date(now.getTime() - 30 * DAY);
   const day14 = new Date(now.getTime() - 14 * DAY);
   const in7 = new Date(now.getTime() + 7 * DAY);
-  // فیلتر کاربر واقعی — حساب های فیک (ربات) در هیچ آماری محاسبه نمی شوند
-  const real = { isFake: false } as const;
-  const user = { role: "USER", isFake: false } as const;
+  // فیلتر کاربر واقعی — حساب های فیک (ربات)، همراه AI و حذف شده در هیچ آماری محاسبه نمی شوند
+  const real = { isFake: false, isAICompanion: false, deletedAt: null } as const;
+  const user = { role: "USER", ...real } as const;
   const purchase = { type: "COIN_PURCHASE", status: "COMPLETED", user: real } as const;
 
   const [
@@ -47,7 +47,7 @@ export async function getAdminStats(): Promise<AdminStats> {
     prisma.user.count({ where: { ...user, createdAt: { gte: day7 } } }),
     prisma.user.count({ where: { ...user, createdAt: { gte: day30 } } }),
     prisma.user.count({ where: { ...user, lastSeen: { gte: day1 } } }),
-    prisma.user.count({ where: { ...user, isOnline: true } }),
+    prisma.user.count({ where: { ...user, isOnline: true, lastSeen: { gte: new Date(now.getTime() - 3 * 60 * 1000) } } }),
     prisma.user.count({ where: { ...user, phoneVerified: true } }),
     prisma.user.count({ where: { ...user, isVerified: true } }),
     prisma.user.count({ where: { ...user, isIdentityVerified: true } }),
@@ -103,9 +103,9 @@ export async function getAdminStats(): Promise<AdminStats> {
     prisma.verificationRequest.count({ where: { status: "REJECTED", reviewedAt: { gte: day7 }, user: real } }),
     prisma.profilePhoto.count({ where: { isVerified: false, isRejected: false, isDeletedByUser: false, user: real } }),
     prisma.story.count({ where: { isApproved: false, isRejected: false, isDeletedByUser: false, user: real } }),
-    // تیکت های مهمان (user null) حفظ می شوند — فقط تیکت کاربران فیک حذف می شود
-    prisma.ticket.count({ where: { status: "OPEN", NOT: { user: { isFake: true } } } }),
-    prisma.ticket.count({ where: { status: "ANSWERED", NOT: { user: { isFake: true } } } }),
+    // تیکت های مهمان (user null) حفظ می شوند — فقط تیکت کاربران فیک/AI/حذف شده حذف می شود
+    prisma.ticket.count({ where: { status: "OPEN", OR: [{ user: null }, { user: real }] } }),
+    prisma.ticket.count({ where: { status: "ANSWERED", OR: [{ user: null }, { user: real }] } }),
 
     prisma.auditLog.count({ where: { createdAt: { gte: day1 } } }),
     prisma.botLog.count({ where: { createdAt: { gte: day1 } } }),

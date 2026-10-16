@@ -71,7 +71,7 @@ export async function GET() {
       prisma.profilePhoto.count({ where: { isVerified: false, isRejected: false, isDeletedByUser: false, isProfile: true, user: realUser } }),
       prisma.profilePhoto.count({ where: { isVerified: false, isRejected: false, isDeletedByUser: false, isProfile: false, user: realUser } }),
       prisma.user.count({ where: { ...realUserOnly, isVerified: false, isActive: true } }),
-      prisma.story.count({ where: { isApproved: false, expiresAt: { gt: now }, user: realUser } }),
+      prisma.story.count({ where: { isApproved: false, isRejected: false, isDeletedByUser: false, expiresAt: { gt: now }, user: realUser } }),
       prisma.withdrawRequest.count({ where: { user: realUser, status: "PENDING" } }),
       prisma.report.count({ where: { reporter: realUser, status: "PENDING" } }),
       prisma.coinTransfer.count({ where: { type: "REQUEST", status: "PENDING", sender: realUser } }),
@@ -87,11 +87,12 @@ export async function GET() {
       prisma.subscription.count({ where: { endsAt: { lt: now, gt: weekAgo }, user: realUser } }),
       prisma.boost.count({ where: { endsAt: { gt: now }, user: realUser } }),
       prisma.user.count({ where: { ...realUserOnly, isSpecial: true } }),
-      prisma.user.count({ where: { ...realUserOnly, isOnline: true } }),
-      prisma.story.count({ where: { isApproved: true, expiresAt: { gt: now }, user: realUser } }),
+      // آنلاین واقعی: پرچم isOnline + قلب تپنده در ۳ دقیقه اخیر (کاربرانی که با قطع ناگهانی اینترنت رفته اند گیر نمی کنند)
+      prisma.user.count({ where: { ...realUserOnly, isOnline: true, lastSeen: { gte: new Date(now.getTime() - 3 * 60 * 1000) } } }),
+      prisma.story.count({ where: { isApproved: true, isRejected: false, isDeletedByUser: false, expiresAt: { gt: now }, user: realUser } }),
       prisma.subscription.count({ where: { endsAt: { gt: now }, user: realUser } }),
-      // انتقال های در انتظار غیر از نوع REQUEST — چون REQUEST جداگانه در «درخواست سکه» شمرده می شود
-      prisma.coinTransfer.count({ where: { status: "PENDING", type: { not: "REQUEST" }, sender: realUser } }),
+      // انتقال های موفق امروز — GIFT ها همیشه COMPLETED ثبت می شوند و PENDING واقعی ندارند
+      prisma.coinTransfer.count({ where: { status: "COMPLETED", createdAt: { gte: todayStart }, sender: realUser } }),
       prisma.user.count({ where: realUserOnly }),
       prisma.user.count({ where: { ...realUserOnly, isVerified: true } }),
       prisma.message.count({ where: { createdAt: { gte: todayStart }, sender: realUser } }),
@@ -111,13 +112,13 @@ export async function GET() {
       prisma.withdrawRequest.count({ where: { user: realUser } }),
       prisma.wallet.aggregate({ where: { user: realUserOnly }, _avg: { balance: true } }),
       prisma.transaction.count({ where: { createdAt: { gte: todayStart }, user: realUser } }),
-      // تیکت
-      prisma.ticket.count({ where: { status: "OPEN", user: realUser } }),
-      prisma.ticket.count({ where: { status: "ANSWERED", user: realUser } }),
-      prisma.ticket.count({ where: { priority: "HIGH", status: { not: "CLOSED" }, user: realUser } }),
-      prisma.ticket.count({ where: { status: "CLOSED", user: realUser } }),
-      prisma.ticket.count({ where: { createdAt: { gte: todayStart }, user: realUser } }),
-      prisma.ticket.count({ where: { status: "OPEN", messages: { none: { isFromAdmin: true } }, user: realUser } }),
+      // تیکت — مهمان ها (user=null) حفظ می شوند؛ فقط فیک/AI/حذف شده حذف می شوند
+      prisma.ticket.count({ where: { status: "OPEN", OR: [{ user: null }, { user: realUser }] } }),
+      prisma.ticket.count({ where: { status: "ANSWERED", OR: [{ user: null }, { user: realUser }] } }),
+      prisma.ticket.count({ where: { priority: "HIGH", status: { not: "CLOSED" }, OR: [{ user: null }, { user: realUser }] } }),
+      prisma.ticket.count({ where: { status: "CLOSED", OR: [{ user: null }, { user: realUser }] } }),
+      prisma.ticket.count({ where: { createdAt: { gte: todayStart }, OR: [{ user: null }, { user: realUser }] } }),
+      prisma.ticket.count({ where: { status: "OPEN", messages: { none: { isFromAdmin: true } }, OR: [{ user: null }, { user: realUser }] } }),
     ]);
 
     const alerts = [
@@ -144,7 +145,7 @@ export async function GET() {
       { label: "کاربران آنلاین", count: onlineUsers, href: "/admin/users", icon: "online", color: "#0ea5e9" },
       { label: "استوری فعال", count: activeStories, href: "/admin/stories", icon: "activeStory", color: "#c026d3" },
       { label: "اشتراک فعال", count: activeSubs, href: "/admin/finance", icon: "activeSub", color: "#4f46e5" },
-      { label: "انتقال سکه در انتظار", count: pendingCoinTransferCount, href: "/admin/finance", icon: "pendingTransfer", color: "#0d9488" },
+      { label: "انتقال سکه امروز", count: pendingCoinTransferCount, href: "/admin/finance", icon: "pendingTransfer", color: "#0d9488" },
       { label: "کل کاربران", count: totalUsers, href: "/admin/users", icon: "totalUsers", color: "#2563eb" },
       { label: "کاربران تایید شده", count: verifiedUsers, href: "/admin/users", icon: "verifiedUsers", color: "#059669" },
       { label: "پیام های امروز", count: todayMessages, href: "/admin/analytics", icon: "todayMsg", color: "#db2777" },
