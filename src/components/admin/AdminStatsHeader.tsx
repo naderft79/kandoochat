@@ -43,7 +43,10 @@ export default function AdminStatsHeader() {
       }
     }
     fetchStats();
-    const interval = setInterval(fetchStats, 60000);
+    // تازه سازی خودکار هر ۵ ثانیه — در تب پنهان متوقف می شود تا بار سرور هدر نرود
+    const interval = setInterval(() => {
+      if (document.visibilityState === "visible") fetchStats();
+    }, 5000);
     return () => clearInterval(interval);
   }, []);
 
