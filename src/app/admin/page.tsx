@@ -7,7 +7,6 @@ import AdminCharts from "@/components/admin/AdminCharts";
 import FreeWeekToggle from "@/components/admin/FreeWeekToggle";
 import AdminAlertsBanner from "@/components/admin/AdminAlertsBanner";
 import QrLoginCard from "@/components/admin/QrLoginCard";
-import NotificationTester from "@/components/admin/NotificationTester";
 import { qrLoginEnabled } from "@/lib/qr-login";
 
 const QUICK_LINKS = [
@@ -65,9 +64,6 @@ export default async function AdminDashboardPage() {
 
       {/* نمودارها و آمار پیشرفته */}
       <AdminCharts />
-
-      {/* تست بخش ها — ارسال اعلان های آزمایشی */}
-      <NotificationTester />
     </div>
   );
 }
