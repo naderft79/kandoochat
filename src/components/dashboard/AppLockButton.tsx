@@ -18,6 +18,7 @@ import {
   biometricUnlock,
   type BiometryKind,
 } from "@/lib/appLock";
+import { useToast } from "@/components/ToastProvider";
 
 type Mode = "info" | "set" | "change" | "disable" | "menu";
 
@@ -37,6 +38,7 @@ const INFO_POINTS = [
 ];
 
 export default function AppLockButton() {
+  const { toast } = useToast();
   const [enabled, setEnabled] = useState<boolean | null>(null);
   const [bioOn, setBioOn] = useState(false);
   const [bioKind, setBioKind] = useState<BiometryKind>("none");
@@ -98,6 +100,7 @@ export default function AppLockButton() {
       setLoading(false);
       setEnabled(true);
       setOpen(false);
+      toast("قفل برنامه فعال شد", "success");
       return;
     }
     if (mode === "change") {
@@ -121,6 +124,7 @@ export default function AppLockButton() {
       setMode("menu");
       setStep(0);
       setVals([]);
+      toast("پین جدید ذخیره شد", "success");
       return;
     }
     if (mode === "disable") {
@@ -134,6 +138,7 @@ export default function AppLockButton() {
       setBioOn(false);
       setLoading(false);
       setOpen(false);
+      toast("قفل برنامه غیرفعال شد", "success");
     }
   }
 

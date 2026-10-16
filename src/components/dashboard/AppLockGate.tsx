@@ -114,14 +114,17 @@ export default function AppLockGate() {
 
   return (
     <div className="fixed inset-0 z-[100] bg-surface flex flex-col items-center justify-center p-6 select-none">
-      <span className="w-20 h-20 rounded-full bg-ig-gray-bg border border-ig-divider flex items-center justify-center">
-        <Lock className="w-9 h-9 text-foreground" strokeWidth={1.8} />
+      {/* حلقه آیکون قفل با سایه نرم */}
+      <span className="w-20 h-20 rounded-full bg-ig-gray-bg border border-ig-divider ig-shadow-md flex items-center justify-center">
+        <span className="w-14 h-14 rounded-full bg-surface border border-ig-divider flex items-center justify-center">
+          <Lock className="w-7 h-7 text-foreground" strokeWidth={1.8} />
+        </span>
       </span>
       <h1 className="text-lg font-black text-foreground mt-4">کندو قفل است</h1>
       <p className="text-xs text-ig-gray mt-1">پین ۴ رقمی را وارد کنید</p>
 
       {/* صفحه کلید عددی اختصاصی — کیبورد گوشی هیچ وقت باز نمی شود */}
-      <div className="mt-6">
+      <div className="mt-6 w-full max-w-sm">
         <PinPad
           pin={pin}
           onDigit={(d) => press(d)}
@@ -135,7 +138,7 @@ export default function AppLockGate() {
         <button
           type="button"
           onClick={() => void tryBiometric()}
-          className="mt-5 flex items-center gap-2 text-sm font-bold text-ig-blue"
+          className="mt-5 flex items-center gap-2 rounded-full bg-ig-gray-bg border border-ig-divider px-5 py-2.5 text-sm font-bold text-ig-blue active:scale-95 transition-all"
         >
           <BioIcon className="w-5 h-5" />
           {bioLabel}

@@ -23,31 +23,31 @@ export default function PinPad({
 }) {
   return (
     <div className="select-none">
-      {/* نمایش رقم های وارد شده */}
+      {/* نمایش رقم های وارد شده — دایره های پر و خالی */}
       <div
         dir="ltr"
-        className={`flex justify-center gap-3 ${shake ? "ig-shake" : ""}`}
+        className={`flex justify-center gap-4 ${shake ? "ig-shake" : ""}`}
         aria-live="polite"
       >
         {Array.from({ length: 4 }).map((_, i) => (
           <span
             key={i}
-            className={`w-3.5 h-3.5 rounded-full border-2 transition-colors ${
+            className={`w-4 h-4 rounded-full transition-all duration-150 ${
               i < pin.length
-                ? "bg-ig-blue border-ig-blue"
-                : "border-ig-border bg-transparent"
+                ? "bg-ig-blue scale-110 ig-shadow-sm"
+                : "bg-transparent border-2 border-ig-border"
             }`}
           />
         ))}
       </div>
-      <p className="mt-3 h-5 text-center text-xs text-ig-red" role="alert">
+      <p className="mt-3 h-5 text-center text-xs font-bold text-ig-red" role="alert">
         {error}
       </p>
 
-      {/* صفحه کلید عددی */}
+      {/* صفحه کلید عددی — دکمه ها با aspect-square همیشه دایره کامل می مانند */}
       <div
         dir="ltr"
-        className={`grid grid-cols-3 gap-3 mx-auto w-full ${compact ? "max-w-[220px]" : "max-w-[260px]"}`}
+        className={`grid grid-cols-3 mx-auto w-full ${compact ? "max-w-[240px] gap-3" : "max-w-[290px] gap-4"}`}
       >
         {PAD.map((k, i) =>
           k === "" ? (
@@ -58,7 +58,7 @@ export default function PinPad({
               type="button"
               onClick={onDelete}
               aria-label="حذف"
-              className={`${compact ? "h-12" : "h-16"} rounded-full flex items-center justify-center text-foreground active:bg-ig-btn2 transition-colors`}
+              className="aspect-square rounded-full flex items-center justify-center text-foreground active:bg-ig-btn2 active:scale-90 transition-all duration-100"
             >
               <Delete className={compact ? "w-5 h-5" : "w-6 h-6"} />
             </button>
@@ -67,7 +67,9 @@ export default function PinPad({
               key={k}
               type="button"
               onClick={() => onDigit(k)}
-              className={`${compact ? "h-12 text-lg" : "h-16 text-xl"} rounded-full bg-ig-gray-bg border border-ig-divider font-bold text-foreground active:bg-ig-btn2 transition-colors`}
+              className={`aspect-square rounded-full flex items-center justify-center bg-ig-gray-bg border border-ig-divider font-black text-foreground ig-shadow-sm active:bg-ig-btn2 active:scale-90 transition-all duration-100 ${
+                compact ? "text-xl" : "text-2xl"
+              }`}
             >
               {toPersianDigits(k)}
             </button>
