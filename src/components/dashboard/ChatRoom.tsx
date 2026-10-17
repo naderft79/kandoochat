@@ -958,7 +958,21 @@ export default function ChatRoom({
       )}
 
       {/* پیام ها */}
-      <div ref={listRef} onScroll={handleScroll} data-testid="message-list" style={{ overflowAnchor: "none" }} className="flex-1 overflow-y-auto overflow-x-hidden thin-scroll px-3 py-4 space-y-1 min-h-0">
+      {/* overscroll-contain: ژست اسکرول به main/صفحه منتقل نمی شود — هدر و اینپوت هرگز نمی غلتند */}
+      <div
+        ref={listRef}
+        onScroll={handleScroll}
+        onLoadCapture={() => {
+          // عکس/ویدیو بعد از رندر ارتفاع می گیرد — اگر نزدیک پایین هستیم دقیقا تا نمایش پیام آخر اسکرول شود
+          const el = listRef.current;
+          if (!el) return;
+          const dist = el.scrollHeight - el.scrollTop - el.clientHeight;
+          if (dist < 80) el.scrollTop = el.scrollHeight;
+        }}
+        data-testid="message-list"
+        style={{ overflowAnchor: "none" }}
+        className="flex-1 overflow-y-auto overscroll-contain overflow-x-hidden thin-scroll px-3 py-4 space-y-1 min-h-0"
+      >
         {loadingOlder && (
           <p className="text-center text-xs text-ig-gray py-2" role="status">در حال بارگذاری پیام های قدیمی تر...</p>
         )}

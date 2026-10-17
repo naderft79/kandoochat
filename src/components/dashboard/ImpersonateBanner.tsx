@@ -2,9 +2,11 @@
 
 // بنر بازگشت به پنل مدیریت — وقتی ادمین وارد حساب کاربر شده است
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { ArrowRight, Loader2, ShieldAlert } from "lucide-react";
 
 export default function ImpersonateBanner() {
+  const pathname = usePathname();
   const [restoring, setRestoring] = useState(false);
 
   async function restore() {
@@ -19,6 +21,9 @@ export default function ImpersonateBanner() {
       setRestoring(false);
     }
   }
+
+  // در صفحات چت نمایش داده نمی شود تا چیدمان اتاق دقیقا قفل بماند
+  if (pathname?.startsWith("/dashboard/chat")) return null;
 
   return (
     <div className="bg-ig-blue text-white px-4 py-2 flex items-center justify-between gap-3 shrink-0">
