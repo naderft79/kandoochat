@@ -280,7 +280,7 @@ if (!process.argv.includes("--no-icons")) {
 
 // ---------- گزارش خروجی ها ----------
 console.log("\n[brands] build variants:");
-console.log(`  userDirect    → com.kandoochats.app (کندو — KandooPay)`);
+console.log(`  userDirect    → com.kandoochats.app (کندو چت — Kandoo Chat — KandooPay)`);
 console.log(`  adminDirect   → com.kandoo.admin (مدیریت)`);
 for (const b of brands) {
   for (const m of MARKETS) {
