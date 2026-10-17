@@ -7,6 +7,7 @@ export type BrandColors = { primary: string; light: string; dark: string };
 export type BrandConfig = {
   id: string;
   name: string;
+  nameEn?: string;
   packageName: string;
   uaToken: string;
   slogan: string;
@@ -18,7 +19,8 @@ export type BrandConfig = {
 // کندو — برند پیش فرض؛ در JSON نیست و همیشه fallback است
 export const DEFAULT_BRAND: BrandConfig = {
   id: "kandoo",
-  name: "کندو",
+  name: "کندو چت",
+  nameEn: "Kandoo Chat",
   packageName: "com.kandoochats.app",
   uaToken: "",
   slogan: "همسریابی",

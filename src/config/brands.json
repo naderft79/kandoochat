@@ -2,7 +2,8 @@
   "brands": [
     {
       "id": "nafs",
-      "name": "نفس",
+      "name": "نفس چت",
+      "nameEn": "Nafs Chat",
       "packageName": "com.nafschats.app",
       "uaToken": "nafs",
       "slogan": "همسریابی",
@@ -10,17 +11,19 @@
       "iapKeys": { "bazaar": "", "myket": "" }
     },
     {
-      "id": "mahdel",
-      "name": "هم فاز",
-      "packageName": "com.mahdelchat.app",
-      "uaToken": "mahdel",
+      "id": "hamfaz",
+      "name": "هم فاز چت",
+      "nameEn": "Hamfaz Chat",
+      "packageName": "com.hamfazchat.app",
+      "uaToken": "hamfaz",
       "slogan": "همسریابی",
       "colors": { "primary": "#e11d48", "light": "#fda4af", "dark": "#9f1239" },
       "iapKeys": { "bazaar": "", "myket": "" }
     },
     {
       "id": "hammasir",
-      "name": "هم مسیر",
+      "name": "هم مسیر چت",
+      "nameEn": "Hammasir Chat",
       "packageName": "com.hammasirchat.app",
       "uaToken": "hammasir",
       "slogan": "همسریابی",

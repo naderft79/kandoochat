@@ -4,7 +4,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Smartphone, Loader2, Save, RotateCcw, Check } from "lucide-react";
 
-type BrandTab = { id: string; name: string; color: string };
+type BrandTab = { id: string; name: string; nameEn: string; color: string };
 
 type Row = {
   key: string;
@@ -110,7 +110,10 @@ export default function AdminAppsClient({ brands }: { brands: BrandTab[] }) {
             }`}
             style={active === b.id ? { background: b.color, borderColor: b.color } : undefined}
           >
-            {b.name}
+            <span className="block">{b.name}</span>
+            <span className={`block text-[10px] font-normal ${active === b.id ? "opacity-70" : "text-[#666]"}`} dir="ltr">
+              {b.nameEn}
+            </span>
           </button>
         ))}
       </div>

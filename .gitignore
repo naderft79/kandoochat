@@ -61,6 +61,7 @@ dist/android/
 android/app/brands.gradle
 android/app/src/nafs/
 android/app/src/mahdel/
+android/app/src/hamfaz/
 android/app/src/hammasir/
 
 # فایربیس/FCM — حاوی کلیدهای پروژه است

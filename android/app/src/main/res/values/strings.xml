@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">کندو</string>
-    <string name="title_activity_main">کندو</string>
+    <string name="app_name">کندو چت</string>
+    <string name="title_activity_main">کندو چت</string>
     <string name="package_name">com.kandoochats.app</string>
     <string name="custom_url_scheme">com.kandoochats.app</string>
     <!-- شناسه برند در UA — برای فلیورهای برند تولیدی بازنویسی می شود -->
