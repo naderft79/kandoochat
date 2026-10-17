@@ -44,6 +44,7 @@ const groups: NavGroup[] = [
     items: [
       { href: "/admin", label: "داشبورد", icon: LayoutDashboard },
       { href: "/admin/users", label: "کاربران", icon: Users },
+      { href: "/admin/apps", label: "مدیریت اپ ها", icon: Smartphone },
       { href: "/admin/photos", label: "تایید عکس", icon: BadgeCheck },
       { href: "/admin/stories", label: "تایید استوری", icon: CircleDot },
       { href: "/admin/verify", label: "احراز هویت", icon: ShieldCheck },
@@ -81,7 +82,6 @@ const groups: NavGroup[] = [
       { href: "/admin/audit", label: "لاگ اقدامات", icon: ScrollText },
       { href: "/admin/backup", label: "بکاپ", icon: Database },
       { href: "/admin/health", label: "سلامت سیستم", icon: HeartPulse },
-      { href: "/admin/apps", label: "مدیریت اپ ها", icon: Smartphone },
       { href: "/admin/settings", label: "تنظیمات", icon: Settings },
     ],
   },
