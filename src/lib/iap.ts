@@ -3,7 +3,7 @@
 import crypto from "node:crypto";
 import { prisma } from "@/lib/prisma";
 import { getPlan, planEndsAt, SUBSCRIPTION_PLANS } from "@/lib/subscriptionPlans";
-import { getSetting } from "@/lib/settings";
+import { getBrandSettings } from "@/lib/brandSettings";
 import { ensureWallet } from "@/lib/finance";
 import { isValidBrandId, isValidMarket, getBrandById, type Market } from "@/lib/brands";
 
@@ -30,9 +30,9 @@ export type IapProductInfo = {
   amountToman: number;
 };
 
-// کاتالوگ کامل محصولات با قیمت جاری (قیمت سکه از تنظیمات می آید تا با سایت یکی بماند)
-export async function getIapProducts(): Promise<IapProductInfo[]> {
-  const coinValue = (await getSetting("COIN_VALUE")) || 10000;
+// کاتالوگ کامل محصولات با قیمت جاری — قیمت سکه از تنظیمات همان برند می آید تا با سایت/اپ یکی بماند
+export async function getIapProducts(brandId?: string | null): Promise<IapProductInfo[]> {
+  const { coinValue } = await getBrandSettings(brandId);
   return [
     ...IAP_COIN_PRODUCTS.map((p) => ({
       productId: p.productId,
@@ -53,8 +53,8 @@ export async function getIapProducts(): Promise<IapProductInfo[]> {
   ];
 }
 
-export async function findIapProduct(productId: string): Promise<IapProductInfo | null> {
-  return (await getIapProducts()).find((p) => p.productId === productId) ?? null;
+export async function findIapProduct(productId: string, brandId?: string | null): Promise<IapProductInfo | null> {
+  return (await getIapProducts(brandId)).find((p) => p.productId === productId) ?? null;
 }
 
 // کلید عمومی RSA هر برند+مارکت — از brands.json (iapKeys) یا env: IAP_PUBLIC_KEY_<MARKET>_<BRANDID>
@@ -98,7 +98,7 @@ export async function creditIapPurchase(opts: {
   orderId?: string | null;
   packageName?: string | null;
 }): Promise<{ ok: boolean; alreadyCredited?: boolean; error?: string }> {
-  const product = await findIapProduct(opts.productId);
+  const product = await findIapProduct(opts.productId, opts.brandId);
   if (!product) return { ok: false, error: "محصول نامعتبر است" };
 
   // ثبت توکن — تکراری بودن توکن یعنی این خرید قبلا اعتبار شده

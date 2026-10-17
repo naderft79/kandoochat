@@ -28,3 +28,8 @@ export function isMarketAppClient(): boolean {
   if (typeof navigator === "undefined") return false;
   return /KandooApp\/[a-z0-9-]+\.(bazaar|myket)\//i.test(navigator.userAgent);
 }
+
+// تشخیص اپ مارکتی از روی هدر درخواست — این اپ ها نباید به درگاه ریالی هدایت شوند
+export function isMarketAppRequest(request: Request): boolean {
+  return /KandooApp\/[a-z0-9-]+\.(bazaar|myket)\//i.test(request.headers.get("user-agent") ?? "");
+}

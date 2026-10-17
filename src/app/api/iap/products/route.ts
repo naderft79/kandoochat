@@ -8,7 +8,7 @@ export async function GET() {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "دسترسی غیرمجاز" }, { status: 401 });
   const { brand, market } = await getRequestBrandInfo();
-  const products = await getIapProducts();
+  const products = await getIapProducts(brand.id);
   return NextResponse.json({
     brand: brand.id,
     market,

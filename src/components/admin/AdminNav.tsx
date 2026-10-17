@@ -32,6 +32,7 @@ import {
   Globe,
   Bell,
   HeartPulse,
+  Smartphone,
 } from "lucide-react";
 
 type NavItem = { href: string; label: string; icon: typeof LayoutDashboard };
@@ -80,6 +81,7 @@ const groups: NavGroup[] = [
       { href: "/admin/audit", label: "لاگ اقدامات", icon: ScrollText },
       { href: "/admin/backup", label: "بکاپ", icon: Database },
       { href: "/admin/health", label: "سلامت سیستم", icon: HeartPulse },
+      { href: "/admin/apps", label: "مدیریت اپ ها", icon: Smartphone },
       { href: "/admin/settings", label: "تنظیمات", icon: Settings },
     ],
   },

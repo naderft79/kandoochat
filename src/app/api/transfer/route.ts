@@ -4,7 +4,8 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireUser, AuthError } from "@/lib/auth";
 import { ensureWallet, InsufficientFundsError } from "@/lib/finance";
-import { getAllSettings } from "@/lib/settings";
+import { getBrandSettings } from "@/lib/brandSettings";
+import { parseBrandFromUA } from "@/lib/brands";
 import { sanitizeString } from "@/lib/sanitize";
 import { isHaniUser } from "@/lib/aiCompanion";
 import { publishToConversation } from "@/lib/chatEvents";
@@ -55,7 +56,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "امکان انتقال سکه به هانی وجود ندارد" }, { status: 400 });
     }
 
-    const settings = await getAllSettings();
+    const settings = await getBrandSettings(parseBrandFromUA(request.headers.get("user-agent")).brandId);
     // انتقال سکه بدون کارمزد است
     const fee = 0;
     const totalDeduct = coins;

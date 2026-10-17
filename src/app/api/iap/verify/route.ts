@@ -41,7 +41,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "بسته نامعتبر است" }, { status: 400 });
     }
 
-    const product = await findIapProduct(body.productId);
+    const product = await findIapProduct(body.productId, brand.id);
     if (!product) {
       return NextResponse.json({ error: "محصول نامعتبر است" }, { status: 400 });
     }

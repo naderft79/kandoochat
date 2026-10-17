@@ -3,7 +3,8 @@ import { redirect } from "next/navigation";
 import { Wallet } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
-import { getAllSettings } from "@/lib/settings";
+import { getBrandSettings } from "@/lib/brandSettings";
+import { getRequestBrandInfo } from "@/lib/brand-server";
 import { ensureWallet, getActiveSubscription } from "@/lib/finance";
 import { formatDate, toPersianDigits } from "@/lib/format";
 import { SUBSCRIPTION_PLANS } from "@/lib/subscriptionPlans";
@@ -24,9 +25,10 @@ export default async function CoinsPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
 
+  const { brand } = await getRequestBrandInfo();
   const [wallet, settings, transactions, active] = await Promise.all([
     ensureWallet(user.id),
-    getAllSettings(),
+    getBrandSettings(brand.id),
     prisma.transaction.findMany({
       where: { userId: user.id },
       orderBy: { createdAt: "desc" },

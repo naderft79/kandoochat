@@ -1,9 +1,15 @@
 // منطق مشترک سیستم دعوت دوستان — تولید کد، جستجو، آزادسازی پاداش و مایلستون
 import { randomBytes } from "crypto";
 import { prisma } from "@/lib/prisma";
-import { getAllSettings } from "@/lib/settings";
+import { getBrandSettings } from "@/lib/brandSettings";
 import { ensureWallet } from "@/lib/finance";
 import { calculateProfileCompletion } from "@/lib/badges";
+
+// تنظیمات بر اساس برند اپِ دعوت کننده — پاداش دعوت متعلق به اکوسیستم همان اپ است
+async function settingsForUser(userId: string) {
+  const u = await prisma.user.findUnique({ where: { id: userId }, select: { brand: true } });
+  return getBrandSettings(u?.brand);
+}
 
 // الفبای کد دعوت — بدون کاراکترهای مشابه بصری: 0 O 1 I L 5 S
 const REFERRAL_ALPHABET = "ABCDEFGHJKMNPQRTUVWXYZ2346789";
@@ -63,7 +69,7 @@ export async function findUserByReferralCode(rawCode: string | null | undefined)
 
 // بررسی سقف های ضد تقلب — آیا دعوت کننده می تواند دعوت جدید بگیرد؟
 export async function referrerCanAcceptReferral(referrerId: string): Promise<boolean> {
-  const settings = await getAllSettings();
+  const settings = await settingsForUser(referrerId);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const [todayCount, totalCount] = await Promise.all([
@@ -81,7 +87,7 @@ export async function createPendingReferral(referrerId: string, referredId: stri
     const existing = await prisma.referral.findUnique({ where: { referredId } });
     if (existing) return false;
     if (!(await referrerCanAcceptReferral(referrerId))) return false;
-    const settings = await getAllSettings();
+    const settings = await settingsForUser(referrerId);
     await prisma.referral.create({
       data: {
         referrerId,
@@ -119,7 +125,7 @@ async function maybePayReferralMilestone(referrerId: string) {
     select: { referralMilestonePaidAt: true },
   });
   if (!referrer || referrer.referralMilestonePaidAt) return;
-  const settings = await getAllSettings();
+  const settings = await settingsForUser(referrerId);
   const paidCount = await prisma.referral.count({
     where: { referrerId, status: "PAID" },
   });
@@ -166,7 +172,7 @@ export async function maybeActivateReferral(referredId: string) {
     if (!referral || referral.status !== "PENDING") return;
     if (!(await checkReferralConditions(referredId))) return;
 
-    const settings = await getAllSettings();
+    const settings = await settingsForUser(referral.referrerId);
     const reward = referral.rewardCoins || settings.referralRewardCoins;
     const referred = await prisma.user.findUnique({
       where: { id: referredId },

@@ -4,12 +4,13 @@ import { z } from "zod";
 import { randomBytes, randomUUID } from "crypto";
 import { prisma } from "@/lib/prisma";
 import { requireUser, AuthError } from "@/lib/auth";
-import { getSetting } from "@/lib/settings";
+import { getBrandSettings } from "@/lib/brandSettings";
+import { parseBrandFromUA } from "@/lib/brands";
 import { signPaymentToken, sanitizeReturnPath } from "@/lib/payment";
 import { SITE_URL } from "@/lib/site";
 import { rateLimit, apiRateLimit, getClientIdentifier, rateLimitUser } from "@/lib/rate-limit";
 import { getPlan } from "@/lib/subscriptionPlans";
-import { isUserAppRequest } from "@/lib/app-ua";
+import { isMarketAppRequest } from "@/lib/app-ua";
 
 const createSchema = z.object({
   type: z.enum(["SUBSCRIPTION", "COINS"]),
@@ -19,10 +20,11 @@ const createSchema = z.object({
 
 export async function POST(request: Request) {
   try {
-    // سیاست گوگل پلی: پرداخت ریالی داخل اپ اندروید غیرفعال است — فقط نسخه وب
-    if (isUserAppRequest(request)) {
+    // اپ های مارکتی (بازار/مایکت) باید از پرداخت درون برنامه ای خود مارکت استفاده کنند
+    // اپ اصلی کندو و نسخه وب به KandooPay هدایت می شوند
+    if (isMarketAppRequest(request)) {
       return NextResponse.json(
-        { error: "پرداخت در نسخه اپلیکیشن در دسترس نیست" },
+        { error: "خرید در این اپ فقط با پرداخت درون برنامه ای مارکت انجام می شود" },
         { status: 403 }
       );
     }
@@ -54,12 +56,18 @@ export async function POST(request: Request) {
     }
 
     const { type } = parsed.data;
+    // تنظیمات بر اساس اپ/برند درخواست کننده
+    const { brandId } = parseBrandFromUA(request.headers.get("user-agent"));
+    const settings = await getBrandSettings(brandId);
     let amountToman = 0;
     let coins = 0;
     let title = "";
     let planKey: string | null = null;
 
     if (type === "SUBSCRIPTION") {
+      if (!settings.buySubscriptionEnabled) {
+        return NextResponse.json({ error: "خرید اشتراک در این اپ غیرفعال است" }, { status: 403 });
+      }
       const plan = getPlan(parsed.data.plan);
       if (!plan) {
         return NextResponse.json({ error: "پلن نامعتبر است" }, { status: 400 });
@@ -68,12 +76,14 @@ export async function POST(request: Request) {
       amountToman = plan.toman;
       title = `خرید اشتراک ${plan.name} کندو`;
     } else {
+      if (!settings.buyCoinsEnabled) {
+        return NextResponse.json({ error: "خرید سکه در این اپ غیرفعال است" }, { status: 403 });
+      }
       coins = parsed.data.coins ?? 0;
       if (!coins) {
         return NextResponse.json({ error: "تعداد سکه الزامی است" }, { status: 400 });
       }
-      const coinValue = await getSetting("COIN_VALUE");
-      amountToman = coins * coinValue;
+      amountToman = coins * settings.coinValue;
       title = "خرید سکه کندو";
     }
 

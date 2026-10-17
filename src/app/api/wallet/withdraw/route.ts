@@ -3,7 +3,8 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireUser, AuthError } from "@/lib/auth";
-import { getAllSettings } from "@/lib/settings";
+import { getBrandSettings } from "@/lib/brandSettings";
+import { getRequestBrandInfo } from "@/lib/brand-server";
 import { ensureWallet } from "@/lib/finance";
 import { checkWithdrawEligibility } from "@/lib/withdraw";
 import { rateLimitUser } from "@/lib/rate-limit";
@@ -55,7 +56,12 @@ export async function POST(request: Request) {
     }
 
     const { coins, cardNumber } = parsed.data;
-    const { coinValue, minWithdrawCoins } = await getAllSettings();
+    // قیمت و حداقل برداشت بر اساس تنظیمات همان اپ
+    const { brand } = await getRequestBrandInfo();
+    const { coinValue, minWithdrawCoins, withdrawCoinsEnabled } = await getBrandSettings(brand.id);
+    if (!withdrawCoinsEnabled) {
+      return NextResponse.json({ error: "برداشت سکه در این اپ غیرفعال است" }, { status: 403 });
+    }
 
     // قوانین برداشت — اولین قانون رد شده جلوی ثبت را می گیرد
     const eligibility = await checkWithdrawEligibility(user);

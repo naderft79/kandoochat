@@ -263,6 +263,18 @@ model Setting {
   value String
 }
 
+// تنظیمات اختصاصی هر اپ/برند — مقدار override روی Setting سراسری است
+// brand = شناسه برند از brands.json یا «kandoo» برای اپ/سایت اصلی
+model BrandSetting {
+  id     String @id @default(cuid())
+  brand  String
+  key    String
+  value  String
+
+  @@unique([brand, key])
+  @@index([brand])
+}
+
 // انتقال سکه بین کاربران در چت (هدیه / درخواست)
 model CoinTransfer {
   id             String       @id @default(cuid())

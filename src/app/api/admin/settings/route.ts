@@ -11,6 +11,7 @@ const FIELD_MAP: Record<string, SettingKey> = {
   minWithdrawCoins: "MIN_WITHDRAW_COINS",
   buyCoinsEnabled: "BUY_COINS_ENABLED",
   withdrawCoinsEnabled: "WITHDRAW_COINS_ENABLED",
+  buySubscriptionEnabled: "BUY_SUBSCRIPTION_ENABLED",
   coinPackages: "COIN_PACKAGES",
   maxCoinsPerPurchase: "MAX_COINS_PER_PURCHASE",
   minCoinsForGift: "MIN_COINS_FOR_GIFT",

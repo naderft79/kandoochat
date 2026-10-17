@@ -3,7 +3,8 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireUser, AuthError } from "@/lib/auth";
-import { getAllSettings } from "@/lib/settings";
+import { getBrandSettings } from "@/lib/brandSettings";
+import { parseBrandFromUA } from "@/lib/brands";
 import { notifyUser } from "@/lib/notifications";
 import { incrementMissionProgress } from "@/lib/missions";
 import { rateLimitUser } from "@/lib/rate-limit";
@@ -60,7 +61,7 @@ export async function POST(request: Request) {
     }
 
     // شرط تکمیل پروفایل حذف شد — مثل گفتگو، لایک با هر پروفایلی آزاد است
-    const settings = await getAllSettings();
+    const settings = await getBrandSettings(parseBrandFromUA(request.headers.get("user-agent")).brandId);
     const now = new Date();
 
     // بررسی محدودیت روزانه

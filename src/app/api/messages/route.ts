@@ -275,8 +275,9 @@ export async function POST(request: Request) {
     // کسر سکه پیام اولویت دار
     if (priorityCoins > 0) {
       await import("@/lib/finance");
-      const { getAllSettings } = await import("@/lib/settings");
-      const settings = await getAllSettings();
+      const { getBrandSettings } = await import("@/lib/brandSettings");
+      const { parseBrandFromUA } = await import("@/lib/brands");
+      const settings = await getBrandSettings(parseBrandFromUA(request.headers.get("user-agent")).brandId);
       await prisma.$transaction([
         prisma.wallet.update({
           where: { userId: user.id },

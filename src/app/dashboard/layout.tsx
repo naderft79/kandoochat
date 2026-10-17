@@ -1,7 +1,8 @@
 // چیدمان پنل کاربری — سبک اینستاگرام
 import { redirect } from "next/navigation";
 import { getCurrentUser, isImpersonating, ADMIN_ROLES } from "@/lib/auth";
-import { getAllSettings } from "@/lib/settings";
+import { getBrandSettings } from "@/lib/brandSettings";
+import { getRequestBrandInfo } from "@/lib/brand-server";
 import { prisma } from "@/lib/prisma";
 import DashboardNav from "@/components/dashboard/DashboardNav";
 import ImpersonateBanner from "@/components/dashboard/ImpersonateBanner";
@@ -15,7 +16,9 @@ export default async function DashboardLayout({
   const user = await getCurrentUser();
   if (!user) redirect("/login");
 
-  const settings = await getAllSettings();
+  // حالت تعمیر به صورت جداگانه برای هر اپ اعمال می شود
+  const { brand } = await getRequestBrandInfo();
+  const settings = await getBrandSettings(brand.id);
   if (settings.maintenanceMode && !(ADMIN_ROLES as readonly string[]).includes(user.role)) {
     redirect("/maintenance");
   }

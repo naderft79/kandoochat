@@ -2,14 +2,17 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireUser, AuthError } from "@/lib/auth";
-import { getAllSettings } from "@/lib/settings";
+import { getBrandSettings } from "@/lib/brandSettings";
+import { parseBrandFromUA } from "@/lib/brands";
 import { ensureReferralCode, findUserByReferralCode, createPendingReferral } from "@/lib/referral";
 
 // دریافت اطلاعات کامل دعوت دوستان
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const user = await requireUser();
-    const settings = await getAllSettings();
+    // مقادیر پاداش بر اساس تنظیمات همان اپ
+    const { brandId } = parseBrandFromUA(request.headers.get("user-agent"));
+    const settings = await getBrandSettings(brandId);
     const code = await ensureReferralCode(user);
 
     const referrals = await prisma.referral.findMany({

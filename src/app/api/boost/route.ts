@@ -3,12 +3,15 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireUser, AuthError } from "@/lib/auth";
 import { ensureWallet } from "@/lib/finance";
-import { getAllSettings } from "@/lib/settings";
+import { getBrandSettings } from "@/lib/brandSettings";
+import { parseBrandFromUA } from "@/lib/brands";
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
     const user = await requireUser();
-    const settings = await getAllSettings();
+    // هزینه و مدت بوست بر اساس تنظیمات همان اپ
+    const { brandId } = parseBrandFromUA(request.headers.get("user-agent"));
+    const settings = await getBrandSettings(brandId);
 
     await ensureWallet(user.id);
     const wallet = await prisma.wallet.findUnique({ where: { userId: user.id } });

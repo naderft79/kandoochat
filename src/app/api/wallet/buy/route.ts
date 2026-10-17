@@ -4,11 +4,12 @@ import { z } from "zod";
 import { randomBytes, randomUUID } from "crypto";
 import { prisma } from "@/lib/prisma";
 import { requireUser, AuthError } from "@/lib/auth";
-import { getSetting } from "@/lib/settings";
+import { getBrandSettings } from "@/lib/brandSettings";
+import { parseBrandFromUA } from "@/lib/brands";
 import { signPaymentToken, sanitizeReturnPath } from "@/lib/payment";
 import { SITE_URL } from "@/lib/site";
 import { rateLimit, apiRateLimit, getClientIdentifier } from "@/lib/rate-limit";
-import { isUserAppRequest } from "@/lib/app-ua";
+import { isMarketAppRequest } from "@/lib/app-ua";
 
 const buySchema = z.object({
   coins: z.coerce.number().int().min(1).max(100_000),
@@ -16,10 +17,11 @@ const buySchema = z.object({
 
 export async function POST(request: Request) {
   try {
-    // سیاست گوگل پلی: پرداخت ریالی داخل اپ اندروید غیرفعال است — فقط نسخه وب
-    if (isUserAppRequest(request)) {
+    // اپ های مارکتی (بازار/مایکت) باید از پرداخت درون برنامه ای خود مارکت استفاده کنند
+    // اپ اصلی کندو و نسخه وب به KandooPay هدایت می شوند
+    if (isMarketAppRequest(request)) {
       return NextResponse.json(
-        { error: "پرداخت در نسخه اپلیکیشن در دسترس نیست" },
+        { error: "خرید سکه در این اپ فقط با پرداخت درون برنامه ای مارکت انجام می شود" },
         { status: 403 }
       );
     }
@@ -45,8 +47,13 @@ export async function POST(request: Request) {
     }
 
     const coins = parsed.data.coins;
-    const coinValue = await getSetting("COIN_VALUE");
-    const amountToman = coins * coinValue;
+    // قیمت سکه بر اساس تنظیمات همان اپ/برند
+    const { brandId } = parseBrandFromUA(request.headers.get("user-agent"));
+    const settings = await getBrandSettings(brandId);
+    if (!settings.buyCoinsEnabled) {
+      return NextResponse.json({ error: "خرید سکه در این اپ غیرفعال است" }, { status: 403 });
+    }
+    const amountToman = coins * settings.coinValue;
 
     if (amountToman < 1000) {
       return NextResponse.json({ error: "مبلغ پرداخت بسیار کم است" }, { status: 400 });

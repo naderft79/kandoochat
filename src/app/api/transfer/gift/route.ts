@@ -5,7 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { requireUser, AuthError } from "@/lib/auth";
 import { rateLimitUser } from "@/lib/rate-limit";
 import { ensureWallet, InsufficientFundsError } from "@/lib/finance";
-import { getAllSettings } from "@/lib/settings";
+import { getBrandSettings } from "@/lib/brandSettings";
+import { parseBrandFromUA } from "@/lib/brands";
 import { publishToConversation } from "@/lib/chatEvents";
 
 const giftSchema = z.object({
@@ -56,7 +57,7 @@ export async function POST(request: Request) {
       });
     }
 
-    const settings = await getAllSettings();
+    const settings = await getBrandSettings(parseBrandFromUA(request.headers.get("user-agent")).brandId);
     // انتقال سکه بدون کارمزد است
     const fee = 0;
     const totalDeduct = coins;

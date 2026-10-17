@@ -5,10 +5,18 @@ import { requireUser, AuthError } from "@/lib/auth";
 import { ensureWallet, getActiveSubscription } from "@/lib/finance";
 import { isoToJalaliDisplay } from "@/lib/jalali";
 import { getPlan, planEndsAt } from "@/lib/subscriptionPlans";
+import { getBrandSettings } from "@/lib/brandSettings";
+import { parseBrandFromUA } from "@/lib/brands";
 
 export async function POST(request: Request) {
   try {
     const user = await requireUser();
+    // خرید اشتراک ممکن است در یک اپ خاص غیرفعال باشد
+    const { brandId } = parseBrandFromUA(request.headers.get("user-agent"));
+    const settings = await getBrandSettings(brandId);
+    if (!settings.buySubscriptionEnabled) {
+      return NextResponse.json({ error: "خرید اشتراک در این اپ غیرفعال است" }, { status: 403 });
+    }
     const body = await request.json().catch(() => ({}));
     const plan = getPlan(typeof body.plan === "string" ? body.plan : null);
     if (!plan) {

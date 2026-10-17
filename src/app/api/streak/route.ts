@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireUser, isImpersonating, AuthError } from "@/lib/auth";
-import { getAllSettings } from "@/lib/settings";
+import { getBrandSettings } from "@/lib/brandSettings";
 import { incrementMissionProgress } from "@/lib/missions";
 
 export async function GET() {
@@ -43,7 +43,8 @@ export async function GET() {
 
         // پاداش استریک هر ۷ روز
         if (newCount % 7 === 0) {
-          const settings = await getAllSettings();
+          // پاداش بر اساس تنظیمات اپِ کاربر
+          const settings = await getBrandSettings(user.brand);
           const { ensureWallet } = await import("@/lib/finance");
           await ensureWallet(user.id);
           await prisma.$transaction([

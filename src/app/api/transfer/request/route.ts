@@ -5,7 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { requireUser, AuthError } from "@/lib/auth";
 import { rateLimitUser } from "@/lib/rate-limit";
 import { ensureWallet, InsufficientFundsError } from "@/lib/finance";
-import { getAllSettings } from "@/lib/settings";
+import { getBrandSettings } from "@/lib/brandSettings";
+import { parseBrandFromUA } from "@/lib/brands";
 import { isHaniUser } from "@/lib/aiCompanion";
 import { publishToConversation } from "@/lib/chatEvents";
 
@@ -174,7 +175,7 @@ export async function PATCH(request: Request) {
     }
 
     // تایید درخواست — انتقال سکه بدون کارمزد است
-    const settings = await getAllSettings();
+    const settings = await getBrandSettings(parseBrandFromUA(request.headers.get("user-agent")).brandId);
     const fee = 0;
     const totalDeduct = transfer.coins;
     const coinValue = settings.coinValue;
