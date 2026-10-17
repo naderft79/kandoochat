@@ -467,7 +467,11 @@ export default function ChatRoom({
     setText("");
     setReplyTo(null);
     sendTypingStatus(false);
-    if (inputRef.current) inputRef.current.style.height = "auto";
+    if (inputRef.current) {
+      inputRef.current.style.height = "auto";
+      // فوکوس برگردد تا کیبورد گوشی بعد از ارسال بسته نشود
+      inputRef.current.focus();
+    }
     void postMessage(content, reply?.id, reply ? { id: reply.id, content: reply.content, type: reply.type, senderId: reply.senderId } : undefined);
   }
 
@@ -1502,6 +1506,8 @@ export default function ChatRoom({
                 {text.trim() ? (
                   <button
                     type="submit"
+                    // جلوگیری از گرفتن فوکوس — با جلوگیری از mousedown فوکوس روی textarea می ماند و کیبورد بسته نمی شود
+                    onMouseDown={(e) => e.preventDefault()}
                     className="p-1.5 shrink-0 rounded-full bg-ig-blue text-white active:scale-90 transition-transform"
                   >
                     <Send className="w-4 h-4" strokeWidth={2} />
