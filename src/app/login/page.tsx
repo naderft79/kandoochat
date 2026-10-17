@@ -9,6 +9,7 @@ import Input, { PasswordInput } from "@/components/ui/Input";
 import Captcha from "@/components/auth/Captcha";
 import { normalizeDigits } from "@/lib/format";
 import { useBrand } from "@/components/BrandProvider";
+import BrandAuthShell from "@/components/auth/BrandAuthShell";
 import { cleanupPushSubscriptions } from "@/lib/pushClient";
 
 function LoginForm() {
@@ -53,9 +54,12 @@ function LoginForm() {
   }
 
   return (
+    <BrandAuthShell mode="login">
     <div className="w-full max-w-[350px]">
-      <div className="bg-surface border border-ig-border rounded-xl p-8 mb-3">
-        <h1 className="text-3xl font-bold text-center mb-8">{brand.name}</h1>
+      <div className="auth-card bg-surface border border-ig-border rounded-xl p-8 mb-3">
+        {brand.id === "kandoo" && (
+          <h1 className="text-3xl font-bold text-center mb-8">{brand.name}</h1>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-3" noValidate>
           <Input
@@ -103,7 +107,7 @@ function LoginForm() {
         </p>
       </div>
 
-      <div className="bg-surface border border-ig-border rounded-xl p-5 text-center">
+      <div className="auth-card-flat bg-surface border border-ig-border rounded-xl p-5 text-center">
         <p className="text-sm text-foreground">
           حساب ندارید؟{" "}
           <Link href="/register" className="text-ig-blue font-bold">
@@ -112,15 +116,14 @@ function LoginForm() {
         </p>
       </div>
     </div>
+    </BrandAuthShell>
   );
 }
 
 export default function LoginPage() {
   return (
-    <div className="min-h-dvh bg-surface flex flex-col items-center justify-center p-4">
-      <Suspense>
-        <LoginForm />
-      </Suspense>
-    </div>
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   );
 }

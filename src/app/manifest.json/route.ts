@@ -5,7 +5,9 @@ export async function GET() {
   const brand = await getRequestBrand();
   const isKandoo = brand.id === "kandoo";
   const icon = (size: number, purpose?: string) => ({
-    src: isKandoo ? `/icons/icon-${size}.png` : `/api/brand-icon/${size}`,
+    src: isKandoo
+      ? `/icons/icon-${size}.png`
+      : `/api/brand-icon/${size}${purpose === "maskable" ? "?maskable=1" : ""}`,
     sizes: `${size}x${size}`,
     type: "image/png",
     ...(purpose ? { purpose } : {}),
@@ -21,7 +23,8 @@ export async function GET() {
     display: "standalone",
     display_override: ["standalone", "minimal-ui"],
     orientation: "portrait",
-    background_color: "#ffffff",
+    // اسپلش PWA با رنگ برند — کندو همان سفید فعلی می ماند
+    background_color: isKandoo ? "#ffffff" : brand.colors.primary,
     theme_color: isKandoo ? "#ffffff" : brand.colors.primary,
     dir: "rtl",
     lang: "fa",
@@ -41,7 +44,7 @@ export async function GET() {
               purpose: "maskable",
             },
           ]
-        : []),
+        : [icon(512, "maskable")]),
     ],
     shortcuts: [
       { name: "گفتگوها", short_name: "چت", url: "/dashboard/chat", icons: [icon(192)] },

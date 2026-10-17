@@ -2,7 +2,30 @@
 // اپ های مارکتی توکن «KandooApp/<brand>.<market>/1.0» در UA می فرستند؛ کندو «KandooApp/1.0»
 import brandsConfig from "@/config/brands.json";
 
-export type BrandColors = { primary: string; light: string; dark: string };
+export type BrandColors = {
+  primary: string;
+  light: string;
+  dark: string;
+  // رنگ دوم گرادیانت/اکسنت — پیش فرض = dark
+  secondary?: string;
+  // پس زمینه روشن متمایل به برند — پیش فرض #fafafa
+  surfaceTint?: string;
+  // اکسنت در حالت تاریک — پیش فرض = light
+  darkAccent?: string;
+  // پس زمینه تاریک متمایل به برند
+  darkSurfaceTint?: string;
+};
+
+// اسلاید آنبوردینگ هر برند — آیکن یکی از whitelist در صفحه آنبوردینگ است
+export type BrandOnboardingSlide = { icon: string; title: string; body: string };
+
+export type BrandTexts = {
+  welcomeTitle?: string;
+  welcomeSub?: string;
+  loginSub?: string;
+  registerSub?: string;
+  onboarding?: BrandOnboardingSlide[];
+};
 
 export type BrandConfig = {
   id: string;
@@ -12,6 +35,11 @@ export type BrandConfig = {
   uaToken: string;
   slogan: string;
   colors: BrandColors;
+  // قالب بصری از کاتالوگ brand-theme — پیش فرض kandoo (بدون تغییر ظاهری)
+  theme?: string;
+  // حرف مونوگرام آیکون — پیش فرض حرف اول نام
+  iconLetter?: string;
+  texts?: BrandTexts;
   // کلید عمومی RSA تایید خرید هر مارکت — از پنل توسعه دهنده آن مارکت
   iapKeys?: { bazaar?: string; myket?: string };
 };
@@ -24,6 +52,8 @@ export const DEFAULT_BRAND: BrandConfig = {
   packageName: "com.kandoochats.app",
   uaToken: "",
   slogan: "همسریابی",
+  theme: "kandoo",
+  iconLetter: "ک",
   // رنگ اکسنت فعلی رابط کاربر (آبی اینستاگرامی) — پنل ادمین طلایی مجزا می ماند
   colors: { primary: "#0074c7", light: "#0095f6", dark: "#005fa3" },
 };

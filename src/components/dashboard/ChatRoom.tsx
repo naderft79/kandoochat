@@ -1073,8 +1073,8 @@ export default function ChatRoom({
                   <div
                     className={`relative px-3.5 py-2.5 rounded-3xl text-sm leading-6 ig-shadow-sm transition-all ${
                       mine
-                        ? `bg-ig-blue text-white rounded-bl-lg ${m.status === "sending" ? "opacity-70" : ""}`
-                        : "bg-surface text-foreground border border-ig-border rounded-br-lg"
+                        ? `chat-bubble-mine bg-ig-blue text-white rounded-bl-lg ${m.status === "sending" ? "opacity-70" : ""}`
+                        : "chat-bubble-theirs bg-surface text-foreground border border-ig-border rounded-br-lg"
                     }`}
                   >
                     {m.type === "IMAGE" && m.mediaUrl ? (
@@ -1167,7 +1167,7 @@ export default function ChatRoom({
         })}
         {otherTyping && (
           <div className="flex justify-end ig-fade-in">
-            <div className="bg-surface border border-ig-border rounded-3xl rounded-br-lg px-4 py-3 ig-shadow-sm">
+            <div className="chat-bubble-theirs bg-surface border border-ig-border rounded-3xl rounded-br-lg px-4 py-3 ig-shadow-sm">
               <div className="flex gap-1">
                 <span className="w-1.5 h-1.5 bg-ig-gray rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
                 <span className="w-1.5 h-1.5 bg-ig-gray rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />

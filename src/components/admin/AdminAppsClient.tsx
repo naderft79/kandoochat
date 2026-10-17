@@ -1,10 +1,18 @@
 "use client";
 
 // مدیریت اپ ها — تب هر برند و تنظیمات جداگانه اش (override روی تنظیمات سراسری)
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Smartphone, Loader2, Save, RotateCcw, Check } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState, type CSSProperties } from "react";
+import { Smartphone, Loader2, Save, RotateCcw, Check, Home, Search, MessageCircle, Wallet, User } from "lucide-react";
 
-type BrandTab = { id: string; name: string; nameEn: string; color: string };
+type BrandPreview = {
+  vars: Record<string, string>;
+  navIndicator: "none" | "pill" | "bar" | "dot";
+  letter: string;
+  welcome: string;
+  sub: string;
+};
+
+type BrandTab = { id: string; name: string; nameEn: string; color: string; preview: BrandPreview };
 
 type Row = {
   key: string;
@@ -117,6 +125,9 @@ export default function AdminAppsClient({ brands }: { brands: BrandTab[] }) {
           </button>
         ))}
       </div>
+
+      {/* پیش نمایش زنده تم برند — قاب گوشی با متغیرهای واقعی قالب */}
+      {activeBrand && <ThemePreview p={activeBrand.preview} name={activeBrand.name} />}
 
       {message && (
         <p className={`text-sm rounded-lg px-4 py-3 ${message.ok ? "bg-[rgba(16,185,129,0.1)] text-[#34d399] border border-[rgba(16,185,129,0.2)]" : "bg-[rgba(239,68,68,0.1)] text-[#f87171] border border-[rgba(239,68,68,0.2)]"}`}>
@@ -244,6 +255,98 @@ function SettingRow({
           </button>
         )}
         {!dirty && !row.customized && <Check className="w-4 h-4 text-[#333]" />}
+      </div>
+    </div>
+  );
+}
+
+// پیش نمایش تم — قاب گوشی کوچک که متغیرهای واقعی قالب برند را اعمال می کند
+function ThemePreview({ p, name }: { p: BrandPreview; name: string }) {
+  const navIcons = [Home, Search, MessageCircle, Wallet, User];
+  const activeIdx = 0;
+  return (
+    <div className="lux-card p-5">
+      <h2 className="text-sm font-bold text-[#d4af37] mb-4">پیش نمایش ظاهری — {name}</h2>
+      <div
+        dir="rtl"
+        style={p.vars as CSSProperties}
+        className="mx-auto w-[270px] rounded-[28px] border border-[rgba(212,175,55,0.15)] overflow-hidden bg-white text-[#262626] shadow-lg"
+      >
+        {/* هیرو: مونوگرام + خوش آمد */}
+        <div
+          className="flex flex-col items-center justify-center text-white px-4 pt-6 pb-5"
+          style={{ background: "var(--brand-gradient-hero)" }}
+        >
+          <span
+            className="w-11 h-11 flex items-center justify-center text-xl font-black bg-white/20"
+            style={{ borderRadius: "var(--brand-radius-card)" }}
+          >
+            {p.letter}
+          </span>
+          <span className="text-sm font-black mt-2">{p.welcome}</span>
+          <span className="text-[10px] text-white/85 mt-0.5">{p.sub}</span>
+        </div>
+
+        {/* بدنه: کارت + دکمه + بابل چت */}
+        <div className="p-3 space-y-2.5" style={{ background: "var(--brand-surface-tint)" }}>
+          <div
+            className="bg-white p-3 text-[11px] leading-5"
+            style={{
+              borderRadius: "var(--brand-radius-card)",
+              boxShadow: "var(--brand-shadow-card)",
+            }}
+          >
+            <span className="font-bold text-[12px]">کارت نمونه</span>
+            <br />
+            شکل و سایه کارت ها در {name} این طور دیده می شود.
+          </div>
+          <button className="btn-brand w-full py-2 text-[11px] font-bold">دکمه اصلی</button>
+          <div className="flex flex-col gap-1.5">
+            <div className="bubble-mine self-start px-3 py-1.5 text-[11px] max-w-[85%]">
+              سلام! پروفایلت رو دیدم
+            </div>
+            <div className="bubble-theirs self-end px-3 py-1.5 text-[11px] max-w-[85%] bg-white border border-[#dbdbdb]">
+              سلام! خوشحال می شم آشنا بشیم
+            </div>
+          </div>
+        </div>
+
+        {/* منوی پایین با نشانگر قالب */}
+        <div className="flex items-center justify-around border-t border-[#efefef] bg-white py-1.5 px-2">
+          {navIcons.map((Icon, i) => {
+            const active = i === activeIdx;
+            return (
+              <span key={i} className="relative flex flex-col items-center justify-center w-10 h-9">
+                {p.navIndicator === "pill" && active && (
+                  <span
+                    className="absolute inset-0"
+                    style={{
+                      background: "color-mix(in srgb, var(--brand-gold) 15%, transparent)",
+                      borderRadius: 999,
+                    }}
+                  />
+                )}
+                {p.navIndicator === "bar" && active && (
+                  <span
+                    className="absolute top-0 inset-x-2 h-0.5 rounded-full"
+                    style={{ background: "var(--brand-gold)" }}
+                  />
+                )}
+                <Icon
+                  className="w-5 h-5 relative"
+                  style={{ color: active && p.navIndicator !== "none" ? "var(--brand-gold)" : "#262626" }}
+                  strokeWidth={active ? 2.5 : 2}
+                />
+                {p.navIndicator === "dot" && active && (
+                  <span
+                    className="absolute bottom-0 w-1 h-1 rounded-full"
+                    style={{ background: "var(--brand-gold)" }}
+                  />
+                )}
+              </span>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

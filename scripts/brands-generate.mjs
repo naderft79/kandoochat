@@ -213,6 +213,88 @@ for (const b of brands) {
 }
 
 // ---------- آیکون های لانچر با sharp ----------
+// شکل مونوگرام هر قالب — با src/lib/brand-theme.ts همگام نگه شود
+const THEME_ICON = {
+  aurora: { radiusRatio: 0.5, deco: "glow" },
+  flame: { radiusRatio: 0.28, deco: "flame" },
+  voyage: { radiusRatio: 0.22, deco: "path" },
+};
+
+function monogramSpec(b) {
+  const t = THEME_ICON[b.theme] ?? THEME_ICON.voyage;
+  return {
+    letter: (b.iconLetter || b.name.trim()[0] || "ک"),
+    primary: b.colors.primary,
+    secondary: b.colors.secondary ?? b.colors.dark,
+    radiusRatio: t.radius,
+    deco: t.deco,
+  };
+}
+
+// SVG مونوگرام — حرف اول نام + گرادیانت + المان قالب
+function iconSvg(spec, px, opts = {}) {
+  const r = opts.round ? px / 2 : px * spec.radiusRatio;
+  const fontSize = Math.round(px * (opts.maskable ? 0.42 : 0.52));
+  const deco =
+    spec.deco === "glow"
+      ? `<circle cx="${px / 2}" cy="${px / 2}" r="${px * 0.36}" fill="#ffffff" opacity="0.22"/>`
+      : spec.deco === "flame"
+        ? `<path d="M ${px * 0.2} ${px * 0.78} Q ${px * 0.5} ${px * 0.6} ${px * 0.8} ${px * 0.78}" stroke="#ffffff" stroke-width="${px * 0.03}" fill="none" opacity="0.5" stroke-linecap="round"/>`
+        : spec.deco === "path"
+          ? `<path d="M ${px * 0.22} ${px * 0.8} C ${px * 0.4} ${px * 0.68}, ${px * 0.6} ${px * 0.68}, ${px * 0.78} ${px * 0.8}" stroke="#ffffff" stroke-width="${px * 0.025}" fill="none" opacity="0.6" stroke-linecap="round" stroke-dasharray="${px * 0.05} ${px * 0.04}"/>`
+          : "";
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${px}" height="${px}">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="${spec.primary}"/>
+      <stop offset="1" stop-color="${spec.secondary}"/>
+    </linearGradient>
+  </defs>
+  <rect width="${px}" height="${px}" rx="${r}" fill="${opts.transparent ? "none" : "url(#g)"}"/>
+  ${deco}
+  <text x="50%" y="54%" text-anchor="middle" dominant-baseline="central"
+    font-family="Vazirmatn, Tahoma, Segoe UI, sans-serif" font-size="${fontSize}"
+    font-weight="900" fill="#ffffff">${escapeXml(spec.letter)}</text>
+</svg>`;
+}
+
+// اسپلش: تمام صفحه گرادیانت برند + مونوگرام سفید مرکزی
+function splashSvg(spec, w, h) {
+  const icon = Math.round(Math.min(w, h) * 0.34);
+  const fontSize = Math.round(icon * 0.52);
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="${spec.primary}"/>
+      <stop offset="1" stop-color="${spec.secondary}"/>
+    </linearGradient>
+  </defs>
+  <rect width="${w}" height="${h}" fill="url(#g)"/>
+  <circle cx="${w / 2}" cy="${h / 2}" r="${icon / 2}" fill="#ffffff" opacity="0.18"/>
+  <circle cx="${w / 2}" cy="${h / 2}" r="${icon * 0.42}" fill="#ffffff" opacity="0.25"/>
+  <text x="${w / 2}" y="${h / 2}" text-anchor="middle" dominant-baseline="central"
+    font-family="Vazirmatn, Tahoma, Segoe UI, sans-serif" font-size="${fontSize}"
+    font-weight="900" fill="#ffffff">${escapeXml(spec.letter)}</text>
+</svg>`;
+}
+
+// آیکون نوتیفیکیشن مونوکروم — فقط حرف سفید روی شفاف
+function notificationSvg(spec, px) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${px}" height="${px}">
+  <text x="50%" y="54%" text-anchor="middle" dominant-baseline="central"
+    font-family="Vazirmatn, Tahoma, Segoe UI, sans-serif" font-size="${Math.round(px * 0.6)}"
+    font-weight="900" fill="#ffffff">${escapeXml(spec.letter)}</text>
+</svg>`;
+}
+
+async function renderPng(sharp, svg, target) {
+  try {
+    await sharp(Buffer.from(svg), { density: 300 }).png().toFile(target);
+  } catch (e) {
+    console.warn(`[brands] png failed ${target}:`, e.message);
+  }
+}
+
 async function generateIcons() {
   let sharp;
   try {
@@ -222,43 +304,96 @@ async function generateIcons() {
     return;
   }
   const sizes = { mdpi: 48, hdpi: 72, xhdpi: 96, xxhdpi: 144, xxxhdpi: 192 };
+  // اسپلش برای همه باکت های drawable که main دارد — وگرنه نسخه خاص تری از main برنده می شود
+  const splashBuckets = [
+    ["drawable", 1080, 1920],
+    ["drawable-port-mdpi", 480, 800],
+    ["drawable-port-hdpi", 800, 1280],
+    ["drawable-port-xhdpi", 1080, 1920],
+    ["drawable-port-xxhdpi", 1440, 2560],
+    ["drawable-port-xxxhdpi", 1920, 3200],
+    ["drawable-port-night-mdpi", 480, 800],
+    ["drawable-port-night-hdpi", 800, 1280],
+    ["drawable-port-night-xhdpi", 1080, 1920],
+    ["drawable-port-night-xxhdpi", 1440, 2560],
+    ["drawable-port-night-xxxhdpi", 1920, 3200],
+    ["drawable-land-mdpi", 800, 480],
+    ["drawable-land-hdpi", 1280, 800],
+    ["drawable-land-xhdpi", 1920, 1080],
+    ["drawable-land-xxhdpi", 2560, 1440],
+    ["drawable-land-xxxhdpi", 3200, 1920],
+    ["drawable-land-night-mdpi", 800, 480],
+    ["drawable-land-night-hdpi", 1280, 800],
+    ["drawable-land-night-xhdpi", 1920, 1080],
+    ["drawable-land-night-xxhdpi", 2560, 1440],
+    ["drawable-land-night-xxxhdpi", 3200, 1920],
+    ["drawable-night", 1080, 1920],
+  ];
   for (const b of brands) {
-    for (const [dpi, px] of Object.entries(sizes)) {
-      const dir = path.join(androidApp, "src", b.id, "res", `mipmap-${dpi}`);
-      mkdirSync(dir, { recursive: true });
-      for (const name of ["ic_launcher.png", "ic_launcher_round.png"]) {
-        const target = path.join(dir, name);
-        if (existsSync(target)) continue; // آیکون دستی جایگزین شده باشد پاک نمی شود
-        const round = name.includes("round");
-        const svg = iconSvg(b, px, round);
-        try {
-          await sharp(Buffer.from(svg)).png().toFile(target);
-        } catch (e) {
-          console.warn(`[brands] icon failed ${b.id}/${dpi}/${name}:`, e.message);
-        }
-      }
-    }
-    console.log(`[brands] icons for ${b.id} → android/app/src/${b.id}/res/mipmap-*`);
-  }
-}
+    const spec = monogramSpec(b);
+    const brandRes = path.join(androidApp, "src", b.id, "res");
+    // اگر فایل مارکر وجود داشته باشد آیکون های دستی این برند دست نمی خورند
+    const manual = existsSync(path.join(brandRes, ".icon-manual"));
 
-// آیکون مدرج برند با متن نام — نسخه اولیه؛ لوگوی واقعی بعدا جایگزین می شود
-function iconSvg(b, px, round) {
-  const r = round ? px / 2 : px * 0.22;
-  const fontSize =
-    b.name.length <= 2 ? px * 0.42 : b.name.length <= 4 ? px * 0.32 : px * 0.22;
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${px}" height="${px}">
-  <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="${b.colors.primary}"/>
-      <stop offset="1" stop-color="${b.colors.dark}"/>
-    </linearGradient>
-  </defs>
-  <rect width="${px}" height="${px}" rx="${r}" fill="url(#g)"/>
-  <text x="50%" y="54%" text-anchor="middle" dominant-baseline="central"
-    font-family="Tahoma, Segoe UI, Vazirmatn, sans-serif" font-size="${fontSize}"
-    font-weight="800" fill="#ffffff">${escapeXml(b.name)}</text>
-</svg>`;
+    for (const [dpi, px] of Object.entries(sizes)) {
+      const dir = path.join(brandRes, `mipmap-${dpi}`);
+      mkdirSync(dir, { recursive: true });
+      if (!manual) {
+        await renderPng(sharp, iconSvg(spec, px), path.join(dir, "ic_launcher.png"));
+        await renderPng(sharp, iconSvg(spec, px, { round: true }), path.join(dir, "ic_launcher_round.png"));
+      }
+      // foreground adaptive: حرف سفید روی شفاف — داخل safe zone مرکزی
+      await renderPng(sharp, iconSvg(spec, px, { transparent: true }), path.join(dir, "ic_launcher_foreground.png"));
+    }
+
+    // adaptive icon XML — بدون این، مانیفست به ic_launcher.xml کندو (زنبور) اشاره می کرد
+    const anydpi = path.join(brandRes, "mipmap-anydpi-v26");
+    mkdirSync(anydpi, { recursive: true });
+    const adaptive = `<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/ic_launcher_background"/>
+    <foreground android:drawable="@mipmap/ic_launcher_foreground"/>
+</adaptive-icon>`;
+    writeFileSync(path.join(anydpi, "ic_launcher.xml"), adaptive);
+    writeFileSync(path.join(anydpi, "ic_launcher_round.xml"), adaptive);
+
+    // رنگ پس زمینه آیکون = primary برند
+    writeFileSync(
+      path.join(brandRes, "values", "ic_launcher_background.xml"),
+      `<?xml version='1.0' encoding='utf-8'?>
+<resources><color name="ic_launcher_background">${b.colors.primary}</color></resources>
+`
+    );
+
+    // اسپلش برنددار در همه باکت ها
+    for (const [bucket, w, h] of splashBuckets) {
+      const dir = path.join(brandRes, bucket);
+      mkdirSync(dir, { recursive: true });
+      await renderPng(sharp, splashSvg(spec, w, h), path.join(dir, "splash.png"));
+    }
+
+    // آیکون نوتیفیکیشن مونوکروم
+    const drawableDir = path.join(brandRes, "drawable");
+    mkdirSync(drawableDir, { recursive: true });
+    await renderPng(sharp, notificationSvg(spec, 96), path.join(drawableDir, "ic_notification.png"));
+
+    // مانیفست برند — آیکون/رنگ نوتیفیکیشن برای آینده (merge با مانیفست اصلی)
+    writeFileSync(
+      path.join(androidApp, "src", b.id, "AndroidManifest.xml"),
+      `<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <meta-data android:name="com.google.firebase.messaging.default_notification_icon"
+                   android:resource="@drawable/ic_notification" />
+        <meta-data android:name="com.google.firebase.messaging.default_notification_color"
+                   android:resource="@color/ic_launcher_background" />
+    </application>
+</manifest>
+`
+    );
+
+    console.log(`[brands] icons+splash for ${b.id} → android/app/src/${b.id}/res/`);
+  }
 }
 
 function randomPass() {

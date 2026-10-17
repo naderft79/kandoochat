@@ -19,6 +19,7 @@ import SelectMenu, { type SelectOption } from "@/components/ui/SelectMenu";
 import Captcha from "@/components/auth/Captcha";
 import { cn } from "@/components/ui/cn";
 import { useBrand } from "@/components/BrandProvider";
+import BrandAuthShell from "@/components/auth/BrandAuthShell";
 
 const STEPS = ["حساب کاربری", "تایید موبایل", "مشخصات فردی"];
 const CURRENT_JY = currentJalaliYear();
@@ -360,7 +361,8 @@ function SpecialRegisterFormInner({ slug }: { slug: string }) {
   }
 
   return (
-    <div className="min-h-dvh bg-surface flex flex-col items-center justify-center p-4 gap-4">
+    <BrandAuthShell mode="special">
+    <div className="w-full flex flex-col items-center justify-center gap-4">
       {/* هیروی جذاب — مرحله اول: توضیحات و دکمه شروع ثبت نام */}
       {view === "intro" && (
         <div className="w-full max-w-[400px] space-y-3">
@@ -439,7 +441,7 @@ function SpecialRegisterFormInner({ slug }: { slug: string }) {
 
       {/* کارت فرم — مرحله دوم؛ دقیقا مثل فرم ثبت نام عادی */}
       {view === "form" && (
-      <div className="w-full max-w-[400px] bg-surface border border-ig-border rounded-xl p-6 sm:p-8">
+      <div className="auth-card w-full max-w-[400px] bg-surface border border-ig-border rounded-xl p-6 sm:p-8">
         <div className="flex items-center justify-center gap-2 mb-1">
           <h1 className="text-2xl font-bold text-center">{brand.name}</h1>
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-ig-gold/15 text-ig-gold text-[10px] font-black">
@@ -773,5 +775,6 @@ function SpecialRegisterFormInner({ slug }: { slug: string }) {
       </div>
       )}
     </div>
+    </BrandAuthShell>
   );
 }

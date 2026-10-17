@@ -49,7 +49,8 @@ export default function BrandLogo({
           alt={brand.name}
           width={36}
           height={36}
-          className={`shrink-0 rounded-xl ${iconClassName || "w-9 h-9"}`}
+          className={`shrink-0 ${iconClassName || "w-9 h-9"}`}
+          style={{ borderRadius: "var(--brand-radius-card, 12px)" }}
           draggable={false}
         />
       )}

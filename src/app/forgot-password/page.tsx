@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
 import Input, { PasswordInput } from "@/components/ui/Input";
 import Captcha from "@/components/auth/Captcha";
+import BrandAuthShell from "@/components/auth/BrandAuthShell";
 import { normalizeDigits, toPersianDigits } from "@/lib/format";
 
 type Step = "phone" | "code" | "password" | "done";
@@ -81,8 +82,8 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-dvh bg-surface flex items-center justify-center p-4">
-      <div className="w-full max-w-[350px] bg-surface border border-ig-border rounded-xl p-8">
+    <BrandAuthShell mode="forgot">
+      <div className="auth-card w-full max-w-[350px] bg-surface border border-ig-border rounded-xl p-8">
         <h1 className="text-xl font-bold text-center mb-2">بازیابی رمز عبور</h1>
 
         {step === "phone" && (
@@ -168,6 +169,6 @@ export default function ForgotPasswordPage() {
           </Link>
         </p>
       </div>
-    </div>
+    </BrandAuthShell>
   );
 }

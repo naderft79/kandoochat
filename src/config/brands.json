@@ -6,8 +6,30 @@
       "nameEn": "Nafs Chat",
       "packageName": "com.nafschats.app",
       "uaToken": "nafs",
-      "slogan": "همسریابی",
-      "colors": { "primary": "#8b5cf6", "light": "#c4b5fd", "dark": "#6d28d9" },
+      "slogan": "جایی که نفس ها به هم می رسند",
+      "theme": "aurora",
+      "iconLetter": "ن",
+      "colors": {
+        "primary": "#8b5cf6",
+        "light": "#c4b5fd",
+        "dark": "#6d28d9",
+        "secondary": "#ec4899",
+        "surfaceTint": "#faf7ff",
+        "darkAccent": "#a78bfa",
+        "darkSurfaceTint": "#17121f"
+      },
+      "texts": {
+        "welcomeTitle": "به نفس چت خوش آمدی",
+        "welcomeSub": "اینجا نیمه گمشده ات پیداست",
+        "loginSub": "برای ادامه وارد حسابت شو",
+        "registerSub": "ساخت حساب در نفس چت",
+        "onboarding": [
+          { "icon": "heart", "title": "نفس چت چیست؟", "body": "یه فضای آروم و امن برای آشنایی — با پروفایل های تایید شده، به نفس تازه ای برس." },
+          { "icon": "search", "title": "کشف آدم ها", "body": "بر اساس شهر، استان و سن آدم های اطرافت رو ببین و اونی که دنیاش شبیه توئه پیدا کن." },
+          { "icon": "chat", "title": "لایک و گفتگو", "body": "هرکیو دوست داشتی لایک کن؛ اگه اونم لایکت کرد، گفتگو شروع می شه." },
+          { "icon": "shield", "title": "امنیت و تیک آبی", "body": "با احراز هویت و تیک آبی، پروفایلت معتبرتر و اعتمادسازتر می شه." }
+        ]
+      },
       "iapKeys": { "bazaar": "", "myket": "" }
     },
     {
@@ -16,8 +38,30 @@
       "nameEn": "Hamfaz Chat",
       "packageName": "com.hamfazchat.app",
       "uaToken": "hamfaz",
-      "slogan": "همسریابی",
-      "colors": { "primary": "#e11d48", "light": "#fda4af", "dark": "#9f1239" },
+      "slogan": "با هم فاز شو",
+      "theme": "flame",
+      "iconLetter": "هـ",
+      "colors": {
+        "primary": "#e11d48",
+        "light": "#fda4af",
+        "dark": "#9f1239",
+        "secondary": "#f97316",
+        "surfaceTint": "#fff5f5",
+        "darkAccent": "#fb7185",
+        "darkSurfaceTint": "#1f1014"
+      },
+      "texts": {
+        "welcomeTitle": "به هم فاز چت خوش آمدی",
+        "welcomeSub": "آدم هایی که روی موج توئن اینجان",
+        "loginSub": "وارد شو و هم فازتو پیدا کن",
+        "registerSub": "همین حالا عضو شو",
+        "onboarding": [
+          { "icon": "heart", "title": "هم فاز چت چیست؟", "body": "یه اپلیکیشن همسریابی پرانرژی — پروفایل های واقعی و تایید شده، هم فازت اینجاست." },
+          { "icon": "search", "title": "پیدا کن و کشف کن", "body": "با فیلتر شهر و سن دقیق جستجو کن و آدم های هم فاز اطرافت رو ببین." },
+          { "icon": "chat", "title": "لایک کن و حرف بزن", "body": "لایک بزن؛ مچ که شدین گفتگو شروع می شه — ساده و مستقیم." },
+          { "icon": "shield", "title": "تیک آبی و امنیت", "body": "با احراز هویت، تیک آبی بگیر و اعتماد بیشتری جلب کن." }
+        ]
+      },
       "iapKeys": { "bazaar": "", "myket": "" }
     },
     {
@@ -26,8 +70,30 @@
       "nameEn": "Hammasir Chat",
       "packageName": "com.hammasirchat.app",
       "uaToken": "hammasir",
-      "slogan": "همسریابی",
-      "colors": { "primary": "#0d9488", "light": "#5eead4", "dark": "#115e59" },
+      "slogan": "مسیر مشترک را پیدا کن",
+      "theme": "voyage",
+      "iconLetter": "م",
+      "colors": {
+        "primary": "#0d9488",
+        "light": "#5eead4",
+        "dark": "#115e59",
+        "secondary": "#06b6d4",
+        "surfaceTint": "#f0fdfa",
+        "darkAccent": "#2dd4bf",
+        "darkSurfaceTint": "#0d1b1a"
+      },
+      "texts": {
+        "welcomeTitle": "به هم مسیر چت خوش آمدی",
+        "welcomeSub": "همراه مسیر زندگیت رو اینجا پیدا کن",
+        "loginSub": "وارد حسابت شو",
+        "registerSub": "عضویت در هم مسیر چت",
+        "onboarding": [
+          { "icon": "map", "title": "هم مسیر چت چیست؟", "body": "یه فضای تازه و تمیز برای آشنایی — کسی رو پیدا کن که مسیرش با تو یکیه." },
+          { "icon": "search", "title": "جستجوی دقیق", "body": "بر اساس شهر، استان و سن فیلتر کن و آدم های نزدیکت رو کشف کن." },
+          { "icon": "chat", "title": "لایک و گفتگو", "body": "لایک کن، مچ شو و گفتگو رو شروع کن — مستقیم و ساده." },
+          { "icon": "shield", "title": "امنیت و تیک آبی", "body": "با احراز هویت و تیک آبی، پروفایلت معتبرتر می شه." }
+        ]
+      },
       "iapKeys": { "bazaar": "", "myket": "" }
     }
   ]

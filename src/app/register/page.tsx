@@ -16,6 +16,7 @@ import SelectMenu, { type SelectOption } from "@/components/ui/SelectMenu";
 import Captcha from "@/components/auth/Captcha";
 import { cn } from "@/components/ui/cn";
 import { useBrand } from "@/components/BrandProvider";
+import BrandAuthShell from "@/components/auth/BrandAuthShell";
 
 const STEPS = ["حساب کاربری", "تایید موبایل", "مشخصات فردی"];
 const CURRENT_JY = currentJalaliYear();
@@ -333,8 +334,9 @@ function RegisterForm() {
   // صفحه تبریک — فقط وقتی اشتراک یک هفته ای به عضو دعوت شده تعلق گرفته باشد
   if (giftFrom !== null) {
     return (
-      <div className="min-h-dvh bg-surface flex items-center justify-center p-4">
-        <div className="w-full max-w-[400px] bg-surface border border-ig-border rounded-xl p-6 sm:p-8 text-center">
+      <BrandAuthShell mode="register">
+      <div className="w-full">
+        <div className="auth-card w-full max-w-[400px] mx-auto bg-surface border border-ig-border rounded-xl p-6 sm:p-8 text-center">
           <div className="w-16 h-16 rounded-full bg-ig-btn2 flex items-center justify-center mx-auto mb-4">
             <Gift className="w-8 h-8 text-ig-blue" aria-hidden />
           </div>
@@ -353,14 +355,19 @@ function RegisterForm() {
           </Button>
         </div>
       </div>
+      </BrandAuthShell>
     );
   }
 
   return (
-    <div className="min-h-dvh bg-surface flex items-center justify-center p-4">
-      <div className="w-full max-w-[400px] bg-surface border border-ig-border rounded-xl p-6 sm:p-8">
-        <h1 className="text-2xl font-bold text-center mb-1">{brand.name}</h1>
-        <p className="text-sm text-ig-gray text-center mb-5">ثبت نام در {brand.name}</p>
+    <BrandAuthShell mode="register">
+      <div className="auth-card w-full max-w-[400px] bg-surface border border-ig-border rounded-xl p-6 sm:p-8">
+        {brand.id === "kandoo" && (
+          <>
+            <h1 className="text-2xl font-bold text-center mb-1">{brand.name}</h1>
+            <p className="text-sm text-ig-gray text-center mb-5">ثبت نام در {brand.name}</p>
+          </>
+        )}
 
         <ol className="flex items-center justify-center gap-1.5 mb-6" aria-label="مراحل ثبت نام">
           {STEPS.map((label, i) => (
@@ -684,6 +691,6 @@ function RegisterForm() {
           </Link>
         </p>
       </div>
-    </div>
+    </BrandAuthShell>
   );
 }

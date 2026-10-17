@@ -76,6 +76,129 @@ body {
   background-clip: text;
 }
 
+/* === المان های برنددار — توکن های قالب از brand-theme روی html تزریق می شوند === */
+/* برای کندو مقادیر = ظاهر فعلی، پس کلاس ها روی کندو همان خروجی امروزی را می دهند */
+.btn-brand {
+  background: var(--brand-gradient-primary, var(--brand-gold));
+  color: #ffffff;
+  border-radius: var(--brand-radius-btn, 8px);
+  box-shadow: var(--brand-shadow-btn, none);
+  transition: filter 0.15s ease, transform 0.1s ease;
+}
+.btn-brand:hover { filter: brightness(1.06); }
+.btn-brand:active { transform: scale(0.97); }
+
+.card-brand {
+  background: var(--surface);
+  border: 1px solid var(--ig-border);
+  border-radius: var(--brand-radius-card, 12px);
+  box-shadow: var(--brand-shadow-card, 0 1px 3px rgba(0,0,0,0.08));
+}
+
+.input-brand { border-radius: var(--brand-radius-input, 8px); }
+.input-brand:focus-within, .input-brand:focus { border-color: var(--brand-gold); }
+
+/* بابل چت — شکل و رنگ هر اپ متفاوت */
+.bubble-mine {
+  background: var(--brand-gradient-primary, var(--brand-gold));
+  color: #ffffff;
+  border-radius: var(--brand-radius-bubble-mine, 24px 24px 8px 24px);
+}
+.bubble-theirs {
+  background: var(--surface);
+  border: 1px solid var(--ig-border);
+  border-radius: var(--brand-radius-bubble-theirs, 24px 24px 24px 8px);
+}
+
+/* گرادیانت های برند */
+.hero-gradient { background: var(--brand-gradient-hero); }
+.soft-gradient { background: var(--brand-gradient-soft); }
+
+/* تیتر با وزن قالب */
+.headline { font-weight: var(--brand-headline-weight, 800); }
+
+/* نشانگر آیتم فعال منوی موبایل بر اساس قالب */
+html[data-theme="aurora"] .nav-item.active {
+  background: color-mix(in srgb, var(--brand-gold) 15%, transparent);
+  border-radius: 999px;
+}
+html[data-theme="aurora"] .nav-item.active svg { color: var(--brand-gold); }
+html[data-theme="flame"] .nav-item.active { box-shadow: inset 0 2px 0 var(--brand-gold); }
+html[data-theme="flame"] .nav-item.active svg { color: var(--brand-gold); }
+html[data-theme="voyage"] .nav-item { position: relative; }
+html[data-theme="voyage"] .nav-item.active::after {
+  content: "";
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--brand-gold);
+}
+html[data-theme="voyage"] .nav-item.active svg { color: var(--brand-gold); }
+
+/* === بازرنگی سراسری برندهای غیرکندو ===
+   کلاس های ig-blue با رنگ لیتنرال کامپایل شده اند — اینجا به متغیر برند نگاشت می شوند
+   تا دکمه ها، لینک ها، بج ها و هایلایت ها در هر اپ رنگ خودش را بگیرند */
+html:not([data-brand="kandoo"]) .bg-ig-blue { background-color: var(--brand-gold); }
+html:not([data-brand="kandoo"]) .text-ig-blue { color: var(--brand-gold); }
+html:not([data-brand="kandoo"]) .border-ig-blue { border-color: var(--brand-gold); }
+html:not([data-brand="kandoo"]) .fill-ig-blue { fill: var(--brand-gold); }
+html:not([data-brand="kandoo"]) .stroke-ig-blue { stroke: var(--brand-gold); }
+html:not([data-brand="kandoo"]) .bg-ig-blue\/10 { background-color: color-mix(in srgb, var(--brand-gold) 10%, transparent); }
+html:not([data-brand="kandoo"]) .bg-ig-blue\/15 { background-color: color-mix(in srgb, var(--brand-gold) 15%, transparent); }
+html:not([data-brand="kandoo"]) .bg-ig-blue\/20 { background-color: color-mix(in srgb, var(--brand-gold) 20%, transparent); }
+html:not([data-brand="kandoo"]) .bg-ig-blue\/\[0\.04\] { background-color: color-mix(in srgb, var(--brand-gold) 4%, transparent); }
+html:not([data-brand="kandoo"]) .text-ig-blue\/80 { color: color-mix(in srgb, var(--brand-gold) 80%, transparent); }
+html:not([data-brand="kandoo"]) .hover\:bg-ig-blue-hover:hover { background-color: var(--brand-gold-dark); }
+html:not([data-brand="kandoo"]) .hover\:bg-ig-blue:hover { background-color: var(--brand-gold-dark); }
+html:not([data-brand="kandoo"]) .hover\:text-ig-blue:hover { color: var(--brand-gold); }
+html:not([data-brand="kandoo"]) .focus\:border-ig-blue:focus { border-color: var(--brand-gold); }
+html:not([data-brand="kandoo"]) .focus-within\:border-ig-blue:focus-within { border-color: var(--brand-gold); }
+html:not([data-brand="kandoo"]) .focus-visible\:outline-ig-blue:focus-visible { outline-color: var(--brand-gold); }
+html:not([data-brand="kandoo"]) .outline-ig-blue { outline-color: var(--brand-gold); }
+html:not([data-brand="kandoo"]) .peer-checked\:bg-ig-blue:is(:where(.peer):checked ~ *) { background-color: var(--brand-gold); }
+html:not([data-brand="kandoo"]) .accent-ig-blue { accent-color: var(--brand-gold); }
+
+/* گرادیانت های عمومی — در برندها گرادیانت خود قالب می شود */
+html:not([data-brand="kandoo"]) .ig-gradient { background: var(--brand-gradient-primary); }
+html:not([data-brand="kandoo"]) .ig-story-ring { background: var(--brand-gradient-primary); padding: 2.5px; border-radius: 9999px; }
+
+/* شکل ها — گردی دکمه/ورودی/کارت از توکن های قالب */
+html:not([data-brand="kandoo"]) button.rounded-lg,
+html:not([data-brand="kandoo"]) a.rounded-lg { border-radius: var(--brand-radius-btn); }
+html:not([data-brand="kandoo"]) input.rounded-lg,
+html:not([data-brand="kandoo"]) textarea.rounded-lg,
+html:not([data-brand="kandoo"]) select.rounded-lg { border-radius: var(--brand-radius-input); }
+html:not([data-brand="kandoo"]) .rounded-xl { border-radius: var(--brand-radius-card); }
+html:not([data-brand="kandoo"]) .rounded-2xl:not(.chat-bubble-mine):not(.chat-bubble-theirs) { border-radius: var(--brand-radius-card); }
+
+/* بابل های چت — شکل و گرادیانت اختصاصی هر برند */
+html:not([data-brand="kandoo"]) .chat-bubble-mine {
+  background: var(--brand-gradient-primary);
+  color: #ffffff;
+  border-radius: var(--brand-radius-bubble-mine);
+}
+html:not([data-brand="kandoo"]) .chat-bubble-theirs {
+  border-radius: var(--brand-radius-bubble-theirs);
+}
+
+/* بک گراند صفحات با تِنت ملایم برند */
+html:not([data-brand="kandoo"]) .bg-ig-gray-bg { background-color: var(--brand-surface-tint, var(--ig-gray-bg)); }
+
+/* کارت های صفحات auth — در برندهای غیرکندو به شکل قالب در می آیند */
+html:not([data-brand="kandoo"]) .auth-card {
+  border-radius: var(--brand-radius-card);
+  box-shadow: var(--brand-shadow-card);
+  border-color: transparent;
+}
+html:not([data-brand="kandoo"]) .auth-card-flat {
+  border-radius: calc(var(--brand-radius-card) * 0.75);
+  border-color: color-mix(in srgb, var(--brand-gold) 20%, transparent);
+}
+
 /* مخفی کردن اسکرول بار مرورگر در تمام صفحات */
 ::-webkit-scrollbar {
   display: none;

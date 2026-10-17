@@ -18,6 +18,7 @@ import {
 import { toPersianDigits, formatToman } from "@/lib/format";
 import BrandLogo from "@/components/BrandLogo";
 import DefaultAvatar from "@/components/dashboard/DefaultAvatar";
+import { useBrand } from "@/components/BrandProvider";
 
 type Profile = {
   id: string;
@@ -56,6 +57,14 @@ export default function LandingClient({
   coinValue,
 }: Props) {
   const ctaHref = isLoggedIn ? "/dashboard" : "/register";
+  const brand = useBrand();
+  const isKandoo = brand.id === "kandoo";
+  // نام نمایشی لندینگ — کندو همان KanDoo تایپوگرافی، برندها نام فارسی خودشان
+  const brandName = isKandoo ? "KanDoo" : brand.name;
+  const gradText = isKandoo ? "ig-gradient-text" : "brand-gradient-text";
+  const ctaClass = isKandoo ? "ig-gradient" : "btn-brand";
+  const gradIcon = isKandoo ? "ig-gradient" : "brand-gradient";
+  const heroPanel = isKandoo ? "ig-gradient" : "hero-gradient";
 
   return (
     <div className="min-h-dvh bg-surface overflow-x-hidden">
@@ -81,7 +90,7 @@ export default function LandingClient({
                 </Link>
                 <Link
                   href="/register"
-                  className="px-4 py-1.5 rounded-lg ig-gradient text-white text-sm font-bold hover:opacity-90 transition-opacity"
+                  className={`px-4 py-1.5 rounded-lg ${ctaClass} text-white text-sm font-bold hover:opacity-90 transition-opacity`}
                 >
                   ثبت نام رایگان
                 </Link>
@@ -108,7 +117,7 @@ export default function LandingClient({
           className="text-4xl sm:text-6xl font-bold leading-tight text-foreground"
         >
           نیمه گمشده ات را در{" "}
-          <span className="ig-gradient-text">KanDoo</span>{" "}
+          <span className={gradText}>{brandName}</span>{" "}
           پیدا کن
         </motion.h1>
 
@@ -119,7 +128,7 @@ export default function LandingClient({
           variants={fadeUp}
           className="mt-6 text-base sm:text-lg text-ig-gray max-w-2xl mx-auto leading-8"
         >
-          KanDoo یک جامعه امن برای آشنایی جدی و ازدواج است. پروفایل های تایید شده،
+          {brandName} یک جامعه امن برای آشنایی جدی و ازدواج است. پروفایل های تایید شده،
           هم شهری های شما و گفتگوی امن؛ همه در یک جا.
         </motion.p>
 
@@ -132,7 +141,7 @@ export default function LandingClient({
         >
           <Link
             href={ctaHref}
-            className="group w-full sm:w-auto px-8 py-3 rounded-lg ig-gradient text-white font-bold text-base hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+            className={`group w-full sm:w-auto px-8 py-3 rounded-lg ${ctaClass} text-white font-bold text-base hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2`}
           >
             همین حالا شروع کن
             <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
@@ -160,7 +169,7 @@ export default function LandingClient({
             پروفایل های تایید شده
           </h2>
           <p className="mt-3 text-ig-gray text-sm">
-            این پروفایل ها توسط تیم کندو بررسی و تایید شده اند
+            این پروفایل ها توسط تیم {brand.name} بررسی و تایید شده اند
           </p>
         </motion.div>
 
@@ -218,7 +227,7 @@ export default function LandingClient({
             variants={fadeUp}
             className="text-2xl sm:text-3xl font-bold text-center text-foreground mb-12"
           >
-            چرا KanDoo؟
+            چرا {brandName}؟
           </motion.h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
@@ -252,7 +261,7 @@ export default function LandingClient({
                 variants={fadeUp}
                 className="p-6 rounded-lg bg-surface border border-ig-border hover:border-ig-gray transition-colors"
               >
-                <div className="w-10 h-10 rounded-lg ig-gradient flex items-center justify-center mb-4">
+                <div className={`w-10 h-10 rounded-lg ${gradIcon} flex items-center justify-center mb-4`}>
                   <f.icon className="w-5 h-5 text-white" strokeWidth={1.5} />
                 </div>
                 <h3 className="font-bold text-foreground mb-2 text-sm">{f.title}</h3>
@@ -304,7 +313,7 @@ export default function LandingClient({
               variants={fadeUp}
               className="relative bg-surface border border-ig-border rounded-lg p-8 text-center"
             >
-              <span className="absolute -top-5 right-1/2 translate-x-1/2 w-10 h-10 rounded-full ig-gradient text-white font-bold flex items-center justify-center">
+              <span className={`absolute -top-5 right-1/2 translate-x-1/2 w-10 h-10 rounded-full ${gradIcon} text-white font-bold flex items-center justify-center`}>
                 {s.step}
               </span>
               <s.icon className="w-8 h-8 text-ig-blue mx-auto mt-3 mb-4" strokeWidth={1.5} />
@@ -322,14 +331,14 @@ export default function LandingClient({
           whileInView="visible"
           viewport={{ once: true }}
           variants={fadeUp}
-          className="rounded-2xl ig-gradient p-8 sm:p-12 text-white text-center"
+          className={`rounded-2xl ${heroPanel} p-8 sm:p-12 text-white text-center`}
         >
           <Coins className="w-10 h-10 mx-auto mb-4 opacity-90" strokeWidth={1.5} />
           <h2 className="text-2xl sm:text-3xl font-bold mb-3">
             اشتراک ماهانه فقط {formatToman(subscriptionPrice)}
           </h2>
           <p className="opacity-90 leading-7 max-w-xl mx-auto text-sm">
-            با سیستم سکه KanDoo، هر سکه {formatToman(coinValue)} ارزش دارد. سکه
+            با سیستم سکه {brandName}، هر سکه {formatToman(coinValue)} ارزش دارد. سکه
             بخر، اشتراک فعال کن و هر وقت خواستی سکه هایت را به تومان تبدیل کن.
           </p>
           <Link
@@ -349,7 +358,7 @@ export default function LandingClient({
             <span className="text-ig-gray text-sm">| سایت همسریابی</span>
           </div>
           <p className="text-xs text-ig-gray">
-            © {toPersianDigits(new Date().getFullYear())} KanDoo — همه حقوق محفوظ است
+            © {toPersianDigits(new Date().getFullYear())} {brandName} — همه حقوق محفوظ است
           </p>
         </div>
       </footer>

@@ -1,5 +1,6 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { getRequestBrandInfo } from "@/lib/brand-server";
+import { getBrandTheme, brandCssVars, brandDarkCss } from "@/lib/brand-theme";
 import BrandProvider from "@/components/BrandProvider";
 import { Vazirmatn, Grand_Hotel } from "next/font/google";
 import "./globals.css";
@@ -78,31 +79,31 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export const viewport = {
-  themeColor: "#ffffff",
-  width: "device-width",
-  initialScale: 1,
-  minimumScale: 1,
-  maximumScale: 1,
-  userScalable: false,
-  viewportFit: "cover",
-  // با باز شدن کیبورد، viewport لی اوت کوچک می شود تا هدر و باکس تایپ چت دیده شوند
-  interactiveWidget: "resizes-content",
-};
+// theme-color هر برند رنگ خودش — نوار آدرس موبایل برنددار می شود
+export async function generateViewport(): Promise<Viewport> {
+  const { brand } = await getRequestBrandInfo();
+  return {
+    themeColor: brand.id === "kandoo" ? "#ffffff" : brand.colors.primary,
+    width: "device-width",
+    initialScale: 1,
+    minimumScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+    viewportFit: "cover",
+    // با باز شدن کیبورد، viewport لی اوت کوچک می شود تا هدر و باکس تایپ چت دیده شوند
+    interactiveWidget: "resizes-content",
+  };
+}
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   // فقط برای کاربران وارد شده — اعلان زنده باید در همه صفحات کار کند
   const session = await getSession();
   const { brand, market } = await getRequestBrandInfo();
-  // رنگ برند → اکسنت اصلی رابط (ig-blue ها) + متغیرهای برند برای استفاده های سفارشی
-  const brandStyle = {
-    "--brand-gold": brand.colors.primary,
-    "--brand-gold-light": brand.colors.light,
-    "--brand-gold-dark": brand.colors.dark,
-    "--color-ig-blue": brand.colors.primary,
-    "--color-ig-blue-hover": brand.colors.dark,
-    "--color-ig-blue-bright": brand.colors.light,
-  } as React.CSSProperties;
+  const theme = getBrandTheme(brand);
+  // مجموعه کامل متغیرهای برند: پالت + شکل + سایه + گرادیانت — سمت سرور تزریق می شود (بدون فلیکر)
+  const brandStyle = brandCssVars(brand, theme) as React.CSSProperties;
+  // قواعد حالت تاریک برند — فقط برای برندهای غیرکندو
+  const darkCss = brandDarkCss(brand);
 
   return (
     <html
@@ -110,11 +111,12 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       dir="rtl"
       data-scroll-behavior="smooth"
       data-brand={brand.id}
+      data-theme={theme.id}
       suppressHydrationWarning
       style={brandStyle}
       className={`${vazirmatn.variable} ${grandHotel.variable} h-full antialiased`}
     >
-      <head />
+      <head>{darkCss && <style dangerouslySetInnerHTML={{ __html: darkCss }} />}</head>
       <body className="min-h-full flex flex-col font-sans" suppressHydrationWarning>
         <ThemeProvider>
           <BrandProvider brand={brand} market={market}>

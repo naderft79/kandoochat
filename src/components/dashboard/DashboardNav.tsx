@@ -210,7 +210,7 @@ export default function DashboardNav({
               aria-label={item.label}
               aria-current={active ? "page" : undefined}
               onClick={() => active && scrollTop()}
-              className="flex items-center justify-center flex-1 h-12 transition-transform active:scale-90"
+              className={`nav-item ${active ? "active" : ""} flex items-center justify-center flex-1 h-12 transition-transform active:scale-90`}
             >
               {item.href === "/dashboard/profile" ? (
                 userPhoto ? (
