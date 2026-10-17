@@ -59,7 +59,9 @@ export default function AppLockGate() {
         return import("@capacitor/app").then(({ App }) => {
           let handle: { remove: () => void } | undefined;
           void App.addListener("appStateChange", ({ isActive }) => {
-            if (isActive) setLocked(true);
+            // فقط وقتی قفل واقعا فعال است دوباره قفل شود — در غیر این صورت
+            // کاربر بدون پین روی صفحه قفل گیر می کرد
+            if (isActive && getLockConfig()) setLocked(true);
           }).then((h) => {
             handle = h;
           });
