@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { toPersianDigits } from "@/lib/format";
 import { nativeShare as capShare, nativeCopy } from "@/lib/native";
+import { isMarketAppClient } from "@/lib/app-ua";
 import DefaultAvatar from "@/components/dashboard/DefaultAvatar";
 import { useBrand } from "@/components/BrandProvider";
 
@@ -39,9 +40,12 @@ export default function ReferralPage() {
   const [copied, setCopied] = useState<"code" | "link" | null>(null);
   const [qrUrl, setQrUrl] = useState("");
 
+  // در اپ های مارکتی لینک سایت اصلی نمایش و کپی نمی شود — فقط کد دعوت همراه متن
+  const marketApp = isMarketAppClient();
+
   const inviteLink = useMemo(
-    () => (data?.code ? `${window.location.origin}/invite/${data.code}` : ""),
-    [data?.code]
+    () => (data?.code && !marketApp ? `${window.location.origin}/invite/${data.code}` : ""),
+    [data?.code, marketApp]
   );
 
   // لینک های اشتراک شبکه اجتماعی با utm تگ می شوند تا منبع ورود در آمار دقیق ثبت شود
@@ -50,9 +54,11 @@ export default function ReferralPage() {
   const shareText = useMemo(
     () =>
       data
-        ? `به ${brand.name} بیا! با لینک دعوت من ثبت نام کن و ${toPersianDigits(data.rewardCoins)} سکه رایگان بگیر:`
+        ? marketApp
+          ? `به ${brand.name} بیا! موقع ثبت نام کد دعوت من رو بزن تا هر دومون ${toPersianDigits(data.rewardCoins)} سکه رایگان بگیریم. کد دعوت: ${data.code}`
+          : `به ${brand.name} بیا! با لینک دعوت من ثبت نام کن و ${toPersianDigits(data.rewardCoins)} سکه رایگان بگیر:`
         : "",
-    [data, brand.name]
+    [data, brand.name, marketApp]
   );
 
   useEffect(() => {
@@ -82,8 +88,13 @@ export default function ReferralPage() {
   }
 
   async function share() {
-    const ok = await capShare({ title: `دعوت به ${brand.name}`, text: shareText, url: inviteLink });
-    if (!ok) copyText(inviteLink, "link");
+    // اپ مارکتی: بدون لینک — فقط متن و کد دعوت
+    const ok = await capShare({
+      title: `دعوت به ${brand.name}`,
+      text: shareText,
+      ...(marketApp ? {} : { url: inviteLink }),
+    });
+    if (!ok) copyText(marketApp ? shareText : inviteLink, "link");
   }
 
   if (loading) {
@@ -160,33 +171,56 @@ export default function ReferralPage() {
         </button>
         {copied === "code" && <p className="text-xs text-green-600 text-center mt-1">کد کپی شد</p>}
 
-        <div className="flex items-center gap-2 mt-3" dir="ltr">
-          <input
-            type="text"
-            readOnly
-            value={inviteLink}
-            className="flex-1 min-w-0 px-3 py-2.5 rounded-xl bg-ig-gray-bg text-xs text-ig-gray outline-none truncate"
-          />
+        {marketApp ? (
+          // در اپ های مارکتی لینک سایت اصلی لو نمی رود — متن دعوت با کد کپی می شود
           <button
-            onClick={() => copyText(inviteLink, "link")}
-            className="px-4 py-2.5 rounded-xl bg-ig-blue text-white text-sm font-bold shrink-0 flex items-center gap-1"
+            onClick={() => copyText(shareText, "link")}
+            className="w-full mt-3 px-4 py-2.5 rounded-xl bg-ig-blue text-white text-sm font-bold flex items-center justify-center gap-1.5"
           >
             {copied === "link" ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-            {copied === "link" ? "کپی شد" : "کپی"}
+            {copied === "link" ? "متن دعوت کپی شد" : "کپی متن دعوت"}
           </button>
-        </div>
+        ) : (
+          <div className="flex items-center gap-2 mt-3" dir="ltr">
+            <input
+              type="text"
+              readOnly
+              value={inviteLink}
+              className="flex-1 min-w-0 px-3 py-2.5 rounded-xl bg-ig-gray-bg text-xs text-ig-gray outline-none truncate"
+            />
+            <button
+              onClick={() => copyText(inviteLink, "link")}
+              className="px-4 py-2.5 rounded-xl bg-ig-blue text-white text-sm font-bold shrink-0 flex items-center gap-1"
+            >
+              {copied === "link" ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+              {copied === "link" ? "کپی شد" : "کپی"}
+            </button>
+          </div>
+        )}
 
         {/* دکمه های اشتراک گذاری */}
         <div className="grid grid-cols-3 gap-2 mt-4">
           <button
-            onClick={() => openShare(`https://t.me/share/url?url=${encodeURIComponent(taggedLink("telegram"))}&text=${encodeURIComponent(shareText)}`)}
+            onClick={() =>
+              openShare(
+                marketApp
+                  ? `https://t.me/share/url?text=${encodeURIComponent(shareText)}`
+                  : `https://t.me/share/url?url=${encodeURIComponent(taggedLink("telegram"))}&text=${encodeURIComponent(shareText)}`
+              )
+            }
             className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-ig-btn2 hover:bg-ig-btn2-hover text-sm font-bold transition-colors"
           >
             <Send className="w-4 h-4 text-sky-500" />
             تلگرام
           </button>
           <button
-            onClick={() => openShare(`https://wa.me/?text=${encodeURIComponent(`${shareText} ${taggedLink("whatsapp")}`)}`)}
+            onClick={() =>
+              openShare(
+                marketApp
+                  ? `https://wa.me/?text=${encodeURIComponent(shareText)}`
+                  : `https://wa.me/?text=${encodeURIComponent(`${shareText} ${taggedLink("whatsapp")}`)}`
+              )
+            }
             className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-ig-btn2 hover:bg-ig-btn2-hover text-sm font-bold transition-colors"
           >
             <MessageCircle className="w-4 h-4 text-green-600" />
@@ -201,8 +235,8 @@ export default function ReferralPage() {
           </button>
         </div>
 
-        {/* QR کد */}
-        {qrUrl && (
+        {/* QR کد — در اپ های مارکتی چون لینک اصلی لو می رود نمایش داده نمی شود */}
+        {qrUrl && !marketApp && (
           <div className="mt-4 flex flex-col items-center">
             <div className="p-3 bg-surface border border-ig-border rounded-2xl">
               {/* eslint-disable-next-line @next/next/no-img-element */}
